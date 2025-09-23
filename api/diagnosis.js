@@ -16,7 +16,7 @@ export default async function handler(req, res) {
   // eslint-disable-next-line no-undef
   const APP_ID = process.env.INFERMEDICA_APP_ID;
   // eslint-disable-next-line no-undef
-  const APP_KEY = process.env.INFERMEDICA_API_KEY;
+  const APP_KEY = process.env.INFERMEDICA_APP_KEY;
   const API_URL = "https://api.infermedica.com/v3";
 
   if (!APP_ID || !APP_KEY) {
