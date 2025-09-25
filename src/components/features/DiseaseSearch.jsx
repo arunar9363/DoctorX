@@ -321,6 +321,7 @@ const DiseaseSearchPage = () => {
         ? 'linear-gradient(135deg, var(--color-fourth) 0%, #0f172a 50%, var(--color-primary) 100%)'
         : `linear-gradient(120deg, ${currentTheme.colorPrimary} 0%, ${currentTheme.colorFourth} 100%)`,
       transition: 'background 0.4s ease-in-out',
+      paddingTop: '30px' // Added padding to ensure heading is visible on mobile
     },
     container: mergeStyles({ maxWidth: '1200px', margin: '0 auto', padding: '0 20px' }, isSmallScreen && { padding: '0 16px' }),
     pageHeader: mergeStyles({ color: currentTheme.colorSecondary, padding: '60px 0', textAlign: 'center', marginTop: '20px', marginBottom: 0 }, isMobile && { padding: '40px 0' }),
