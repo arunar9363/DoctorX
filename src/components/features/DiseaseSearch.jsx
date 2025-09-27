@@ -195,7 +195,11 @@ const DiseaseSearchPage = () => {
   const handleViewDetails = (disease) => navigate(`/diseases/${createSlug(disease.name)}`);
   const handleUpdateClick = (update) => { if (update?.url) window.open(update.url, '_blank', 'noopener,noreferrer'); };
   const handleViewAllUpdates = () => window.open('https://www.who.int/news', '_blank', 'noopener,noreferrer');
-  const getIconComponent = (iconName, size = 20) => ({ AlertCircle, TrendingUp, Globe, Calendar, Shield, Activity })[iconName] || <Activity size={size} />;
+ const getIconComponent = (iconName, size = 20) => {
+  const components = { AlertCircle, TrendingUp, Globe, Calendar, Shield, Activity };
+  const IconComponent = components[iconName] || Activity;
+  return <IconComponent size={size} />;
+};
   const getCategoryIcon = (category) => getIconComponent({ 'emergency alert': 'AlertCircle', 'health data': 'TrendingUp', 'guidelines': 'Shield' }[category?.toLowerCase()]);
 
   // --- INLINE STYLES START ---
