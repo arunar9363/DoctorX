@@ -767,7 +767,7 @@ function ContactPage() {
                 onBlur={(e) => e.target.style.transform = 'translateY(0)'}
               />
 
-              <input type="hidden" name="redirect" value="https://doctor-x-care.vercel.app/contact?success=true" />
+              <input type="hidden" name="redirect" value="https://doctorx-care.vercel.app/contact?success=true" />
 
               <button
                 type="submit"
