@@ -209,7 +209,7 @@ function LoginModal({ show, onClose, message, onShowToast, onLoginSuccess, redir
         <div className="text-center mt-3">
           <p>
             <span id="acc">Don't have an account? </span>
-            <a href="/register">Register</a>
+            <a href="https://doctorx-care.vercel.app/register">Register</a>
           </p>
           <p><a href="/forgot-password">Forgot password?</a></p>
         </div>
