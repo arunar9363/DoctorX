@@ -1,9 +1,9 @@
 // src/App.jsx
-import { BrowserRouter as Router, Routes, Route, useLocation, Outlet, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "./firebase"; // Make sure firebase is exported from here
+import { auth } from "./firebase";
 
 // Components
 import Navbar from "./components/common/Navbar";
@@ -22,7 +22,6 @@ import ContactPage from "./pages/ContactUsPage";
 import SymptomPage from "./pages/SymptomPage";
 import RegisterPage from "./pages/RegisterPage";
 import TermsOfService from "./pages/TermsOfService";
-import ProfilePage from "./pages/ProfilePage"; // Import the new profile page
 
 // Wrapper for login modal page
 function LoginPageWrapper() {
@@ -30,31 +29,24 @@ function LoginPageWrapper() {
 }
 
 // Protected Router Component
-// This will protect routes that require a user to be logged in.
 const ProtectedRouter = () => {
   const [user, loading] = useAuthState(auth);
 
   if (loading) {
-    // You can optionally return a loading spinner here
+    // Optionally return a loading spinner
     return <div>Loading...</div>;
   }
 
   return user ? <Outlet /> : <Navigate to="/" />;
 };
 
-
 // Layout wrapper
 function Layout({ children }) {
-  const location = useLocation();
-  // Let's adjust this to hide on the root path instead of /home
-  const hideLayout = location.pathname === "/";
-
   return (
     <div className="landing-page">
-      {/* Conditionally render Navbar and Footer */}
-      {!hideLayout && <Navbar />}
+      <Navbar />
       {children}
-      {!hideLayout && <Footer />}
+      <Footer />
     </div>
   );
 }
@@ -62,7 +54,6 @@ function Layout({ children }) {
 function App() {
   return (
     <Router>
-      {/* The Layout component now wraps everything and controls Navbar/Footer visibility */}
       <Layout>
         <Routes>
           {/* Public Routes */}
@@ -86,12 +77,6 @@ function App() {
           <Route path="/login" element={<LoginPageWrapper />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/terms" element={<TermsOfService />} />
-
-          {/* Protected Routes */}
-          <Route element={<ProtectedRouter />}>
-            <Route path="/profile" element={<ProfilePage />} />
-            {/* You can add more protected routes here in the future */}
-          </Route>
         </Routes>
       </Layout>
     </Router>

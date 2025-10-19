@@ -1,13 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 
 import loginImage from "/assets/ragisterpage.svg";
-import "../styles/RegisterPage.css";
 import LoginModal from "../components/common/LoginModal";
 
-// Simple Toast Component (inline to avoid import issues)
+// Simple Toast Component
 const SimpleToast = ({ message, type, show, onClose }) => {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -111,19 +111,52 @@ function RegisterPage() {
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
   const navigate = useNavigate();
 
-  // Show toast function
+  const [dob, setDob] = useState("");
+  const [existingConditions, setExistingConditions] = useState("");
+  const [city, setCity] = useState("");
+
+  // Detect dark mode and screen size
+  const [isDark, setIsDark] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
+
+  useEffect(() => {
+    const checkTheme = () => {
+      const theme = document.documentElement.getAttribute('data-theme');
+      setIsDark(theme === 'dark');
+    };
+
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth <= 768);
+      setIsTablet(window.innerWidth > 768 && window.innerWidth <= 1024);
+    };
+
+    checkTheme();
+    checkScreenSize();
+
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme']
+    });
+
+    window.addEventListener('resize', checkScreenSize);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', checkScreenSize);
+    };
+  }, []);
+
   const showToast = (message, type = 'success') => {
-    console.log("Showing toast:", message, type);
     setToast({ show: true, message, type });
   };
 
-  // Hide toast function
   const hideToast = () => {
     setToast({ show: false, message: '', type: 'success' });
   };
 
   const validateForm = () => {
-    // Check if all fields are filled
     if (!name.trim()) {
       showToast("Please enter your full name.", "error");
       return false;
@@ -131,6 +164,11 @@ function RegisterPage() {
 
     if (name.trim().length < 2) {
       showToast("Name must be at least 2 characters long.", "error");
+      return false;
+    }
+
+    if (!dob) {
+      showToast("Please enter your Date of Birth.", "error");
       return false;
     }
 
@@ -144,12 +182,16 @@ function RegisterPage() {
       return false;
     }
 
+    if (!city.trim()) {
+      showToast("Please enter your city or location.", "error");
+      return false;
+    }
+
     if (!email.trim()) {
       showToast("Please enter your email address.", "error");
       return false;
     }
 
-    // Basic email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       showToast("Please enter a valid email address.", "error");
@@ -189,28 +231,38 @@ function RegisterPage() {
     setIsLoading(true);
 
     try {
-      console.log("Attempting to register user...");
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      console.log("Registration successful:", userCredential.user);
+      const user = userCredential.user;
 
-      // Clear form
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        name: name,
+        email: email,
+        dob: dob,
+        gender: gender,
+        bloodGroup: bloodGroup,
+        city: city,
+        existingConditions: existingConditions.trim() || "None",
+        createdAt: new Date(),
+      });
+
       setName("");
       setGender("");
       setBloodGroup("");
       setEmail("");
       setPassword("");
       setConfirmPassword("");
+      setDob("");
+      setCity("");
+      setExistingConditions("");
 
       showToast("Registration successful! Welcome to DoctorX!", "success");
 
-      // Redirect to home page after a short delay
       setTimeout(() => {
         navigate("/");
       }, 2000);
 
     } catch (err) {
-      console.error("Registration error:", err);
-
       let errorMessage = "Registration failed. Please try again.";
 
       if (err.code === "auth/email-already-in-use") {
@@ -231,61 +283,248 @@ function RegisterPage() {
     }
   };
 
+  // Inline Styles
+  const pageStyle = {
+    display: 'flex',
+    flexDirection: isMobile ? 'column' : 'row',
+    minHeight: '100vh',
+    width: '100%',
+    fontFamily: '"Inter", sans-serif',
+    background: isDark
+      ? 'linear-gradient(135deg, #0a192f 0%, #0f172a 50%, #1a365d 100%)'
+      : 'linear-gradient(135deg, #e0f2fe 0%, #f8fdfe 50%, #dbeafe 100%)',
+    paddingTop: isMobile ? '70px' : '0',
+  };
+
+  const leftStyle = {
+    flex: isMobile ? 'none' : 1,
+    width: isMobile ? '100%' : 'auto',
+    color: isDark ? '#e2e8f0' : '#0d9db8',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: isMobile ? '20px' : (isTablet ? '30px' : '40px'),
+    textAlign: 'center',
+    minWidth: 0,
+    minHeight: isMobile ? 'auto' : '100vh',
+  };
+
+  const leftH1Style = {
+    fontSize: isMobile ? '24px' : 'clamp(24px, 4vw, 36px)',
+    marginBottom: '12px',
+    fontWeight: 600,
+    lineHeight: 1.2,
+    color: isDark ? '#f1f5f9' : '#0d9db8',
+  };
+
+  const leftPStyle = {
+    color: isDark ? '#94a3b8' : '#2d3748',
+    fontSize: isMobile ? '14px' : 'clamp(14px, 2.5vw, 18px)',
+    marginBottom: '20px',
+    opacity: 0.9,
+    lineHeight: 1.6,
+    maxWidth: '400px',
+  };
+
+  const imgStyle = {
+    maxWidth: isMobile ? 'min(100%, 240px)' : (isTablet ? 'min(100%, 320px)' : 'min(100%, 400px)'),
+    width: '100%',
+    height: 'auto',
+    marginTop: isMobile ? '10px' : '20px',
+    objectFit: 'contain',
+    filter: 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1))',
+  };
+
+  const rightStyle = {
+    flex: isMobile ? 'none' : 1,
+    width: isMobile ? '100%' : 'auto',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: isMobile ? '20px' : (isTablet ? '30px' : '40px'),
+    minWidth: 0,
+    minHeight: isMobile ? 'auto' : '100vh',
+  };
+
+  const formBoxStyle = {
+    width: '100%',
+    maxWidth: isMobile ? '100%' : (isTablet ? '480px' : '520px'),
+    margin: '0 auto',
+  };
+
+  const formRowStyle = {
+    display: 'grid',
+    gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+    gap: isMobile ? '0' : '16px',
+    marginBottom: '0',
+  };
+
+  const h2Style = {
+    fontSize: isMobile ? '1.8rem' : 'clamp(1.8rem, 4vw, 2.5rem)',
+    fontWeight: 600,
+    marginBottom: isMobile ? '15px' : '20px',
+    color: isDark ? '#f1f5f9' : '#0d9db8',
+    fontFamily: '"Merriweather", serif',
+    lineHeight: 1.2,
+  };
+
+  const subtitleStyle = {
+    fontSize: isMobile ? '0.9rem' : 'clamp(0.9rem, 2vw, 1.1rem)',
+    color: isDark ? '#94a3b8' : '#2d3748',
+    marginBottom: isMobile ? '20px' : '24px',
+    lineHeight: 1.5,
+  };
+
+  const inputStyle = {
+    width: '100%',
+    padding: isMobile ? '16px' : '14px 16px',
+    marginBottom: isMobile ? '18px' : '16px',
+    border: `2px solid ${isDark ? '#334155' : '#e5e7eb'}`,
+    borderRadius: isMobile ? '10px' : '12px',
+    fontSize: isMobile ? '16px' : '15px',
+    outline: 'none',
+    transition: 'all 0.3s ease',
+    boxSizing: 'border-box',
+    background: isDark ? '#1e293b' : '#fff',
+    fontFamily: 'inherit',
+    color: isDark ? '#e2e8f0' : '#2d3748',
+  };
+
+  const textareaStyle = {
+    ...inputStyle,
+    resize: 'vertical',
+    minHeight: '60px',
+  };
+
+  const buttonStyle = {
+    width: '100%',
+    padding: isMobile ? '18px' : '16px',
+    background: 'linear-gradient(135deg, #0d9db8, #0ea5c1)',
+    color: 'white',
+    border: 'none',
+    borderRadius: isMobile ? '10px' : '12px',
+    fontSize: isMobile ? '16px' : '16px',
+    fontWeight: 600,
+    cursor: isLoading ? 'not-allowed' : 'pointer',
+    transition: 'all 0.3s ease',
+    marginTop: isMobile ? '20px' : '24px',
+    position: 'relative',
+    overflow: 'hidden',
+    letterSpacing: '0.5px',
+    opacity: isLoading ? 0.6 : 1,
+  };
+
+  const loginLinkStyle = {
+    textAlign: 'center',
+    marginTop: isMobile ? '24px' : '20px',
+    fontSize: isMobile ? '15px' : '15px',
+    color: isDark ? '#94a3b8' : '#2d3748',
+  };
+
+  const btnLoginStyle = {
+    background: 'none',
+    border: 'none',
+    color: '#0d9db8',
+    fontWeight: 600,
+    cursor: isLoading ? 'not-allowed' : 'pointer',
+    textDecoration: 'underline',
+    fontSize: 'inherit',
+    padding: 0,
+    margin: 0,
+    transition: 'color 0.3s ease',
+    opacity: isLoading ? 0.6 : 1,
+  };
+
   return (
-    <div className="register-page">
-      {/* Left Section - Illustration */}
-      <div className="register-left">
-        <h1>Welcome to DoctorX</h1>
-        <p>Your trusted healthcare partner at your fingertips.</p>
-        <img src={loginImage} alt="DoctorX Illustration" />
+    <div style={pageStyle}>
+      <div style={leftStyle}>
+        <h1 style={leftH1Style}>Welcome to DoctorX</h1>
+        <p style={leftPStyle}>Your trusted healthcare partner at your fingertips.</p>
+        <img src={loginImage} alt="DoctorX Illustration" style={imgStyle} />
       </div>
 
-      {/* Right Section - Form */}
-      <div className="register-right">
-        <div className="form-box">
-          <h2>Create Account</h2>
-          <p className="subtitle">
+      <div style={rightStyle}>
+        <div style={formBoxStyle}>
+          <h2 style={h2Style}>Create Account</h2>
+          <p style={subtitleStyle}>
             Start managing your healthcare with <b>DoctorX</b>
           </p>
 
           <form onSubmit={handleSubmit}>
+            <div style={formRowStyle}>
+              <input
+                type="text"
+                placeholder="Full Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                disabled={isLoading}
+                style={inputStyle}
+              />
+
+              <input
+                type="date"
+                placeholder="Date of Birth"
+                value={dob}
+                onChange={(e) => setDob(e.target.value)}
+                required
+                disabled={isLoading}
+                style={inputStyle}
+              />
+            </div>
+
+            <div style={formRowStyle}>
+              <select
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                required
+                disabled={isLoading}
+                style={inputStyle}
+              >
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+
+              <select
+                value={bloodGroup}
+                onChange={(e) => setBloodGroup(e.target.value)}
+                required
+                disabled={isLoading}
+                style={inputStyle}
+              >
+                <option value="">Select Blood Group</option>
+                <option value="A+">A+</option>
+                <option value="A-">A-</option>
+                <option value="B+">B+</option>
+                <option value="B-">B-</option>
+                <option value="O+">O+</option>
+                <option value="O-">O-</option>
+                <option value="AB+">AB+</option>
+                <option value="AB-">AB-</option>
+              </select>
+            </div>
+
             <input
               type="text"
-              placeholder="Full Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              placeholder="Where do you live? (e.g., Mumbai, Delhi)"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
               required
               disabled={isLoading}
+              style={inputStyle}
             />
 
-            <select
-              value={gender}
-              onChange={(e) => setGender(e.target.value)}
-              required
+            <textarea
+              placeholder="Do you have any existing medical conditions? (optional)"
+              value={existingConditions}
+              onChange={(e) => setExistingConditions(e.target.value)}
               disabled={isLoading}
-            >
-              <option value="">Select Gender</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
-            </select>
-
-            <select
-              value={bloodGroup}
-              onChange={(e) => setBloodGroup(e.target.value)}
-              required
-              disabled={isLoading}
-            >
-              <option value="">Select Blood Group</option>
-              <option value="A+">A+</option>
-              <option value="A-">A-</option>
-              <option value="B+">B+</option>
-              <option value="B-">B-</option>
-              <option value="O+">O+</option>
-              <option value="O-">O-</option>
-              <option value="AB+">AB+</option>
-              <option value="AB-">AB-</option>
-            </select>
+              rows="2"
+              style={textareaStyle}
+            />
 
             <input
               type="email"
@@ -294,43 +533,48 @@ function RegisterPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               disabled={isLoading}
+              style={inputStyle}
             />
 
-            <input
-              type="password"
-              placeholder="Create Password (min 6 characters)"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={isLoading}
-              minLength="6"
-            />
+            <div style={formRowStyle}>
+              <input
+                type="password"
+                placeholder="Create Password (min 6 characters)"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={isLoading}
+                minLength="6"
+                style={inputStyle}
+              />
 
-            <input
-              type="password"
-              placeholder="Confirm Password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              disabled={isLoading}
-            />
+              <input
+                type="password"
+                placeholder="Confirm Password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+                disabled={isLoading}
+                style={inputStyle}
+              />
+            </div>
 
             <button
               type="submit"
-              className="btn-primary"
               disabled={isLoading}
+              style={buttonStyle}
             >
               {isLoading ? "Creating Account..." : "Continue →"}
             </button>
           </form>
 
-          <p className="login-link">
+          <p style={loginLinkStyle}>
             Already have an account?{" "}
             <button
-              className="btn-login"
               onClick={() => setShowLogin(true)}
               type="button"
               disabled={isLoading}
+              style={btnLoginStyle}
             >
               Login
             </button>
@@ -338,14 +582,12 @@ function RegisterPage() {
         </div>
       </div>
 
-      {/* Login Modal */}
       <LoginModal
         show={showLogin}
         onClose={() => setShowLogin(false)}
         onShowToast={showToast}
       />
 
-      {/* Toast Notification */}
       <SimpleToast
         message={toast.message}
         type={toast.type}

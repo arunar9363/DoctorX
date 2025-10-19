@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import LoginModal from "../common/LoginModal";
+import ProfilePage from "../../pages/ProfilePage";
 import { auth, signOut } from "../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -265,12 +266,13 @@ function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const [showLogin, setShowLogin] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
   const [user, setUser] = useState(null);
   const [isDark, setIsDark] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 992); // UPDATED: Breakpoint
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 992);
   const [showEmergency, setShowEmergency] = useState(false);
 
   const isActiveLink = (path) => {
@@ -281,7 +283,7 @@ function Navbar() {
 
   useEffect(() => {
     const handleResize = () => {
-      const mobile = window.innerWidth <= 992; // UPDATED: Breakpoint
+      const mobile = window.innerWidth <= 992;
       setIsMobile(mobile);
       if (!mobile) setIsMenuOpen(false);
     };
@@ -328,6 +330,11 @@ function Navbar() {
     }
   };
 
+  const handleProfileClick = () => {
+    setShowProfile(true);
+    closeMenu();
+  };
+
   const styles = {
     navbar: {
       background: isDark ? 'rgba(18, 18, 18, 0.95)' : 'rgba(255, 255, 255, 0.95)',
@@ -338,7 +345,7 @@ function Navbar() {
       left: 0,
       right: 0,
       zIndex: 1030,
-      padding: isMobile ? '0.5rem 0' : '0.75rem 0', // UPDATED: Sizing
+      padding: isMobile ? '0.5rem 0' : '0.75rem 0',
       boxShadow: isDark ? '0 2px 20px rgba(0, 0, 0, 0.3)' : '0 2px 20px rgba(0, 0, 0, 0.1)',
     },
     container: {
@@ -355,7 +362,7 @@ function Navbar() {
       flexShrink: 0
     },
     logo: {
-      height: isMobile ? '30px' : '40px', // UPDATED: Sizing
+      height: isMobile ? '30px' : '40px',
       width: 'auto'
     },
     desktopNav: {
@@ -420,7 +427,7 @@ function Navbar() {
       background: 'linear-gradient(135deg, #dc3545, #c82333)',
       color: 'white',
     },
-    profileButton: { // ADDED
+    profileButton: {
       background: 'linear-gradient(135deg, #17a2b8, #117a8b)',
       color: 'white'
     },
@@ -482,7 +489,7 @@ function Navbar() {
     },
     mobileMenu: {
       position: 'fixed',
-      top: '62px', // UPDATED: Sizing
+      top: '62px',
       left: 0,
       right: 0,
       width: '100vw',
@@ -510,7 +517,7 @@ function Navbar() {
       color: isDark ? 'rgba(255, 255, 255, 0.9)' : '#2d3748',
       fontWeight: '500',
       fontSize: '1rem',
-      padding: '0.7rem 1.5rem', // UPDATED: Sizing
+      padding: '0.7rem 1.5rem',
       transition: 'all 0.3s ease',
       textDecoration: 'none',
       borderBottom: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.08)',
@@ -526,10 +533,10 @@ function Navbar() {
       background: isDark ? '#1a202c' : '#f7fafc',
     },
     mobileButton: {
-      padding: '0.7rem 1.5rem', // UPDATED: Sizing
+      padding: '0.7rem 1.5rem',
       borderRadius: '20px',
       fontWeight: '600',
-      fontSize: '0.85rem', // UPDATED: Sizing
+      fontSize: '0.85rem',
       cursor: 'pointer',
       textDecoration: 'none',
       border: 'none',
@@ -554,7 +561,7 @@ function Navbar() {
       background: 'linear-gradient(135deg, #dc3545, #c82333)',
       color: 'white',
     },
-    mobileProfileButton: { // ADDED
+    mobileProfileButton: {
       background: 'linear-gradient(135deg, #17a2b8, #117a8b)',
       color: 'white'
     },
@@ -604,11 +611,10 @@ function Navbar() {
                   <Link style={{ ...styles.unifiedButton, ...styles.registerButton }} to="/register">Register</Link>
                 </>
               ) : (
-                // --- UPDATED: Added Profile Button ---
                 <>
-                  <Link to="/profile" style={{ ...styles.unifiedButton, ...styles.profileButton }}>
+                  <button onClick={handleProfileClick} style={{ ...styles.unifiedButton, ...styles.profileButton }}>
                     <ProfileIcon /> My Profile
-                  </Link>
+                  </button>
                   <button style={{ ...styles.unifiedButton, ...styles.logoutButton }} onClick={handleLogout}>Logout</button>
                 </>
               )
@@ -655,11 +661,10 @@ function Navbar() {
                   <Link style={{ ...styles.mobileButton, ...styles.mobileRegisterButton }} to="/register" onClick={closeMenu}>Register</Link>
                 </>
               ) : (
-                // --- UPDATED: Added Profile Button ---
                 <>
-                  <Link style={{ ...styles.mobileButton, ...styles.mobileProfileButton }} to="/profile" onClick={closeMenu}>
+                  <button style={{ ...styles.mobileButton, ...styles.mobileProfileButton }} onClick={handleProfileClick}>
                     <ProfileIcon /> My Profile
-                  </Link>
+                  </button>
                   <button style={{ ...styles.mobileButton, ...styles.mobileLogoutButton }} onClick={handleLogout}>Logout</button>
                 </>
               )
@@ -682,6 +687,7 @@ function Navbar() {
 
       <>
         <LoginModal show={showLogin} onClose={() => setShowLogin(false)} onShowToast={showToast} />
+        <ProfilePage show={showProfile} onClose={() => setShowProfile(false)} onShowToast={showToast} />
         <EmergencyModal show={showEmergency} onClose={() => setShowEmergency(false)} isDark={isDark} />
         <SimpleToast message={toast.message} type={toast.type} show={toast.show} onClose={hideToast} />
         <style>{`
