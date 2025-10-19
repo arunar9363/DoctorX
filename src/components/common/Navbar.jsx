@@ -4,7 +4,26 @@ import LoginModal from "../common/LoginModal";
 import { auth, signOut } from "../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
-// Simple Toast Component
+// --- ADDED: SVG Profile Icon Component ---
+const ProfileIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+    <circle cx="12" cy="7" r="4"></circle>
+  </svg>
+);
+
+
+// Simple Toast Component (Your existing code)
 const SimpleToast = ({ message, type, show, onClose }) => {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -82,7 +101,7 @@ const SimpleToast = ({ message, type, show, onClose }) => {
   );
 };
 
-// Emergency Modal Component
+// Emergency Modal Component (Your existing code)
 const EmergencyModal = ({ show, onClose, isDark }) => {
   if (!show) return null;
 
@@ -244,42 +263,32 @@ const EmergencyModal = ({ show, onClose, isDark }) => {
 
 function Navbar() {
   const location = useLocation();
-  const navigate = useNavigate(); // Added navigation hook
+  const navigate = useNavigate();
   const [showLogin, setShowLogin] = useState(false);
   const [user, setUser] = useState(null);
   const [isDark, setIsDark] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 992); // UPDATED: Breakpoint
   const [showEmergency, setShowEmergency] = useState(false);
 
-  // Helper function to check if a link is active
   const isActiveLink = (path) => {
-    if (path === '/' && location.pathname === '/') {
-      return true;
-    }
-    if (path !== '/' && location.pathname.startsWith(path)) {
-      return true;
-    }
+    if (path === '/' && location.pathname === '/') return true;
+    if (path !== '/' && location.pathname.startsWith(path)) return true;
     return false;
   };
 
-  // Handle window resize
   useEffect(() => {
     const handleResize = () => {
-      const mobile = window.innerWidth <= 768;
+      const mobile = window.innerWidth <= 992; // UPDATED: Breakpoint
       setIsMobile(mobile);
-      if (!mobile) {
-        setIsMenuOpen(false);
-      }
+      if (!mobile) setIsMenuOpen(false);
     };
-
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Track auth state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -288,14 +297,12 @@ function Navbar() {
     return () => unsubscribe();
   }, []);
 
-  // Initialize theme on component mount
   useEffect(() => {
     const savedTheme = localStorage.getItem('theme') || 'light';
     setIsDark(savedTheme === 'dark');
     document.documentElement.setAttribute("data-theme", savedTheme);
   }, []);
 
-  // Theme toggle
   const toggleTheme = () => {
     const newTheme = isDark ? 'light' : 'dark';
     setIsDark(!isDark);
@@ -303,32 +310,17 @@ function Navbar() {
     localStorage.setItem('theme', newTheme);
   };
 
-  // Mobile menu toggle
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+  const closeMenu = () => setIsMenuOpen(false);
 
-  // Close menu when link is clicked (mobile)
-  const closeMenu = () => {
-    setIsMenuOpen(false);
-  };
-
-  // Show toast function
-  const showToast = (message, type = 'success') => {
-    setToast({ show: true, message, type });
-  };
-
-  // Hide toast function
-  const hideToast = () => {
-    setToast({ show: false, message: '', type: 'success' });
-  };
+  const showToast = (message, type = 'success') => setToast({ show: true, message, type });
+  const hideToast = () => setToast({ show: false, message: '', type: 'success' });
 
   const handleLogout = async () => {
     try {
       await signOut(auth);
       showToast("Logout successful! See you again soon.", "success");
       closeMenu();
-      // Redirect to home page after logout
       navigate('/');
     } catch (error) {
       console.error("Logout error:", error);
@@ -336,32 +328,24 @@ function Navbar() {
     }
   };
 
-  // Main styles with unified button styling
   const styles = {
     navbar: {
-      background: isDark
-        ? 'rgba(18, 18, 18, 0.95)'
-        : 'rgba(255, 255, 255, 0.95)',
+      background: isDark ? 'rgba(18, 18, 18, 0.95)' : 'rgba(255, 255, 255, 0.95)',
       backdropFilter: 'blur(10px)',
-      borderBottom: isDark
-        ? '1px solid rgba(255, 255, 255, 0.1)'
-        : '1px solid rgba(255, 255, 255, 0.2)',
+      borderBottom: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(255, 255, 255, 0.2)',
       position: 'fixed',
       top: 0,
       left: 0,
       right: 0,
       zIndex: 1030,
-      padding: '0.75rem 0',
-      boxShadow: isDark
-        ? '0 2px 20px rgba(0, 0, 0, 0.3)'
-        : '0 2px 20px rgba(0, 0, 0, 0.1)',
+      padding: isMobile ? '0.5rem 0' : '0.75rem 0', // UPDATED: Sizing
+      boxShadow: isDark ? '0 2px 20px rgba(0, 0, 0, 0.3)' : '0 2px 20px rgba(0, 0, 0, 0.1)',
     },
     container: {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
       padding: '0 20px',
-      maxWidth: '100%',
       width: '100%'
     },
     brand: {
@@ -371,10 +355,9 @@ function Navbar() {
       flexShrink: 0
     },
     logo: {
-      height: isMobile ? '32px' : '40px',
+      height: isMobile ? '30px' : '40px', // UPDATED: Sizing
       width: 'auto'
     },
-    // Desktop Navigation
     desktopNav: {
       display: isMobile ? 'none' : 'flex',
       alignItems: 'center',
@@ -402,18 +385,14 @@ function Navbar() {
     },
     activeNavLink: {
       color: isDark ? '#4dabf7' : '#007bff',
-      background: isDark
-        ? 'rgba(77, 171, 247, 0.15)'
-        : 'rgba(0, 123, 255, 0.15)'
+      background: isDark ? 'rgba(77, 171, 247, 0.15)' : 'rgba(0, 123, 255, 0.15)'
     },
-    // Desktop Actions - All buttons with consistent styling like Emergency button
     desktopActions: {
-      display: 'flex',
+      display: isMobile ? 'none' : 'flex',
       alignItems: 'center',
       gap: '0.5rem',
       flexShrink: 0
     },
-    // Unified button base style (similar to emergency button)
     unifiedButton: {
       padding: '0.4rem 0.8rem',
       borderRadius: '20px',
@@ -432,22 +411,22 @@ function Navbar() {
     loginButton: {
       background: 'linear-gradient(135deg, #007bff, #0056b3)',
       color: 'white',
-      boxShadow: '0 2px 8px rgba(0, 123, 255, 0.3)'
     },
     registerButton: {
       background: 'linear-gradient(135deg, #28a745, #1e7e34)',
       color: 'white',
-      boxShadow: '0 2px 8px rgba(40, 167, 69, 0.3)'
     },
     logoutButton: {
       background: 'linear-gradient(135deg, #dc3545, #c82333)',
       color: 'white',
-      boxShadow: '0 2px 8px rgba(220, 53, 69, 0.3)'
+    },
+    profileButton: { // ADDED
+      background: 'linear-gradient(135deg, #17a2b8, #117a8b)',
+      color: 'white'
     },
     emergencyBtn: {
       background: 'linear-gradient(135deg, #dc2626, #ef4444)',
       color: 'white',
-      boxShadow: '0 2px 8px rgba(220, 38, 38, 0.3)'
     },
     themeToggle: {
       width: '50px',
@@ -492,36 +471,24 @@ function Navbar() {
       position: 'relative',
       zIndex: 1
     },
-    // Mobile styles
     mobileToggler: {
       display: isMobile ? 'flex' : 'none',
       background: 'transparent',
       border: 'none',
       padding: '0.5rem',
       cursor: 'pointer',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center'
-    },
-    hamburgerLine: {
-      width: '24px',
-      height: '3px',
-      background: isDark ? 'rgba(255, 255, 255, 0.75)' : 'rgba(33, 37, 41, 0.75)',
-      margin: '3px 0',
-      transition: 'all 0.3s ease',
-      borderRadius: '2px'
+      fontSize: '24px',
+      color: isDark ? 'white' : 'black'
     },
     mobileMenu: {
       position: 'fixed',
-      top: '70px',
+      top: '62px', // UPDATED: Sizing
       left: 0,
       right: 0,
       width: '100vw',
       height: 'auto',
-      maxHeight: 'calc(100vh - 70px)',
-      background: isDark
-        ? 'rgba(18, 18, 18, 0.98)'
-        : 'rgba(255, 255, 255, 0.98)',
+      maxHeight: 'calc(100vh - 62px)',
+      background: isDark ? 'rgba(18, 18, 18, 0.98)' : 'rgba(255, 255, 255, 0.98)',
       backdropFilter: 'blur(15px)',
       border: 'none',
       zIndex: 1000,
@@ -530,11 +497,6 @@ function Navbar() {
       overflowY: 'auto',
       padding: 0
     },
-    mobileNavContainer: {
-      display: 'flex',
-      flexDirection: 'column',
-      minHeight: 'auto'
-    },
     mobileNavLinks: {
       display: 'flex',
       flexDirection: 'column',
@@ -542,69 +504,63 @@ function Navbar() {
       margin: 0,
       listStyle: 'none',
       padding: '10px 0',
-      background: isDark ? '#1a202c' : '#f7fafc',
       borderRadius: '0',
     },
     mobileNavLink: {
       color: isDark ? 'rgba(255, 255, 255, 0.9)' : '#2d3748',
       fontWeight: '500',
       fontSize: '1rem',
-      padding: '0.75rem 2rem',
-      borderRadius: '0',
+      padding: '0.7rem 1.5rem', // UPDATED: Sizing
       transition: 'all 0.3s ease',
       textDecoration: 'none',
-      borderBottom: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
-      display: 'block',
-      width: '100%'
+      borderBottom: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.08)',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '10px'
     },
     mobileActions: {
       display: 'flex',
       flexDirection: 'column',
       gap: '0.75rem',
-      padding: '1rem 2rem',
-      background: isDark ? '#2d3748' : '#edf2f7',
+      padding: '1rem 1.5rem',
+      background: isDark ? '#1a202c' : '#f7fafc',
     },
     mobileButton: {
-      padding: '0.75rem 1.5rem',
+      padding: '0.7rem 1.5rem', // UPDATED: Sizing
       borderRadius: '20px',
       fontWeight: '600',
-      fontSize: '0.9rem',
+      fontSize: '0.85rem', // UPDATED: Sizing
       cursor: 'pointer',
       textDecoration: 'none',
       border: 'none',
       width: '100%',
       textAlign: 'center',
       transition: 'all 0.3s ease',
-      boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
+      boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '8px'
     },
     mobileLoginButton: {
       background: 'linear-gradient(135deg, #007bff, #0056b3)',
       color: 'white',
-      boxShadow: '0 4px 15px rgba(0, 123, 255, 0.3)'
     },
     mobileRegisterButton: {
       background: 'linear-gradient(135deg, #28a745, #1e7e34)',
       color: 'white',
-      boxShadow: '0 4px 15px rgba(40, 167, 69, 0.3)'
     },
     mobileLogoutButton: {
       background: 'linear-gradient(135deg, #dc3545, #c82333)',
       color: 'white',
-      boxShadow: '0 4px 15px rgba(220, 53, 69, 0.3)'
+    },
+    mobileProfileButton: { // ADDED
+      background: 'linear-gradient(135deg, #17a2b8, #117a8b)',
+      color: 'white'
     },
     mobileEmergencyBtn: {
       background: 'linear-gradient(135deg, #dc2626, #ef4444)',
       color: 'white',
-      border: 'none',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: '8px',
-      boxShadow: '0 4px 15px rgba(220, 38, 38, 0.3)',
-      padding: '0.75rem 1.5rem',
-      borderRadius: '20px',
-      fontWeight: '600',
-      fontSize: '0.9rem'
     },
     mobileThemeContainer: {
       display: 'flex',
@@ -618,7 +574,6 @@ function Navbar() {
     <>
       <nav style={styles.navbar}>
         <div style={styles.container}>
-          {/* Logo */}
           <Link style={styles.brand} to="/" onClick={closeMenu}>
             <img style={styles.logo} src="/assets/MAINLOGO1.png" alt="DoctorX Logo" />
           </Link>
@@ -626,101 +581,17 @@ function Navbar() {
           {/* Desktop Navigation */}
           <div style={styles.desktopNav}>
             <ul style={styles.navLinks}>
-              <li>
-                <Link
-                  style={{
-                    ...styles.navLink,
-                    ...(isActiveLink('/') ? styles.activeNavLink : {})
-                  }}
-                  to="/"
-                  onMouseOver={(e) => {
-                    if (!isActiveLink('/')) {
-                      e.target.style.background = isDark
-                        ? 'rgba(255, 255, 255, 0.1)'
-                        : 'rgba(0, 0, 0, 0.05)';
-                    }
-                  }}
-                  onMouseOut={(e) => {
-                    if (!isActiveLink('/')) {
-                      e.target.style.background = 'transparent';
-                    }
-                  }}
-                >
-                  Home
-                </Link>
-              </li>
-
+              <li><Link style={{ ...styles.navLink, ...(isActiveLink('/') ? styles.activeNavLink : {}) }} to="/">Home</Link></li>
               {user && (
                 <>
-                  <li>
-                    <Link
-                      style={{
-                        ...styles.navLink,
-                        ...(isActiveLink('/symptoms') ? styles.activeNavLink : {})
-                      }}
-                      to="/symptoms"
-                    >
-                      Analyze Symptoms
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      style={{
-                        ...styles.navLink,
-                        ...(isActiveLink('/diseases-front') ? styles.activeNavLink : {})
-                      }}
-                      to="/diseases-front"
-                    >
-                      Disease Details
-                    </Link>
-                  </li>
+                  <li><Link style={{ ...styles.navLink, ...(isActiveLink('/symptoms') ? styles.activeNavLink : {}) }} to="/symptoms">Analyze Symptoms</Link></li>
+                  <li><Link style={{ ...styles.navLink, ...(isActiveLink('/diseases-front') ? styles.activeNavLink : {}) }} to="/diseases-front">Disease Details</Link></li>
                 </>
               )}
-
-              <li>
-                <Link
-                  style={{
-                    ...styles.navLink,
-                    ...(isActiveLink('/audience') ? styles.activeNavLink : {})
-                  }}
-                  to="/audience"
-                >
-                  Audience
-                </Link>
-              </li>
-              <li>
-                <Link
-                  style={{
-                    ...styles.navLink,
-                    ...(isActiveLink('/about') ? styles.activeNavLink : {})
-                  }}
-                  to="/about"
-                >
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link
-                  style={{
-                    ...styles.navLink,
-                    ...(isActiveLink('/terms') ? styles.activeNavLink : {})
-                  }}
-                  to="/terms"
-                >
-                  Terms & Conditions
-                </Link>
-              </li>
-              <li>
-                <Link
-                  style={{
-                    ...styles.navLink,
-                    ...(isActiveLink('/contact') ? styles.activeNavLink : {})
-                  }}
-                  to="/contact"
-                >
-                  Feedback
-                </Link>
-              </li>
+              <li><Link style={{ ...styles.navLink, ...(isActiveLink('/audience') ? styles.activeNavLink : {}) }} to="/audience">Audience</Link></li>
+              <li><Link style={{ ...styles.navLink, ...(isActiveLink('/about') ? styles.activeNavLink : {}) }} to="/about">About Us</Link></li>
+              <li><Link style={{ ...styles.navLink, ...(isActiveLink('/terms') ? styles.activeNavLink : {}) }} to="/terms">Terms & Conditions</Link></li>
+              <li><Link style={{ ...styles.navLink, ...(isActiveLink('/contact') ? styles.activeNavLink : {}) }} to="/contact">Feedback</Link></li>
             </ul>
           </div>
 
@@ -729,80 +600,20 @@ function Navbar() {
             {!isLoading && (
               !user ? (
                 <>
-                  <button
-                    style={{
-                      ...styles.unifiedButton,
-                      ...styles.loginButton
-                    }}
-                    onClick={() => setShowLogin(true)}
-                    onMouseOver={(e) => {
-                      e.target.style.transform = 'translateY(-2px)';
-                      e.target.style.boxShadow = '0 4px 15px rgba(0, 123, 255, 0.4)';
-                    }}
-                    onMouseOut={(e) => {
-                      e.target.style.transform = 'translateY(0)';
-                      e.target.style.boxShadow = '0 2px 8px rgba(0, 123, 255, 0.3)';
-                    }}
-                  >
-                    Login
-                  </button>
-                  <Link
-                    style={{
-                      ...styles.unifiedButton,
-                      ...styles.registerButton
-                    }}
-                    to="/register"
-                    onMouseOver={(e) => {
-                      e.target.style.transform = 'translateY(-2px)';
-                      e.target.style.boxShadow = '0 4px 15px rgba(40, 167, 69, 0.4)';
-                    }}
-                    onMouseOut={(e) => {
-                      e.target.style.transform = 'translateY(0)';
-                      e.target.style.boxShadow = '0 2px 8px rgba(40, 167, 69, 0.3)';
-                    }}
-                  >
-                    Register
-                  </Link>
+                  <button style={{ ...styles.unifiedButton, ...styles.loginButton }} onClick={() => setShowLogin(true)}>Login</button>
+                  <Link style={{ ...styles.unifiedButton, ...styles.registerButton }} to="/register">Register</Link>
                 </>
               ) : (
-                <button
-                  style={{
-                    ...styles.unifiedButton,
-                    ...styles.logoutButton
-                  }}
-                  onClick={handleLogout}
-                  onMouseOver={(e) => {
-                    e.target.style.transform = 'translateY(-2px)';
-                    e.target.style.boxShadow = '0 4px 15px rgba(220, 53, 69, 0.4)';
-                  }}
-                  onMouseOut={(e) => {
-                    e.target.style.transform = 'translateY(0)';
-                    e.target.style.boxShadow = '0 2px 8px rgba(220, 53, 69, 0.3)';
-                  }}
-                >
-                  Logout
-                </button>
+                // --- UPDATED: Added Profile Button ---
+                <>
+                  <Link to="/profile" style={{ ...styles.unifiedButton, ...styles.profileButton }}>
+                    <ProfileIcon /> My Profile
+                  </Link>
+                  <button style={{ ...styles.unifiedButton, ...styles.logoutButton }} onClick={handleLogout}>Logout</button>
+                </>
               )
             )}
-
-            <button
-              style={{
-                ...styles.unifiedButton,
-                ...styles.emergencyBtn
-              }}
-              onClick={() => setShowEmergency(true)}
-              onMouseOver={(e) => {
-                e.target.style.transform = 'translateY(-2px)';
-                e.target.style.boxShadow = '0 4px 15px rgba(220, 38, 38, 0.4)';
-              }}
-              onMouseOut={(e) => {
-                e.target.style.transform = 'translateY(0)';
-                e.target.style.boxShadow = '0 2px 8px rgba(220, 38, 38, 0.3)';
-              }}
-            >
-              SOS
-            </button>
-
+            <button style={{ ...styles.unifiedButton, ...styles.emergencyBtn }} onClick={() => setShowEmergency(true)}>SOS</button>
             <button style={styles.themeToggle} onClick={toggleTheme}>
               <span style={styles.toggleTrack}>
                 <span style={styles.toggleThumb}></span>
@@ -816,206 +627,67 @@ function Navbar() {
 
           {/* Mobile Toggler */}
           <button onClick={toggleMenu} style={styles.mobileToggler}>
-            <span style={styles.hamburgerLine}></span>
-            <span style={styles.hamburgerLine}></span>
-            <span style={styles.hamburgerLine}></span>
+            {isMenuOpen ? '✕' : '☰'}
           </button>
+        </div>
 
-          {/* Mobile Menu */}
-          <div style={styles.mobileMenu}>
-            <div style={styles.mobileNavContainer}>
-              {/* Navigation Links Only */}
-              <ul style={styles.mobileNavLinks}>
-                <li>
-                  <Link
-                    style={{
-                      ...styles.mobileNavLink,
-                      ...(isActiveLink('/') ? styles.activeNavLink : {})
-                    }}
-                    to="/"
-                    onClick={closeMenu}
-                  >
-                    Home
+        {/* Mobile Menu */}
+        <div style={styles.mobileMenu}>
+          <ul style={styles.mobileNavLinks}>
+            <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/') ? styles.activeNavLink : {}) }} to="/" onClick={closeMenu}>Home</Link></li>
+            {user && (
+              <>
+                <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/symptoms') ? styles.activeNavLink : {}) }} to="/symptoms" onClick={closeMenu}>Analyze Symptoms</Link></li>
+                <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/diseases-front') ? styles.activeNavLink : {}) }} to="/diseases-front" onClick={closeMenu}>Disease Details</Link></li>
+              </>
+            )}
+            <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/audience') ? styles.activeNavLink : {}) }} to="/audience" onClick={closeMenu}>Audience</Link></li>
+            <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/about') ? styles.activeNavLink : {}) }} to="/about" onClick={closeMenu}>About Us</Link></li>
+            <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/terms') ? styles.activeNavLink : {}) }} to="/terms" onClick={closeMenu}>Terms & Conditions</Link></li>
+            <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/contact') ? styles.activeNavLink : {}) }} to="/contact" onClick={closeMenu}>Feedback</Link></li>
+          </ul>
+
+          <div style={styles.mobileActions}>
+            {!isLoading && (
+              !user ? (
+                <>
+                  <button style={{ ...styles.mobileButton, ...styles.mobileLoginButton }} onClick={() => { setShowLogin(true); closeMenu(); }}>Login</button>
+                  <Link style={{ ...styles.mobileButton, ...styles.mobileRegisterButton }} to="/register" onClick={closeMenu}>Register</Link>
+                </>
+              ) : (
+                // --- UPDATED: Added Profile Button ---
+                <>
+                  <Link style={{ ...styles.mobileButton, ...styles.mobileProfileButton }} to="/profile" onClick={closeMenu}>
+                    <ProfileIcon /> My Profile
                   </Link>
-                </li>
-
-                {user && (
-                  <>
-                    <li>
-                      <Link
-                        style={{
-                          ...styles.mobileNavLink,
-                          ...(isActiveLink('/symptoms') ? styles.activeNavLink : {})
-                        }}
-                        to="/symptoms"
-                        onClick={closeMenu}
-                      >
-                        Analyze Symptoms
-                      </Link>
-                    </li>
-                    <li>
-                      <Link
-                        style={{
-                          ...styles.mobileNavLink,
-                          ...(isActiveLink('/diseases-front') ? styles.activeNavLink : {})
-                        }}
-                        to="/diseases-front"
-                        onClick={closeMenu}
-                      >
-                        Disease Details
-                      </Link>
-                    </li>
-                  </>
-                )}
-
-                <li>
-                  <Link
-                    style={{
-                      ...styles.mobileNavLink,
-                      ...(isActiveLink('/audience') ? styles.activeNavLink : {})
-                    }}
-                    to="/audience"
-                    onClick={closeMenu}
-                  >
-                    Audience
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    style={{
-                      ...styles.mobileNavLink,
-                      ...(isActiveLink('/about') ? styles.activeNavLink : {})
-                    }}
-                    to="/about"
-                    onClick={closeMenu}
-                  >
-                    About Us
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    style={{
-                      ...styles.mobileNavLink,
-                      ...(isActiveLink('/terms') ? styles.activeNavLink : {})
-                    }}
-                    to="/terms"
-                    onClick={closeMenu}
-                  >
-                    Terms & Conditions
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    style={{
-                      ...styles.mobileNavLink,
-                      ...(isActiveLink('/contact') ? styles.activeNavLink : {})
-                    }}
-                    to="/contact"
-                    onClick={closeMenu}
-                  >
-                    Feedback
-                  </Link>
-                </li>
-              </ul>
-
-              {/* Mobile Actions - Compact */}
-              <div style={styles.mobileActions}>
-                {!isLoading && (
-                  !user ? (
-                    <>
-                      <button
-                        style={{
-                          ...styles.mobileButton,
-                          ...styles.mobileLoginButton
-                        }}
-                        onClick={() => {
-                          setShowLogin(true);
-                          closeMenu();
-                        }}
-                      >
-                        Login
-                      </button>
-                      <Link
-                        style={{
-                          ...styles.mobileButton,
-                          ...styles.mobileRegisterButton
-                        }}
-                        to="/register"
-                        onClick={closeMenu}
-                      >
-                        Register
-                      </Link>
-                    </>
-                  ) : (
-                    <button
-                      style={{
-                        ...styles.mobileButton,
-                        ...styles.mobileLogoutButton
-                      }}
-                      onClick={handleLogout}
-                    >
-                      Logout
-                    </button>
-                  )
-                )}
-
-                <button
-                  style={styles.mobileEmergencyBtn}
-                  onClick={() => {
-                    setShowEmergency(true);
-                    closeMenu();
-                  }}
-                >
-                  🆘 Emergency Help
-                </button>
-
-                <div style={styles.mobileThemeContainer}>
-                  <button style={styles.themeToggle} onClick={toggleTheme}>
-                    <span style={styles.toggleTrack}>
-                      <span style={styles.toggleThumb}></span>
-                      <span style={styles.toggleIcons}>
-                        <span style={{ fontSize: '12px', opacity: isDark ? 0.3 : 1 }}>☀️</span>
-                        <span style={{ fontSize: '12px', opacity: isDark ? 1 : 0.3 }}>🌙</span>
-                      </span>
-                    </span>
-                  </button>
-                </div>
-              </div>
+                  <button style={{ ...styles.mobileButton, ...styles.mobileLogoutButton }} onClick={handleLogout}>Logout</button>
+                </>
+              )
+            )}
+            <button style={{ ...styles.mobileButton, ...styles.mobileEmergencyBtn }} onClick={() => { setShowEmergency(true); closeMenu(); }}>🆘 Emergency Help</button>
+            <div style={styles.mobileThemeContainer}>
+              <button style={styles.themeToggle} onClick={toggleTheme}>
+                <span style={styles.toggleTrack}>
+                  <span style={styles.toggleThumb}></span>
+                  <span style={styles.toggleIcons}>
+                    <span style={{ fontSize: '12px', opacity: isDark ? 0.3 : 1 }}>☀️</span>
+                    <span style={{ fontSize: '12px', opacity: isDark ? 1 : 0.3 }}>🌙</span>
+                  </span>
+                </span>
+              </button>
             </div>
           </div>
         </div>
       </nav>
 
       <>
-        <LoginModal
-          show={showLogin}
-          onClose={() => setShowLogin(false)}
-          onShowToast={showToast}
-        />
-        <EmergencyModal
-          show={showEmergency}
-          onClose={() => setShowEmergency(false)}
-          isDark={isDark}
-        />
-        <SimpleToast
-          message={toast.message}
-          type={toast.type}
-          show={toast.show}
-          onClose={hideToast}
-        />
+        <LoginModal show={showLogin} onClose={() => setShowLogin(false)} onShowToast={showToast} />
+        <EmergencyModal show={showEmergency} onClose={() => setShowEmergency(false)} isDark={isDark} />
+        <SimpleToast message={toast.message} type={toast.type} show={toast.show} onClose={hideToast} />
         <style>{`
-          @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-          }
-          @keyframes slideUp {
-            from { transform: translateY(50px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-          }
-          @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-          }
+          @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+          @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+          @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
         `}</style>
       </>
     </>
