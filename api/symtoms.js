@@ -1,9 +1,10 @@
 // api/symptoms.js
 export default async function handler(req, res) {
-  // Enable CORS
+  // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Content-Type', 'application/json'); // IMPORTANT!
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -13,15 +14,16 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // eslint-disable-next-line no-undef
   const APP_ID = process.env.INFERMEDICA_APP_ID;
-  // eslint-disable-next-line no-undef
   const APP_KEY = process.env.INFERMEDICA_APP_KEY;
   const API_URL = "https://api.infermedica.com/v3";
 
   if (!APP_ID || !APP_KEY) {
     console.error('Missing Infermedica credentials');
-    return res.status(500).json({ error: 'Missing API credentials' });
+    return res.status(500).json({ 
+      error: 'Missing API credentials',
+      details: 'INFERMEDICA_APP_ID and INFERMEDICA_APP_KEY must be configured'
+    });
   }
 
   const headers = {
@@ -57,7 +59,7 @@ export default async function handler(req, res) {
       
       const data = await response.json();
       const symptoms = data.filter(item => item.type === 'symptom');
-      return res.json(symptoms);
+      return res.status(200).json(symptoms);
       
     } else {
       // Get all symptoms
@@ -72,11 +74,14 @@ export default async function handler(req, res) {
       }
       
       const data = await response.json();
-      return res.json(data);
+      return res.status(200).json(data);
     }
     
   } catch (err) {
     console.error('Symptoms fetch error:', err);
-    return res.status(500).json({ error: 'Failed to fetch symptoms' });
+    return res.status(500).json({ 
+      error: 'Failed to fetch symptoms',
+      details: err.message 
+    });
   }
 }

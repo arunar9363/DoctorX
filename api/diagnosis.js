@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
+  res.setHeader('Content-Type', 'application/json'); // IMPORTANT!
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
@@ -13,9 +13,8 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // eslint-disable-next-line no-undef
+  
   const APP_ID = process.env.INFERMEDICA_APP_ID;
-  // eslint-disable-next-line no-undef
   const APP_KEY = process.env.INFERMEDICA_APP_KEY;
   const API_URL = "https://api.infermedica.com/v3";
 

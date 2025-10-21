@@ -4,6 +4,7 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Content-Type', 'application/json'); // IMPORTANT!
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -13,9 +14,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // eslint-disable-next-line no-undef
   const APP_ID = process.env.INFERMEDICA_APP_ID;
-  // eslint-disable-next-line no-undef
   const APP_KEY = process.env.INFERMEDICA_APP_KEY;
 
   try {
@@ -27,7 +26,6 @@ export default async function handler(req, res) {
         APP_KEY: APP_KEY ? "✓" : "✗"
       },
       apiVersion: "v3",
-      // eslint-disable-next-line no-undef
       environment: process.env.VERCEL_ENV || "development",
       availableEndpoints: [
         "GET /api/symptoms - Get symptoms (with optional search)",
