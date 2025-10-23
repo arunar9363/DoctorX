@@ -463,15 +463,33 @@ function RegisterPage() {
                 style={inputStyle}
               />
 
-              <input
-                type="date"
-                placeholder="Date of Birth"
-                value={dob}
-                onChange={(e) => setDob(e.target.value)}
-                required
-                disabled={isLoading}
-                style={inputStyle}
-              />
+              <div style={{ position: 'relative', marginBottom: isMobile ? '18px' : '0' }}>
+                {!dob && (
+                  <label style={{
+                    position: 'absolute',
+                    left: '16px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    color: isDark ? '#64748b' : '#9ca3af',
+                    pointerEvents: 'none',
+                    fontSize: isMobile ? '16px' : '15px',
+                  }}>
+                    Date of Birth
+                  </label>
+                )}
+                <input
+                  type="date"
+                  value={dob}
+                  onChange={(e) => setDob(e.target.value)}
+                  required
+                  disabled={isLoading}
+                  style={{
+                    ...inputStyle,
+                    marginBottom: 0,
+                    colorScheme: isDark ? 'dark' : 'light',
+                  }}
+                />
+              </div>
             </div>
 
             <div style={formRowStyle}>
