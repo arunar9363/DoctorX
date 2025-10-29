@@ -25,7 +25,7 @@
     "message": "Ya it's good if u fill the symptoms u know the symptoms in earlier stage ....great",
     "type": "general",
     "reply": {
-      "from": "Arun",
+      "from": "DoctorX(Arun)",
       "message": "Hi Prateek, Thank you for highlighting the value of early symptom detection. I'm glad our symptom checker is helping users identify health concerns early. I'll continue improving this feature."
     }
   },
@@ -51,7 +51,7 @@
   },
   {
     "id": 6,
-    "name": "Amardeep Deep",
+    "name": "Amardeep Deep Singh",
     "message": "This is the very useful app. It's very important for general patients for their basic information to identify the disease and identify the doctor which is more important.",
     "type": "general",
     "reply": {
