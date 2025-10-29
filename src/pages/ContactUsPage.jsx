@@ -208,7 +208,7 @@ function ContactPage() {
       setToast({
         type: 'success',
         title: 'Feedback Submitted Successfully!',
-        message: 'Thank you for your feedback. We appreciate your input and will review it carefully.'
+        message: 'Thank you for your feedback. We appreciate your input and will review it carefully. Your feedback will be visible on DoctorX within 12 hours.'
       });
       setFeedbackSubmitted(true);
     } else if (error === 'true') {
