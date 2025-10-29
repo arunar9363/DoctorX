@@ -162,11 +162,20 @@ function Footer() {
     </svg>
   );
 
-  const FacebookIcon = () => (
+  const GithubIcon = () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+      <path d="M12 0C5.373 0 0 5.373 0 12c0 5.303 3.438 9.8 8.205 11.387.6.113.82-.26.82-.577 
+      0-.285-.01-1.04-.015-2.04-3.338.726-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.757-1.333-1.757
+      -1.09-.745.083-.729.083-.729 1.205.085 1.84 1.237 1.84 1.237 1.07 1.834 2.809 1.304 3.495.997
+      .108-.776.418-1.305.762-1.605-2.665-.303-5.466-1.334-5.466-5.932
+      0-1.31.468-2.382 1.236-3.222-.124-.303-.536-1.523.117-3.176 0 0 1.008-.322 3.3 1.23a11.5 11.5 0 0 1 3.003-.404
+      c1.02.005 2.045.138 3.003.404 2.29-1.552 3.297-1.23 3.297-1.23.654 1.653.242 2.873.119 3.176
+      .77.84 1.235 1.912 1.235 3.222 0 4.61-2.804 5.625-5.476 5.922.43.37.823 1.102.823 2.222
+      0 1.605-.015 2.898-.015 3.293 0 .32.217.694.825.576C20.565 21.796 24 17.3 24 12
+      24 5.373 18.627 0 12 0z"/>
     </svg>
   );
+
 
   const InstagramIcon = () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -290,7 +299,7 @@ function Footer() {
             {/* Social Media Icons */}
             <div style={socialIconsStyles}>
               <a
-                href="#"
+                href="https://x.com/arun_1195"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Follow us on Twitter"
@@ -314,10 +323,10 @@ function Footer() {
                 <TwitterIcon />
               </a>
               <a
-                href="#"
+                href="https://github.com/arunar9363"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Follow us on Facebook"
+                aria-label="Follow us on GitHub"
                 className="social-icon-modern"
                 style={socialIconLinkStyles}
                 onMouseOver={(e) => {
@@ -335,34 +344,10 @@ function Footer() {
                   e.target.style.boxShadow = 'none';
                 }}
               >
-                <FacebookIcon />
+                <GithubIcon />
               </a>
               <a
-                href="#"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Follow us on Instagram"
-                className="social-icon-modern"
-                style={socialIconLinkStyles}
-                onMouseOver={(e) => {
-                  e.target.style.background = 'var(--color-secondary)';
-                  e.target.style.color = 'white';
-                  e.target.style.borderColor = 'var(--color-secondary)';
-                  e.target.style.transform = 'translateY(-3px) scale(1.05)';
-                  e.target.style.boxShadow = '0 10px 25px rgba(13, 157, 184, 0.4)';
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.background = 'var(--color-fourth)';
-                  e.target.style.color = 'var(--color-dark)';
-                  e.target.style.borderColor = 'var(--color-secondary)';
-                  e.target.style.transform = 'translateY(0) scale(1)';
-                  e.target.style.boxShadow = 'none';
-                }}
-              >
-                <InstagramIcon />
-              </a>
-              <a
-                href="https://linkedin.com/company/doctorx"
+                href="https://www.linkedin.com/in/arun-pratap-singh-944491292"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Connect with us on LinkedIn"
@@ -385,6 +370,31 @@ function Footer() {
               >
                 <LinkedInIcon />
               </a>
+              <a
+                href="https://www.instagram.com/arun_ps_119/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Follow us on Instagram"
+                className="social-icon-modern"
+                style={socialIconLinkStyles}
+                onMouseOver={(e) => {
+                  e.target.style.background = 'var(--color-secondary)';
+                  e.target.style.color = 'white';
+                  e.target.style.borderColor = 'var(--color-secondary)';
+                  e.target.style.transform = 'translateY(-3px) scale(1.05)';
+                  e.target.style.boxShadow = '0 10px 25px rgba(13, 157, 184, 0.4)';
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.background = 'var(--color-fourth)';
+                  e.target.style.color = 'var(--color-dark)';
+                  e.target.style.borderColor = 'var(--color-secondary)';
+                  e.target.style.transform = 'translateY(0) scale(1)';
+                  e.target.style.boxShadow = 'none';
+                }}
+              >
+                <InstagramIcon />
+              </a>
+              
             </div>
           </div>
 

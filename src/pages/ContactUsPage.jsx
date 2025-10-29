@@ -23,6 +23,16 @@ function ContactPage() {
   const feedbacks = [
     {
       id: 1,
+      name: "Saumya Singh",
+      message: "This app is very informative and easy to use! It helps users learn about possible diseases and find suitable doctors quickly.",
+      type: "compliment",
+      reply: {
+        from: "DoctorX",
+        message: "Thank you for your valuable feedback! We're delighted to hear that our platform is helping you access important health information. Your support motivates us to continue improving our services."
+      }
+    },
+    {
+      id: 2,
       name: "Anuj Pratap Singh",
       message: "This app is very helpful. It provides important information for patients to understand their symptoms and find the right doctor. It’s a great initiative for basic health awareness.",
       type: "general",
@@ -32,7 +42,7 @@ function ContactPage() {
       }
     },
     {
-      id: 2,
+      id: 3,
       name: "Amardeep Deep",
       message: "This is the very useful app. It's very important for general patients for their basic information to identify the disease and identify the doctor which is more important.",
       type: "general",
@@ -42,7 +52,7 @@ function ContactPage() {
       }
     },
     {
-      id: 3,
+      id: 4,
       name: "Vikas Kumar",
       message: "Experience is good but site is too slow.",
       type: "compliment",
@@ -52,7 +62,17 @@ function ContactPage() {
       }
     },
     {
-      id: 4,
+      id: 5,
+      name: "Mayank Mishra",
+      message: "Best.",
+      type: "compliment",
+      reply: {
+        from: "DoctorX",
+        message: "Thank you for your feedback! We're glad to hear that you think highly of our platform. If you have any specific suggestions for improvement, please feel free to share."
+      }
+    },
+    {
+      id: 6,
       name: "Client Name",
       message: "All I can say in a nutshell is what an amazing work and team! I am so thankful for coming across you all.",
       type: "general",
