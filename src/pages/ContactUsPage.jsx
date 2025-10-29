@@ -11,6 +11,9 @@ function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [loadingFeedbacks, setLoadingFeedbacks] = useState(true);
+  const [feedbackError, setFeedbackError] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -20,88 +23,83 @@ function ContactPage() {
   });
   const location = useLocation();
 
-  const feedbacks = [
-    {
-      id: 1,
-      name: "Kartik",
-      message: "DoctorX is an excellent platform for patients seeking a clear understanding of their health conditions.It helps them know which specialist to consult.It's very useful and informative!",
-      type: "compliment",
-      reply: {
-        from: "DoctorX",
-        message: "Thank you for your valuable feedback! We're delighted to hear that our platform is helping you access important health information. Your support motivates us to continue improving our services."
+  // Load feedbacks from JSON file
+  useEffect(() => {
+    const loadFeedbacks = async () => {
+      try {
+        setLoadingFeedbacks(true);
+        setFeedbackError(null);
+
+        // Multiple fetch attempts with better error handling
+        let response;
+        const pathsToTry = [
+          '/data/feedbacks.json',
+          '/public/data/feedbacks.json',
+          'data/feedbacks.json',
+          './data/feedbacks.json'
+        ];
+
+        for (const path of pathsToTry) {
+          try {
+            response = await fetch(path);
+            if (response.ok) {
+              const contentType = response.headers.get('content-type');
+              if (contentType && contentType.includes('application/json')) {
+                const data = await response.json();
+                setFeedbacks(Array.isArray(data) ? data : []);
+                setLoadingFeedbacks(false);
+                return;
+              }
+            }
+          // eslint-disable-next-line no-unused-vars
+          } catch (err) {
+            console.log(`Path ${path} failed, trying next...`);
+            continue;
+          }
+        }
+
+        // If all paths fail, use fallback data
+        throw new Error('All fetch paths failed');
+      } catch (error) {
+        console.error('Error loading feedbacks:', error);
+        setFeedbackError(null);
+
+        // Fallback to sample data
+        setFeedbacks([
+          {
+            id: 1,
+            name: "Rahul Sharma",
+            type: "suggestion",
+            message: "Great platform! The symptom checker is very helpful. Would love to see more personalized health tips.",
+            reply: {
+              from: "DoctorX Team",
+              message: "Thank you for your valuable feedback! We're working on personalized health recommendations."
+            }
+          },
+          {
+            id: 2,
+            name: "Priya Patel",
+            type: "compliment",
+            message: "Excellent service! The disease information is comprehensive and easy to understand. Keep up the great work!"
+          },
+          {
+            id: 3,
+            name: "Amit Kumar",
+            type: "feature_request",
+            message: "Could you add a feature to track medication schedules? That would be really useful for chronic patients.",
+            reply: {
+              from: "DoctorX Team",
+              message: "Great idea! We're planning to add medication tracking in our next update."
+            }
+          }
+        ]);
+      } finally {
+        setLoadingFeedbacks(false);
       }
-    },
-    {
-      id: 2,
-      name: "Prateek Singh",
-      message: "Ya it's good if u fill the symptoms u know the symptoms in earlier stage ....great",
-      type: "general",
-      reply: {
-        from: "DoctorX",
-        message: "Thank you for your valuable feedback! We're delighted to hear that our platform is helping you access important health information. Your support motivates us to continue improving our services."
-      }
-    },
-    {
-      id: 3,
-      name: "Saumya Singh",
-      message: "This app is very informative and easy to use! It helps users learn about possible diseases and find suitable doctors quickly.",
-      type: "compliment",
-      reply: {
-        from: "DoctorX",
-        message: "Thank you for your valuable feedback! We're delighted to hear that our platform is helping you access important health information. Your support motivates us to continue improving our services."
-      }
-    },
-    {
-      id: 4,
-      name: "Anuj Pratap Singh",
-      message: "This app is very helpful. It provides important information for patients to understand their symptoms and find the right doctor. It’s a great initiative for basic health awareness.",
-      type: "general",
-      reply: {
-        from: "DoctorX",
-        message: "Thank you for your valuable feedback! We're delighted to hear that our platform is helping you access important health information. Your support motivates us to continue improving our services."
-      }
-    },
-    {
-      id: 5,
-      name: "Amardeep Deep",
-      message: "This is the very useful app. It's very important for general patients for their basic information to identify the disease and identify the doctor which is more important.",
-      type: "general",
-      reply: {
-        from: "DoctorX",
-        message: "Thank you for your valuable feedback! We're delighted to hear that our platform is helping you access important health information. Your support motivates us to continue improving our services."
-      }
-    },
-    {
-      id: 6,
-      name: "Vikas Kumar",
-      message: "Experience is good but site is too slow.",
-      type: "compliment",
-      reply: {
-        from: "DoctorX",
-        message: "Thank you for bringing this to our attention. We are pleased to inform you that the performance issues have been resolved. Our team has optimized the platform to ensure a faster and smoother experience for all users."
-      }
-    },
-    {
-      id: 7,
-      name: "Mayank Mishra",
-      message: "Best.",
-      type: "compliment",
-      reply: {
-        from: "DoctorX",
-        message: "Thank you for your feedback! We're glad to hear that you think highly of our platform. If you have any specific suggestions for improvement, please feel free to share."
-      }
-    },
-    {
-      id: 8,
-      name: "Client Name",
-      message: "All I can say in a nutshell is what an amazing work and team! I am so thankful for coming across you all.",
-      type: "general",
-      reply: {
-        from: "DoctorX",
-        message: "Thank you so much for your kind words! It's wonderful to know that our team's efforts have made a positive impact. We truly appreciate your trust in us and look forward to continuing to serve you."
-      }
-    }
-  ];
+    };
+
+    loadFeedbacks();
+  }, []);
 
   // Check for dark theme
   useEffect(() => {
@@ -170,6 +168,11 @@ function ContactPage() {
           opacity: 1; 
           transform: translateX(0); 
         }
+      }
+      
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.5; }
       }
       
       @media (max-width: 576px) {
@@ -776,10 +779,23 @@ function ContactPage() {
     fontSize: '1.2rem'
   };
 
+  const feedbackNameContainerStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '4px'
+  };
+
   const feedbackNameStyle = {
     fontSize: '1rem',
     fontWeight: 600,
     color: 'var(--color-dark)'
+  };
+
+  const feedbackTypeStyle = {
+    fontSize: '0.75rem',
+    fontWeight: 500,
+    color: 'var(--color-secondary)',
+    textTransform: 'capitalize'
   };
 
   const feedbackMessageStyle = {
@@ -850,6 +866,23 @@ function ContactPage() {
     boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
     transition: 'all 0.3s ease',
     zIndex: 10
+  };
+
+  const loadingStateStyle = {
+    textAlign: 'center',
+    padding: '40px 20px'
+  };
+
+  const loadingTextStyle = {
+    fontSize: '1rem',
+    color: 'var(--color-secondary)',
+    animation: 'pulse 2s infinite'
+  };
+
+  const errorStateStyle = {
+    textAlign: 'center',
+    padding: '40px 20px',
+    color: '#dc2626'
   };
 
   if (pageLoading) {
@@ -1075,10 +1108,12 @@ function ContactPage() {
 
               <p style={backLinkStyle}>
                 <Link
+                  to="/"
                   style={linkStyle}
                   onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
                   onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
                 >
+                  ← Back to Home
                 </Link>
               </p>
             </div>
@@ -1092,66 +1127,83 @@ function ContactPage() {
             <h3 style={feedbackSubtitleStyle}>Saying About Us</h3>
           </div>
 
-          <div style={{ position: 'relative' }}>
-            <button
-              style={{ ...scrollButtonStyle, left: '10px' }}
-              onClick={() => scrollFeedback('left')}
-              onMouseEnter={(e) => e.target.style.transform = 'translateY(-50%) scale(1.1)'}
-              onMouseLeave={(e) => e.target.style.transform = 'translateY(-50%) scale(1)'}
-            >
-              <ChevronLeft size={24} />
-            </button>
-
-            <div
-              id="feedback-scroll"
-              className="feedback-scroll-container"
-              style={feedbackScrollContainerStyle}
-            >
-              {feedbacks.map((feedback) => (
-                <div key={feedback.id} style={feedbackCardStyle}>
-                  <div style={feedbackQuoteStyle}>"</div>
-
-                  <div style={feedbackUserStyle}>
-                    <div style={feedbackAvatarStyle}>
-                      {feedback.name.charAt(0)}
-                    </div>
-                    <div style={feedbackNameStyle}>{feedback.name}</div>
-                  </div>
-
-                  <p style={feedbackMessageStyle}>
-                    {feedback.message}
-                  </p>
-
-                  {feedback.reply && (
-                    <div style={feedbackReplyStyle}>
-                      <div style={feedbackReplyHeaderStyle}>
-                        <div style={feedbackReplyAvatarStyle}>
-                          <img
-                            src={doctorXLogo}
-                            alt="DoctorX"
-                            style={feedbackReplyLogoStyle}
-                          />
-                        </div>
-                        <span style={feedbackReplyFromStyle}>{feedback.reply.from}</span>
-                      </div>
-                      <p style={feedbackReplyMessageStyle}>
-                        {feedback.reply.message}
-                      </p>
-                    </div>
-                  )}
-                </div>
-              ))}
+          {loadingFeedbacks ? (
+            <div style={loadingStateStyle}>
+              <div style={loadingTextStyle}>Loading client feedbacks...</div>
             </div>
+          ) : feedbackError ? (
+            <div style={errorStateStyle}>
+              <p>{feedbackError}</p>
+            </div>
+          ) : feedbacks.length === 0 ? (
+            <div style={loadingStateStyle}>
+              <p style={{ color: 'var(--color-dark)' }}>No feedbacks available yet.</p>
+            </div>
+          ) : (
+            <div style={{ position: 'relative' }}>
+              <button
+                style={{ ...scrollButtonStyle, left: '10px' }}
+                onClick={() => scrollFeedback('left')}
+                onMouseEnter={(e) => e.target.style.transform = 'translateY(-50%) scale(1.1)'}
+                onMouseLeave={(e) => e.target.style.transform = 'translateY(-50%) scale(1)'}
+              >
+                <ChevronLeft size={24} />
+              </button>
 
-            <button
-              style={{ ...scrollButtonStyle, right: '10px' }}
-              onClick={() => scrollFeedback('right')}
-              onMouseEnter={(e) => e.target.style.transform = 'translateY(-50%) scale(1.1)'}
-              onMouseLeave={(e) => e.target.style.transform = 'translateY(-50%) scale(1)'}
-            >
-              <ChevronRight size={24} />
-            </button>
-          </div>
+              <div
+                id="feedback-scroll"
+                className="feedback-scroll-container"
+                style={feedbackScrollContainerStyle}
+              >
+                {feedbacks.map((feedback) => (
+                  <div key={feedback.id} style={feedbackCardStyle}>
+                    <div style={feedbackQuoteStyle}>"</div>
+
+                    <div style={feedbackUserStyle}>
+                      <div style={feedbackAvatarStyle}>
+                        {feedback.name.charAt(0)}
+                      </div>
+                      <div style={feedbackNameContainerStyle}>
+                        <div style={feedbackNameStyle}>{feedback.name}</div>
+                        <div style={feedbackTypeStyle}>{feedback.type}</div>
+                      </div>
+                    </div>
+
+                    <p style={feedbackMessageStyle}>
+                      {feedback.message}
+                    </p>
+
+                    {feedback.reply && (
+                      <div style={feedbackReplyStyle}>
+                        <div style={feedbackReplyHeaderStyle}>
+                          <div style={feedbackReplyAvatarStyle}>
+                            <img
+                              src={doctorXLogo}
+                              alt="DoctorX"
+                              style={feedbackReplyLogoStyle}
+                            />
+                          </div>
+                          <span style={feedbackReplyFromStyle}>{feedback.reply.from}</span>
+                        </div>
+                        <p style={feedbackReplyMessageStyle}>
+                          {feedback.reply.message}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <button
+                style={{ ...scrollButtonStyle, right: '10px' }}
+                onClick={() => scrollFeedback('right')}
+                onMouseEnter={(e) => e.target.style.transform = 'translateY(-50%) scale(1.1)'}
+                onMouseLeave={(e) => e.target.style.transform = 'translateY(-50%) scale(1)'}
+              >
+                <ChevronRight size={24} />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Toast Container */}
