@@ -1,14 +1,16 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import contactImage from "/assets/c1.svg";
+import doctorXLogo from "/assets/MAINLOGO2.png";
 
 function ContactPage() {
   const [toast, setToast] = useState(null);
   const [isDarkTheme, setIsDarkTheme] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
-  const [pageLoading, setPageLoading] = useState(true); // Added page loading state
+  const [pageLoading, setPageLoading] = useState(true);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -17,6 +19,39 @@ function ContactPage() {
     message: ''
   });
   const location = useLocation();
+
+  const feedbacks = [
+    {
+      id: 1,
+      name: "Amardeep Deep",
+      message: "This is the very useful app. It's very important for general patients for their basic information to identify the disease and identify the doctor which is more important.",
+      type: "general",
+      reply: {
+        from: "DoctorX",
+        message: "Thank you for your valuable feedback! We're delighted to hear that our platform is helping you access important health information. Your support motivates us to continue improving our services."
+      }
+    },
+    {
+      id: 2,
+      name: "Vikas Kumar",
+      message: "Experience is good but site is too slow.",
+      type: "compliment",
+      reply: {
+        from: "DoctorX",
+        message: "Thank you for bringing this to our attention. We are pleased to inform you that the performance issues have been resolved. Our team has optimized the platform to ensure a faster and smoother experience for all users."
+      }
+    },
+    {
+      id: 3,
+      name: "Client Name",
+      message: "All I can say in a nutshell is what an amazing work and team! I am so thankful for coming across you all.",
+      type: "general",
+      reply: {
+        from: "DoctorX",
+        message: "Thank you so much for your kind words! It's wonderful to know that our team's efforts have made a positive impact. We truly appreciate your trust in us and look forward to continuing to serve you."
+      }
+    }
+  ];
 
   // Check for dark theme
   useEffect(() => {
@@ -32,7 +67,7 @@ function ContactPage() {
     return () => observer.disconnect();
   }, []);
 
-  // Page loader timer - copied from Hero component
+  // Page loader timer
   useEffect(() => {
     const timer = setTimeout(() => {
       setPageLoading(false);
@@ -40,7 +75,7 @@ function ContactPage() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Inject keyframe animations into the document head - copied from Hero component
+  // Inject keyframe animations
   useEffect(() => {
     const styleTag = document.createElement('style');
     styleTag.innerHTML = `
@@ -104,6 +139,28 @@ function ContactPage() {
           transform: translateY(0) !important;
         }
       }
+
+      .feedback-scroll-container {
+        scrollbar-width: thin;
+        scrollbar-color: var(--color-secondary) transparent;
+      }
+
+      .feedback-scroll-container::-webkit-scrollbar {
+        height: 8px;
+      }
+
+      .feedback-scroll-container::-webkit-scrollbar-track {
+        background: transparent;
+      }
+
+      .feedback-scroll-container::-webkit-scrollbar-thumb {
+        background: var(--color-secondary);
+        border-radius: 4px;
+      }
+
+      .feedback-scroll-container::-webkit-scrollbar-thumb:hover {
+        background: var(--color-third);
+      }
     `;
     document.head.appendChild(styleTag);
     return () => {
@@ -132,7 +189,6 @@ function ContactPage() {
       });
     }
 
-    // Auto-hide toast after 5 seconds
     if (success === 'true' || error === 'true') {
       const timer = setTimeout(() => {
         setToast(null);
@@ -154,8 +210,6 @@ function ContactPage() {
 
   const handleSubmit = () => {
     setIsSubmitting(true);
-    // Form will be submitted normally to Web3Forms
-    // After submission, user will be redirected back with success/error params
   };
 
   const handleEditFeedback = () => {
@@ -163,7 +217,18 @@ function ContactPage() {
     setToast(null);
   };
 
-  // Page loader styles - copied from Hero component
+  const scrollFeedback = (direction) => {
+    const container = document.getElementById('feedback-scroll');
+    const scrollAmount = 400;
+    if (container) {
+      container.scrollBy({
+        left: direction === 'right' ? scrollAmount : -scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Page loader styles
   const pageLoaderOverlayStyle = {
     position: 'fixed',
     top: 0,
@@ -219,7 +284,6 @@ function ContactPage() {
     fontFamily: "'Merriweather', serif"
   };
 
-  // Check if screen is mobile/tablet
   const [screenSize, setScreenSize] = useState({
     isMobile: window.innerWidth <= 575,
     isTablet: window.innerWidth <= 991,
@@ -239,13 +303,23 @@ function ContactPage() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Responsive page styles
   const getPageStyle = () => {
+    const baseStyle = {
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: '100vh',
+      width: '100%',
+      fontFamily: '"Merriweather", serif'
+    };
+
+    return baseStyle;
+  };
+
+  const getContactSectionStyle = () => {
     const baseStyle = {
       display: 'flex',
       minHeight: '100vh',
       width: '100%',
-      fontFamily: '"Merriweather", serif',
       background: isDarkTheme
         ? 'linear-gradient(135deg, var(--color-fourth) 0%, #0f172a 50%, var(--color-primary) 100%)'
         : 'linear-gradient(135deg, var(--color-fourth) 0%, #f8fdfe 50%, var(--color-primary) 100%)',
@@ -263,7 +337,6 @@ function ContactPage() {
     return baseStyle;
   };
 
-  // Responsive left section styles
   const getLeftSectionStyle = () => {
     const baseStyle = {
       flex: 1,
@@ -322,7 +395,6 @@ function ContactPage() {
     marginTop: '20px'
   };
 
-  // Responsive right section styles
   const getRightSectionStyle = () => {
     const baseStyle = {
       flex: 1,
@@ -570,10 +642,166 @@ function ContactPage() {
         'linear-gradient(90deg, #3b82f6, #2563eb)',
     borderRadius: '0 0 16px 16px',
     transformOrigin: 'left',
-    animation: 'progress 4s linear forwards'
+    animation: 'progress 6s linear forwards'
   };
 
-  // Show loader if page is loading
+  // Feedback section styles
+  const feedbackSectionStyle = {
+    width: '100%',
+    margin: '0 auto',
+    padding: '40px 20px',
+    background: isDarkTheme
+      ? 'linear-gradient(135deg, var(--color-fourth) 0%, #0f172a 50%, var(--color-primary) 100%)'
+      : 'linear-gradient(135deg, var(--color-fourth) 0%, #f8fdfe 50%, var(--color-primary) 100%)',
+    position: 'relative',
+    transition: 'background 0.4s ease-in-out'
+  };
+
+  const feedbackHeaderStyle = {
+    textAlign: 'center',
+    marginBottom: '30px'
+  };
+
+  const feedbackTitleStyle = {
+    fontSize: screenSize.isMobile ? '1.5rem' : '2rem',
+    fontWeight: 700,
+    color: 'var(--color-secondary)',
+    fontFamily: '"Merriweather", serif',
+    marginBottom: '8px'
+  };
+
+  const feedbackSubtitleStyle = {
+    fontSize: screenSize.isMobile ? '1.2rem' : '1.5rem',
+    fontWeight: 600,
+    color: 'var(--color-dark)',
+    fontFamily: '"Merriweather", serif'
+  };
+
+  const feedbackScrollContainerStyle = {
+    display: 'flex',
+    gap: '20px',
+    overflowX: 'auto',
+    overflowY: 'hidden',
+    paddingBottom: '10px',
+    scrollBehavior: 'smooth',
+    maxWidth: '1160px',
+    margin: '0 auto'
+  };
+
+  const feedbackCardStyle = {
+    minWidth: '350px',
+    maxWidth: '350px',
+    background: isDarkTheme ? 'var(--color-primary)' : '#ffffff',
+    borderRadius: '16px',
+    padding: '24px',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px'
+  };
+
+  const feedbackQuoteStyle = {
+    fontSize: '3rem',
+    color: 'var(--color-secondary)',
+    lineHeight: 0.5,
+    fontFamily: 'serif'
+  };
+
+  const feedbackUserStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px'
+  };
+
+  const feedbackAvatarStyle = {
+    width: '48px',
+    height: '48px',
+    borderRadius: '50%',
+    background: 'var(--color-secondary)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: 'white',
+    fontWeight: 600,
+    fontSize: '1.2rem'
+  };
+
+  const feedbackNameStyle = {
+    fontSize: '1rem',
+    fontWeight: 600,
+    color: 'var(--color-dark)'
+  };
+
+  const feedbackMessageStyle = {
+    fontSize: '0.9rem',
+    color: 'var(--color-dark)',
+    lineHeight: 1.6,
+    flex: 1
+  };
+
+  const feedbackReplyStyle = {
+    background: isDarkTheme ? 'rgba(55, 65, 81, 0.5)' : 'rgba(209, 244, 249, 0.5)',
+    borderLeft: '3px solid var(--color-secondary)',
+    borderRadius: '8px',
+    padding: '12px 16px',
+    marginTop: '8px'
+  };
+
+  const feedbackReplyHeaderStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    marginBottom: '8px'
+  };
+
+  const feedbackReplyAvatarStyle = {
+    width: '32px',
+    height: '32px',
+    borderRadius: '50%',
+    background: 'transparent',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden'
+  };
+
+  const feedbackReplyLogoStyle = {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover'
+  };
+
+  const feedbackReplyFromStyle = {
+    fontSize: '0.85rem',
+    fontWeight: 600,
+    color: 'var(--color-secondary)'
+  };
+
+  const feedbackReplyMessageStyle = {
+    fontSize: '0.85rem',
+    color: 'var(--color-dark)',
+    lineHeight: 1.5
+  };
+
+  const scrollButtonStyle = {
+    position: 'absolute',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    width: '40px',
+    height: '40px',
+    borderRadius: '50%',
+    background: 'var(--color-secondary)',
+    border: 'none',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: 'white',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
+    transition: 'all 0.3s ease',
+    zIndex: 10
+  };
+
   if (pageLoading) {
     return (
       <div style={pageLoaderOverlayStyle}>
@@ -590,222 +818,289 @@ function ContactPage() {
   return (
     <>
       <div style={getPageStyle()}>
-        {/* Left Section - Illustration */}
-        <div style={getLeftSectionStyle()}>
-          <h1 style={leftTitleStyle}>Share Your Thoughts With Us</h1>
-          <p style={leftDescStyle}>We value your opinion and strive to improve our services. Your feedback helps us serve you better.</p>
-          <img src={contactImage} alt="Contact DoctorX" style={leftImageStyle} />
-        </div>
+        {/* Contact Form Section */}
+        <div style={getContactSectionStyle()}>
+          {/* Left Section - Illustration */}
+          <div style={getLeftSectionStyle()}>
+            <h1 style={leftTitleStyle}>Share Your Thoughts With Us</h1>
+            <p style={leftDescStyle}>We value your opinion and strive to improve our services. Your feedback helps us serve you better.</p>
+            <img src={contactImage} alt="Contact DoctorX" style={leftImageStyle} />
+          </div>
 
-        {/* Right Section - Contact Form */}
-        <div style={getRightSectionStyle()}>
-          <div style={formBoxStyle}>
-            <h2 style={formTitleStyle}>Feedback Form</h2>
-            <p style={subtitleStyle}>
-              {feedbackSubmitted
-                ? "Your feedback has been submitted successfully! You can edit and resubmit if needed."
-                : "Help us improve by sharing your thoughts, suggestions, or reporting any issues you've encountered."
-              }
-            </p>
+          {/* Right Section - Contact Form */}
+          <div style={getRightSectionStyle()}>
+            <div style={formBoxStyle}>
+              <h2 style={formTitleStyle}>Feedback Form</h2>
+              <p style={subtitleStyle}>
+                {feedbackSubmitted
+                  ? "Your feedback has been submitted successfully! You can edit and resubmit if needed."
+                  : "Help us improve by sharing your thoughts, suggestions, or reporting any issues you've encountered."
+                }
+              </p>
 
-            {feedbackSubmitted && (
-              <div style={{
-                background: isDarkTheme ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.1)',
-                border: '1px solid rgba(16, 185, 129, 0.3)',
-                borderRadius: '12px',
-                padding: screenSize.isMobile ? '14px' : '16px',
-                marginBottom: '20px',
-                textAlign: 'center'
-              }}>
-                <p style={{
-                  margin: 0,
-                  color: '#10b981',
-                  fontWeight: 500,
-                  fontSize: screenSize.isMobile ? '13px' : '14px'
+              {feedbackSubmitted && (
+                <div style={{
+                  background: isDarkTheme ? 'rgba(16, 185, 129, 0.1)' : 'rgba(16, 185, 129, 0.1)',
+                  border: '1px solid rgba(16, 185, 129, 0.3)',
+                  borderRadius: '12px',
+                  padding: screenSize.isMobile ? '14px' : '16px',
+                  marginBottom: '20px',
+                  textAlign: 'center'
                 }}>
-                  ✓ Feedback submitted successfully!
-                </p>
-                <button
-                  onClick={handleEditFeedback}
-                  style={{
-                    background: 'none',
-                    border: '1px solid #10b981',
-                    borderRadius: '8px',
+                  <p style={{
+                    margin: 0,
                     color: '#10b981',
-                    padding: screenSize.isMobile ? '6px 14px' : '8px 16px',
-                    fontSize: screenSize.isMobile ? '12px' : '13px',
                     fontWeight: 500,
-                    cursor: 'pointer',
-                    marginTop: '10px',
-                    transition: 'all 0.2s'
+                    fontSize: screenSize.isMobile ? '13px' : '14px'
+                  }}>
+                    ✓ Feedback submitted successfully!
+                  </p>
+                  <button
+                    onClick={handleEditFeedback}
+                    style={{
+                      background: 'none',
+                      border: '1px solid #10b981',
+                      borderRadius: '8px',
+                      color: '#10b981',
+                      padding: screenSize.isMobile ? '6px 14px' : '8px 16px',
+                      fontSize: screenSize.isMobile ? '12px' : '13px',
+                      fontWeight: 500,
+                      cursor: 'pointer',
+                      marginTop: '10px',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.target.style.background = '#10b981';
+                      e.target.style.color = 'white';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.background = 'none';
+                      e.target.style.color = '#10b981';
+                    }}
+                  >
+                    Edit Feedback
+                  </button>
+                </div>
+              )}
+
+              <form
+                style={{ width: '100%', opacity: feedbackSubmitted ? 0.6 : 1 }}
+                action="https://api.web3forms.com/submit"
+                method="POST"
+                onSubmit={handleSubmit}
+              >
+                <input type="hidden" name="access_key" value="c914087f-8d40-4075-9c03-7962908ae282" />
+                <input type="hidden" name="subject" value="New Feedback Submission - DoctorX" />
+
+                <div style={{
+                  display: 'flex',
+                  gap: screenSize.isMobile ? '12px' : '16px',
+                  marginBottom: '0',
+                  flexDirection: screenSize.isMobile ? 'column' : 'row'
+                }}>
+                  <input
+                    type="text"
+                    name="name"
+                    placeholder="Full Name"
+                    required
+                    disabled={feedbackSubmitted}
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    style={{
+                      ...getInputStyle(),
+                      flex: screenSize.isMobile ? 'unset' : 1,
+                      marginBottom: '16px',
+                      opacity: feedbackSubmitted ? 0.6 : 1
+                    }}
+                    onFocus={(e) => !feedbackSubmitted && (e.target.style.transform = 'translateY(-2px)')}
+                    onBlur={(e) => e.target.style.transform = 'translateY(0)'}
+                  />
+
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Email Address"
+                    required
+                    disabled={feedbackSubmitted}
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    style={{
+                      ...getInputStyle(),
+                      flex: screenSize.isMobile ? 'unset' : 1,
+                      marginBottom: '16px',
+                      opacity: feedbackSubmitted ? 0.6 : 1
+                    }}
+                    onFocus={(e) => !feedbackSubmitted && (e.target.style.transform = 'translateY(-2px)')}
+                    onBlur={(e) => e.target.style.transform = 'translateY(0)'}
+                  />
+                </div>
+
+                <div style={{
+                  display: 'flex',
+                  gap: screenSize.isMobile ? '12px' : '16px',
+                  marginBottom: '0',
+                  flexDirection: screenSize.isMobile ? 'column' : 'row'
+                }}>
+                  <input
+                    type="tel"
+                    name="phone"
+                    placeholder="Phone Number"
+                    disabled={feedbackSubmitted}
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    style={{
+                      ...getInputStyle(),
+                      flex: screenSize.isMobile ? 'unset' : 1,
+                      marginBottom: '16px',
+                      opacity: feedbackSubmitted ? 0.6 : 1
+                    }}
+                    onFocus={(e) => !feedbackSubmitted && (e.target.style.transform = 'translateY(-2px)')}
+                    onBlur={(e) => e.target.style.transform = 'translateY(0)'}
+                  />
+
+                  <select
+                    name="feedback_type"
+                    required
+                    disabled={feedbackSubmitted}
+                    style={{
+                      ...getInputStyle(),
+                      flex: screenSize.isMobile ? 'unset' : 1,
+                      marginBottom: '16px',
+                      opacity: feedbackSubmitted ? 0.6 : 1,
+                      cursor: feedbackSubmitted ? 'not-allowed' : 'pointer'
+                    }}
+                    onFocus={(e) => !feedbackSubmitted && (e.target.style.transform = 'translateY(-2px)')}
+                    onBlur={(e) => e.target.style.transform = 'translateY(0)'}
+                  >
+                    <option value="">Feedback Type</option>
+                    <option value="suggestion">Suggestion</option>
+                    <option value="bug_report">Bug Report</option>
+                    <option value="feature_request">Feature Request</option>
+                    <option value="general">General Feedback</option>
+                    <option value="complaint">Complaint</option>
+                    <option value="compliment">Compliment</option>
+                  </select>
+                </div>
+
+                <textarea
+                  name="message"
+                  placeholder="Share your detailed feedback here... Tell us about your experience, suggestions for improvement, or any issues you've encountered."
+                  required
+                  disabled={feedbackSubmitted}
+                  value={formData.message}
+                  onChange={handleInputChange}
+                  style={{
+                    ...getTextareaStyle(),
+                    opacity: feedbackSubmitted ? 0.6 : 1
+                  }}
+                  onFocus={(e) => !feedbackSubmitted && (e.target.style.transform = 'translateY(-2px)')}
+                  onBlur={(e) => e.target.style.transform = 'translateY(0)'}
+                />
+
+                <button
+                  type="submit"
+                  disabled={feedbackSubmitted || isSubmitting}
+                  style={{
+                    ...getButtonStyle(),
+                    opacity: feedbackSubmitted ? 0.4 : 1,
+                    cursor: feedbackSubmitted ? 'not-allowed' : (isSubmitting ? 'wait' : 'pointer')
                   }}
                   onMouseEnter={(e) => {
-                    e.target.style.background = '#10b981';
-                    e.target.style.color = 'white';
+                    if (!feedbackSubmitted && !isSubmitting && !screenSize.isMobile) {
+                      e.target.style.transform = 'translateY(-2px)';
+                      e.target.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.2)';
+                    }
                   }}
                   onMouseLeave={(e) => {
-                    e.target.style.background = 'none';
-                    e.target.style.color = '#10b981';
+                    if (!screenSize.isMobile) {
+                      e.target.style.transform = 'translateY(0)';
+                      e.target.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+                    }
                   }}
                 >
-                  Edit Feedback
+                  {isSubmitting ? 'Submitting Feedback...' :
+                    feedbackSubmitted ? 'Feedback Submitted ✓' : 'Submit Feedback'}
                 </button>
-              </div>
-            )}
+              </form>
 
-            <form
-              style={{ width: '100%', opacity: feedbackSubmitted ? 0.6 : 1 }}
-              action="https://api.web3forms.com/submit"
-              method="POST"
-              onSubmit={handleSubmit}
-            >
-              <input type="hidden" name="access_key" value="c914087f-8d40-4075-9c03-7962908ae282" />
-              <input type="hidden" name="subject" value="New Feedback Submission - DoctorX" />
-
-              <div style={{
-                display: 'flex',
-                gap: screenSize.isMobile ? '12px' : '16px',
-                marginBottom: '0',
-                flexDirection: screenSize.isMobile ? 'column' : 'row'
-              }}>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Full Name"
-                  required
-                  disabled={feedbackSubmitted}
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  style={{
-                    ...getInputStyle(),
-                    flex: screenSize.isMobile ? 'unset' : 1,
-                    marginBottom: '16px',
-                    opacity: feedbackSubmitted ? 0.6 : 1
-                  }}
-                  onFocus={(e) => !feedbackSubmitted && (e.target.style.transform = 'translateY(-2px)')}
-                  onBlur={(e) => e.target.style.transform = 'translateY(0)'}
-                />
-
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="Email Address"
-                  required
-                  disabled={feedbackSubmitted}
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  style={{
-                    ...getInputStyle(),
-                    flex: screenSize.isMobile ? 'unset' : 1,
-                    marginBottom: '16px',
-                    opacity: feedbackSubmitted ? 0.6 : 1
-                  }}
-                  onFocus={(e) => !feedbackSubmitted && (e.target.style.transform = 'translateY(-2px)')}
-                  onBlur={(e) => e.target.style.transform = 'translateY(0)'}
-                />
-              </div>
-
-              <div style={{
-                display: 'flex',
-                gap: screenSize.isMobile ? '12px' : '16px',
-                marginBottom: '0',
-                flexDirection: screenSize.isMobile ? 'column' : 'row'
-              }}>
-                <input
-                  type="tel"
-                  name="phone"
-                  placeholder="Phone Number"
-                  disabled={feedbackSubmitted}
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  style={{
-                    ...getInputStyle(),
-                    flex: screenSize.isMobile ? 'unset' : 1,
-                    marginBottom: '16px',
-                    opacity: feedbackSubmitted ? 0.6 : 1
-                  }}
-                  onFocus={(e) => !feedbackSubmitted && (e.target.style.transform = 'translateY(-2px)')}
-                  onBlur={(e) => e.target.style.transform = 'translateY(0)'}
-                />
-
-                <select
-                  name="feedback_type"
-                  required
-                  disabled={feedbackSubmitted}
-                  style={{
-                    ...getInputStyle(),
-                    flex: screenSize.isMobile ? 'unset' : 1,
-                    marginBottom: '16px',
-                    opacity: feedbackSubmitted ? 0.6 : 1,
-                    cursor: feedbackSubmitted ? 'not-allowed' : 'pointer'
-                  }}
-                  onFocus={(e) => !feedbackSubmitted && (e.target.style.transform = 'translateY(-2px)')}
-                  onBlur={(e) => e.target.style.transform = 'translateY(0)'}
+              <p style={backLinkStyle}>
+                <Link
+                  style={linkStyle}
+                  onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
+                  onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
                 >
-                  <option value="">Feedback Type</option>
-                  <option value="suggestion">Suggestion</option>
-                  <option value="bug_report">Bug Report</option>
-                  <option value="feature_request">Feature Request</option>
-                  <option value="general">General Feedback</option>
-                  <option value="complaint">Complaint</option>
-                  <option value="compliment">Compliment</option>
-                </select>
-              </div>
+                </Link>
+              </p>
+            </div>
+          </div>
+        </div>
 
-              <textarea
-                name="message"
-                placeholder="Share your detailed feedback here... Tell us about your experience, suggestions for improvement, or any issues you've encountered."
-                required
-                disabled={feedbackSubmitted}
-                value={formData.message}
-                onChange={handleInputChange}
-                style={{
-                  ...getTextareaStyle(),
-                  opacity: feedbackSubmitted ? 0.6 : 1
-                }}
-                onFocus={(e) => !feedbackSubmitted && (e.target.style.transform = 'translateY(-2px)')}
-                onBlur={(e) => e.target.style.transform = 'translateY(0)'}
-              />
+        {/* Client Feedback Section */}
+        <div style={feedbackSectionStyle}>
+          <div style={feedbackHeaderStyle}>
+            <h2 style={feedbackTitleStyle}>Some Of Our Clients</h2>
+            <h3 style={feedbackSubtitleStyle}>Saying About Us</h3>
+          </div>
 
-          
+          <div style={{ position: 'relative' }}>
+            <button
+              style={{ ...scrollButtonStyle, left: '10px' }}
+              onClick={() => scrollFeedback('left')}
+              onMouseEnter={(e) => e.target.style.transform = 'translateY(-50%) scale(1.1)'}
+              onMouseLeave={(e) => e.target.style.transform = 'translateY(-50%) scale(1)'}
+            >
+              <ChevronLeft size={24} />
+            </button>
 
-              <button
-                type="submit"
-                disabled={feedbackSubmitted || isSubmitting}
-                style={{
-                  ...getButtonStyle(),
-                  opacity: feedbackSubmitted ? 0.4 : 1,
-                  cursor: feedbackSubmitted ? 'not-allowed' : (isSubmitting ? 'wait' : 'pointer')
-                }}
-                onMouseEnter={(e) => {
-                  if (!feedbackSubmitted && !isSubmitting && !screenSize.isMobile) {
-                    e.target.style.transform = 'translateY(-2px)';
-                    e.target.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.2)';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!screenSize.isMobile) {
-                    e.target.style.transform = 'translateY(0)';
-                    e.target.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
-                  }
-                }}
-              >
-                {isSubmitting ? 'Submitting Feedback...' :
-                  feedbackSubmitted ? 'Feedback Submitted ✓' : 'Submit Feedback'}
-              </button>
-            </form>
+            <div
+              id="feedback-scroll"
+              className="feedback-scroll-container"
+              style={feedbackScrollContainerStyle}
+            >
+              {feedbacks.map((feedback) => (
+                <div key={feedback.id} style={feedbackCardStyle}>
+                  <div style={feedbackQuoteStyle}>"</div>
 
-            <p style={backLinkStyle}>
-              {/* Need immediate help?{" "} */}
-              <Link
-                // to="/support"
-                style={linkStyle}
-                onMouseEnter={(e) => e.target.style.textDecoration = 'underline'}
-                onMouseLeave={(e) => e.target.style.textDecoration = 'none'}
-              >
-                {/* Contact Support */}
-              </Link>
-            </p>
+                  <div style={feedbackUserStyle}>
+                    <div style={feedbackAvatarStyle}>
+                      {feedback.name.charAt(0)}
+                    </div>
+                    <div style={feedbackNameStyle}>{feedback.name}</div>
+                  </div>
+
+                  <p style={feedbackMessageStyle}>
+                    {feedback.message}
+                  </p>
+
+                  {feedback.reply && (
+                    <div style={feedbackReplyStyle}>
+                      <div style={feedbackReplyHeaderStyle}>
+                        <div style={feedbackReplyAvatarStyle}>
+                          <img
+                            src={doctorXLogo}
+                            alt="DoctorX"
+                            style={feedbackReplyLogoStyle}
+                          />
+                        </div>
+                        <span style={feedbackReplyFromStyle}>{feedback.reply.from}</span>
+                      </div>
+                      <p style={feedbackReplyMessageStyle}>
+                        {feedback.reply.message}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <button
+              style={{ ...scrollButtonStyle, right: '10px' }}
+              onClick={() => scrollFeedback('right')}
+              onMouseEnter={(e) => e.target.style.transform = 'translateY(-50%) scale(1.1)'}
+              onMouseLeave={(e) => e.target.style.transform = 'translateY(-50%) scale(1)'}
+            >
+              <ChevronRight size={24} />
+            </button>
           </div>
         </div>
 
