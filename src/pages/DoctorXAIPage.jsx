@@ -272,8 +272,9 @@ const styles = {
     flex: 1,
     display: "flex",
     justifyContent: "center",
-    padding: "20px",
+    padding: "10px",
     background: c.bg,
+    width: "100%",
   }),
 
   container: (c) => ({
@@ -284,7 +285,8 @@ const styles = {
     boxShadow: c.shadow,
     display: "flex",
     flexDirection: "column",
-    height: "calc(100vh - 180px)",
+    height: "100%",
+    minHeight: "60vh",
     overflow: "hidden",
     transition: "all 0.3s ease",
     border: `1px solid ${c.border}`,
