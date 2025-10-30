@@ -1,7 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 
 export default function DoctorXAIPage() {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState([
+    {
+      type: "bot",
+      text: "Hello! I'm DoctorX, your AI medical assistant. How can I help you today? Please feel free to ask any health-related questions you might have."
+    }
+  ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [theme, setTheme] = useState("light");
@@ -142,7 +147,7 @@ User Query: ${userMessage}`;
       <div style={styles.chatWrapper(c)}>
         <div style={styles.container(c)}>
           {/* Header - Show only when chat has started */}
-          {messages.length > 0 && (
+          {messages.length > 1 && (
             <div style={styles.header(c)}>
               <img src="/assets/MAINLOGO2.png" alt="DoctorX" style={styles.headerLogo} />
               <h2 style={styles.headerTitle(c)}>DoctorX AI Assistance</h2>
@@ -151,7 +156,7 @@ User Query: ${userMessage}`;
 
           {/* Chat Content */}
           <div style={styles.chatContainer(c)} ref={chatBoxRef}>
-            {messages.length === 0 && (
+            {messages.length === 1 && messages[0].type === "bot" && (
               <div style={styles.welcome}>
                 <img src="/assets/MAINLOGO2.png" alt="DoctorX" style={styles.welcomeLogo} />
                 <h2 style={{ color: c.dark, marginTop: "24px", fontSize: "28px", fontWeight: "700" }}>
