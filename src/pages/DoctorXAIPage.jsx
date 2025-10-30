@@ -7,6 +7,38 @@ export default function DoctorXAIPage() {
   const [theme, setTheme] = useState("light");
   const chatBoxRef = useRef(null);
 
+  // Simple markdown to HTML converter
+  const parseMarkdown = (text) => {
+    if (!text) return "";
+
+    // Convert bold **text** to <strong>
+    text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+    // Convert italic *text* to <em>
+    text = text.replace(/\*([^*]+?)\*/g, '<em>$1</em>');
+
+    // Convert ### Heading to <h3>
+    text = text.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+
+    // Convert ## Heading to <h2>
+    text = text.replace(/^## (.+)$/gm, '<h2>$1</h2>');
+
+    // Convert # Heading to <h1>
+    text = text.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+
+    // Convert bullet points
+    text = text.replace(/^\* (.+)$/gm, '<li>$1</li>');
+    text = text.replace(/^- (.+)$/gm, '<li>$1</li>');
+
+    // Wrap consecutive <li> in <ul>
+    text = text.replace(/(<li>.*<\/li>\n?)+/g, (match) => `<ul>${match}</ul>`);
+
+    // Convert line breaks to <br>
+    text = text.replace(/\n/g, '<br/>');
+
+    return text;
+  };
+
   useEffect(() => {
     const htmlElement = document.documentElement;
     const currentTheme = localStorage.getItem("theme") || "light";
@@ -165,7 +197,16 @@ export default function DoctorXAIPage() {
                           : styles.botContent(c)
                     }
                   >
-                    {msg.text}
+                    {msg.type === "bot" ? (
+                      <div
+                        dangerouslySetInnerHTML={{ __html: parseMarkdown(msg.text) }}
+                        style={{
+                          lineHeight: "1.6",
+                        }}
+                      />
+                    ) : (
+                      msg.text
+                    )}
                   </div>
                   {msg.type === "user" && (
                     <img src="/assets/profile.jpg" alt="User" style={styles.avatar} />
@@ -257,6 +298,27 @@ export default function DoctorXAIPage() {
         }
         div::-webkit-scrollbar-thumb:hover {
           background: #0a7a8f;
+        }
+        /* Markdown Styling */
+        h1, h2, h3 {
+          margin: 12px 0 8px 0;
+          font-weight: 700;
+        }
+        h1 { font-size: 20px; }
+        h2 { font-size: 18px; }
+        h3 { font-size: 16px; }
+        ul {
+          margin: 10px 0;
+          padding-left: 20px;
+        }
+        li {
+          margin-bottom: 5px;
+        }
+        strong {
+          font-weight: 700;
+        }
+        em {
+          font-style: italic;
         }
       `}</style>
     </div>
