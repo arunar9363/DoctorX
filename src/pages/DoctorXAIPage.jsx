@@ -252,6 +252,17 @@ export default function DoctorXAIPage() {
         div::-webkit-scrollbar-thumb:hover {
           background: #0a7a8f;
         }
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+          input {
+            padding: 16px 14px !important;
+            font-size: 16px !important;
+          }
+          button {
+            padding: 10px 16px !important;
+            font-size: 12px !important;
+          }
+        }
       `}</style>
     </div>
   );
@@ -300,6 +311,36 @@ const styles = {
     scrollBehavior: "smooth",
     transition: "background 0.3s ease",
   }),
+
+  chatHeader: (c) => ({
+    background: `linear-gradient(135deg, ${c.secondary} 0%, #0a7a8f 100%)`,
+    padding: "16px 24px",
+    color: "white",
+    display: "flex",
+    alignItems: "center",
+    borderBottom: `2px solid ${c.secondary}`,
+    flexShrink: 0,
+  }),
+
+  headerLeft: {
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+  },
+
+  headerLogo: {
+    width: "40px",
+    height: "40px",
+    borderRadius: "8px",
+    objectFit: "cover",
+  },
+
+  headerTitle: {
+    fontSize: "18px",
+    fontWeight: "700",
+    margin: "0",
+    color: "white",
+  },
 
   welcome: {
     textAlign: "center",
