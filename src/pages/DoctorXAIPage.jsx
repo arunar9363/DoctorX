@@ -78,11 +78,18 @@ export default function DoctorXAIPage() {
     setInput("");
     setLoading(true);
 
+    const systemPrompt = `You are DoctorX, a professional AI medical assistant. Be helpful, informative, polite, and provide accurate health information. Keep responses concise and clear. Always remind users to consult with healthcare professionals for serious concerns.
+
+User Query: ${userMessage}`;
+
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMessage }),
+        body: JSON.stringify({
+          message: systemPrompt,
+          userMessage: userMessage
+        }),
       });
 
       const data = await response.json();
