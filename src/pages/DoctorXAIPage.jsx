@@ -99,18 +99,24 @@ export default function DoctorXAIPage() {
 
   return (
     <div style={styles.pageWrapper(c, theme)}>
-
-
       {/* Chat Container */}
       <div style={styles.chatWrapper(c)}>
         <div style={styles.container(c)}>
+          {/* Header - Show only when chat has started */}
+          {messages.length > 0 && (
+            <div style={styles.header(c)}>
+              <img src="/assets/MAINLOGO2.png" alt="DoctorX" style={styles.headerLogo} />
+              <h2 style={styles.headerTitle(c)}>DoctorX AI Assistance</h2>
+            </div>
+          )}
+
           {/* Chat Content */}
           <div style={styles.chatContainer(c)} ref={chatBoxRef}>
             {messages.length === 0 && (
               <div style={styles.welcome}>
                 <img src="/assets/MAINLOGO2.png" alt="DoctorX" style={styles.welcomeLogo} />
                 <h2 style={{ color: c.dark, marginTop: "24px", fontSize: "28px", fontWeight: "700" }}>
-                  Welcome to DoctorX AI
+                  Welcome to DoctorX AI Assistance
                 </h2>
                 <p style={{ color: c.dark, opacity: 0.7, fontSize: "14px", maxWidth: "400px", margin: "12px auto 0" }}>
                   Ask me health-related questions about symptoms, diseases, treatments, and general wellness advice.
@@ -252,17 +258,6 @@ export default function DoctorXAIPage() {
         div::-webkit-scrollbar-thumb:hover {
           background: #0a7a8f;
         }
-        /* Mobile Responsive */
-        @media (max-width: 768px) {
-          input {
-            padding: 16px 14px !important;
-            font-size: 16px !important;
-          }
-          button {
-            padding: 10px 16px !important;
-            font-size: 12px !important;
-          }
-        }
       `}</style>
     </div>
   );
@@ -296,11 +291,35 @@ const styles = {
     boxShadow: c.shadow,
     display: "flex",
     flexDirection: "column",
-    height: "100%",
-    minHeight: "60vh",
+    height: "calc(100vh - 100px)",
+    maxHeight: "85vh",
     overflow: "hidden",
     transition: "all 0.3s ease",
     border: `1px solid ${c.border}`,
+  }),
+
+  header: (c) => ({
+    padding: "16px 32px",
+    background: c.primary,
+    borderBottom: `1px solid ${c.border}`,
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    transition: "background 0.3s ease",
+  }),
+
+  headerLogo: {
+    width: "40px",
+    height: "40px",
+    borderRadius: "8px",
+    objectFit: "cover",
+  },
+
+  headerTitle: (c) => ({
+    color: c.dark,
+    fontSize: "20px",
+    fontWeight: "600",
+    margin: 0,
   }),
 
   chatContainer: (c) => ({
@@ -311,36 +330,6 @@ const styles = {
     scrollBehavior: "smooth",
     transition: "background 0.3s ease",
   }),
-
-  chatHeader: (c) => ({
-    background: `linear-gradient(135deg, ${c.secondary} 0%, #0a7a8f 100%)`,
-    padding: "16px 24px",
-    color: "white",
-    display: "flex",
-    alignItems: "center",
-    borderBottom: `2px solid ${c.secondary}`,
-    flexShrink: 0,
-  }),
-
-  headerLeft: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-  },
-
-  headerLogo: {
-    width: "40px",
-    height: "40px",
-    borderRadius: "8px",
-    objectFit: "cover",
-  },
-
-  headerTitle: {
-    fontSize: "18px",
-    fontWeight: "700",
-    margin: "0",
-    color: "white",
-  },
 
   welcome: {
     textAlign: "center",
