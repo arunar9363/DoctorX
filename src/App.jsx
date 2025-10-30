@@ -22,6 +22,8 @@ import ContactPage from "./pages/ContactUsPage";
 import SymptomPage from "./pages/SymptomPage";
 import RegisterPage from "./pages/RegisterPage";
 import TermsOfService from "./pages/TermsOfService";
+import DoctorXAIPage from "./pages/DoctorXAIPage";
+
 
 // Wrapper for login modal page
 function LoginPageWrapper() {
@@ -71,6 +73,7 @@ function App() {
                 language="en" />
             }
           />
+          <Route path="/doctorx-ai" element={<DoctorXAIPage />} />
           <Route path="/audience" element={<Audience />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<ContactPage />} />

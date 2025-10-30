@@ -593,6 +593,7 @@ function Navbar() {
                 <>
                   <li><Link style={{ ...styles.navLink, ...(isActiveLink('/symptoms') ? styles.activeNavLink : {}) }} to="/symptoms">Analyze Symptoms</Link></li>
                   <li><Link style={{ ...styles.navLink, ...(isActiveLink('/diseases-front') ? styles.activeNavLink : {}) }} to="/diseases-front">Disease Details</Link></li>
+                  <li><Link style={{ ...styles.navLink, ...(isActiveLink('/doctorx-ai') ? styles.activeNavLink : {}) }} to="/doctorx-ai">DoctorX AI Assistance</Link></li>
                 </>
               )}
               <li><Link style={{ ...styles.navLink, ...(isActiveLink('/audience') ? styles.activeNavLink : {}) }} to="/audience">Audience</Link></li>
@@ -645,6 +646,7 @@ function Navbar() {
               <>
                 <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/symptoms') ? styles.activeNavLink : {}) }} to="/symptoms" onClick={closeMenu}>Analyze Symptoms</Link></li>
                 <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/diseases-front') ? styles.activeNavLink : {}) }} to="/diseases-front" onClick={closeMenu}>Disease Details</Link></li>
+                <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/doctorx-ai') ? styles.activeNavLink : {}) }} to="/doctorx-ai" onClick={closeMenu}>DoctorX AI Assistance</Link></li>
               </>
             )}
             <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/audience') ? styles.activeNavLink : {}) }} to="/audience" onClick={closeMenu}>Audience</Link></li>
