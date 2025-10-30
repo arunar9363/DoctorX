@@ -139,6 +139,16 @@ function Hero() {
     }
   };
 
+  const handleAIAssistance = () => {
+    if (loading) return;
+    if (isAuthenticated) {
+      navigate('/doctorx-ai');
+    } else {
+      setRedirectPath('/doctorx-ai');
+      setShowLogin(true);
+    }
+  };
+
   const handleLoginSuccess = () => {
     setShowLogin(false);
     if (redirectPath) {
@@ -461,6 +471,19 @@ function Hero() {
               disabled={loading}
             >
               {loading ? "Loading..." : "Explore Diseases"}
+            </button>
+            <button
+              style={btnHeroStyle}
+              onMouseEnter={(e) => {
+                Object.assign(e.target.style, btnHeroHoverStyle);
+              }}
+              onMouseLeave={(e) => {
+                Object.assign(e.target.style, btnHeroStyle);
+              }}
+              onClick={handleAIAssistance}
+              disabled={loading}
+            >
+              {loading ? "Loading..." : "AI Assistance"}
             </button>
           </div>
         </div>
