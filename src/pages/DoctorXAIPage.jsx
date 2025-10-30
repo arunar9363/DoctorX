@@ -388,18 +388,18 @@ const styles = {
 
   messageRow: (type) => ({
     display: "flex",
-    alignItems: "flex-end",
+    alignItems: "flex-start",
     gap: "12px",
     justifyContent: type === "user" ? "flex-end" : "flex-start",
     maxWidth: "70%",
+    flexDirection: "column",
   }),
 
   avatar: {
-    width: "40px",
-    height: "40px",
+    width: "32px",
+    height: "32px",
     borderRadius: "50%",
     objectFit: "cover",
-    border: "2px solid #0d9db8",
     flexShrink: 0,
     boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
   },
