@@ -19,9 +19,14 @@ import {
   Info,
   Stethoscope,
   Pill,
-  BookOpen
+  BookOpen,
+  BookmarkPlus,
+  BookmarkCheck
 } from 'lucide-react';
 import { useWHOOutbreaks, useWHOSearch } from '../../hooks/useWHOApi';
+import { saveDiseaseToFirebase, isDiseaseAlreadySaved, removeSavedDisease } from '../../services/firebaseService';
+import { auth } from '../../firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 
 // Helper hook for responsive design using media queries in JS
 const useMediaQuery = (query) => {
@@ -47,6 +52,12 @@ const IndividualDiseasesInfo = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [isDarkMode, setIsDarkMode] = useState(false);
 
+  // Save disease states
+  const [isSaved, setIsSaved] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [toast, setToast] = useState({ show: false, message: '', type: '' });
+
   // State management for hover effects to simulate :hover pseudo-class
   const [hoverStates, setHoverStates] = useState({});
   const handleHover = (key, value) => {
@@ -58,6 +69,14 @@ const IndividualDiseasesInfo = () => {
   const handleFocus = (key, value) => {
     setFocusStates(prev => ({ ...prev, [key]: value }));
   };
+
+  // Check for authentication
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsAuthenticated(!!user);
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Check for dark mode
   useEffect(() => {
@@ -105,7 +124,7 @@ const IndividualDiseasesInfo = () => {
         try {
           const response = await fetch('/data/diseases.json');
           if (response.ok) diseasesData = await response.json();
-          // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line no-unused-vars
         } catch (jsonError) {
           console.warn('Could not load diseases.json, using fallback data');
         }
@@ -122,6 +141,62 @@ const IndividualDiseasesInfo = () => {
     };
     if (diseaseName) loadDiseaseData();
   }, [diseaseName, createSlug, getFallbackData]);
+
+  // Check if disease is already saved
+  useEffect(() => {
+    const checkIfSaved = async () => {
+      if (disease && isAuthenticated) {
+        try {
+          const saved = await isDiseaseAlreadySaved(createSlug(disease.name));
+          setIsSaved(saved);
+        } catch (error) {
+          console.error('Error checking saved status:', error);
+        }
+      }
+    };
+    checkIfSaved();
+  }, [disease, isAuthenticated, createSlug]);
+
+  // Handle save/unsave disease
+  const handleSaveDisease = async () => {
+    if (!isAuthenticated) {
+      showToast('Please log in to save diseases', 'error');
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      if (isSaved) {
+        await removeSavedDisease(createSlug(disease.name));
+        setIsSaved(false);
+        showToast('Disease removed from saved list', 'info');
+      } else {
+        await saveDiseaseToFirebase({
+          name: disease.name,
+          slug: createSlug(disease.name),
+          category: disease.category,
+          description: disease.description,
+          severity: disease.severity,
+          contagious: disease.contagious
+        });
+        setIsSaved(true);
+        showToast('Disease saved successfully!', 'success');
+      }
+    } catch (error) {
+      console.error('Error saving disease:', error);
+      showToast('Failed to save disease. Please try again.', 'error');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Show toast notification
+  const showToast = (message, type) => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast({ show: false, message: '', type: '' });
+    }, 3000);
+  };
 
   // Theme colors based on DiseasesFront colors
   const themes = {
@@ -168,6 +243,8 @@ const IndividualDiseasesInfo = () => {
       @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
       @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
       @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      @keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+      @keyframes slideOutRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
       * { transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease; scrollbar-width: thin; scrollbar-color: ${currentTheme.colorSecondary} ${currentTheme.colorFourth}; }
       ::-webkit-scrollbar { width: 8px; height: 8px; }
       ::-webkit-scrollbar-track { background: ${currentTheme.colorFourth}; border-radius: 4px; }
@@ -193,7 +270,6 @@ const IndividualDiseasesInfo = () => {
   const mergeStyles = (...styles) => Object.assign({}, ...styles.filter(Boolean));
 
   // #region STYLES OBJECT
-  // This region contains all the CSS rules converted to JavaScript style objects.
   const styles = {
     IndividualDiseasesInfo: {
       background: isDarkMode
@@ -202,7 +278,7 @@ const IndividualDiseasesInfo = () => {
       minHeight: '100vh',
       color: isDarkMode ? '#e5e7eb' : currentTheme.colorDark,
       lineHeight: 1.6,
-      paddingTop: '50px' // Increased padding to push content below navbar
+      paddingTop: '50px'
     },
     container: mergeStyles(
       { maxWidth: '1200px', margin: '0 auto', padding: '0 20px' },
@@ -216,7 +292,7 @@ const IndividualDiseasesInfo = () => {
       isMobileLandscape && { padding: '60px 0 30px 0', marginBottom: '30px' },
       isMobilePortrait && { padding: '40px 0 20px 0', marginBottom: '20px' }
     ),
-    headerTop: mergeStyles({ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }, isMobilePortrait && { marginBottom: '20px' }),
+    headerTop: mergeStyles({ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', gap: '12px' }, isMobilePortrait && { marginBottom: '20px', flexWrap: 'wrap' }),
     backButton: (isHovered, isFocused) => mergeStyles(
       {
         display: 'flex',
@@ -234,6 +310,34 @@ const IndividualDiseasesInfo = () => {
       },
       isHovered && { background: isDarkMode ? 'rgba(13, 157, 184, 0.3)' : 'rgba(255, 255, 255, 0.3)', transform: 'translateY(-2px)' },
       isFocused && { outline: `2px solid ${currentTheme.colorSecondary}`, outlineOffset: '2px' }
+    ),
+    saveButton: (isHovered, isFocused) => mergeStyles(
+      {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        background: isSaved
+          ? 'rgba(16, 185, 129, 0.2)'
+          : isDarkMode ? 'rgba(13, 157, 184, 0.2)' : 'rgba(115, 142, 239, 0.368)',
+        border: `1px solid ${isSaved ? '#10b981' : isDarkMode ? 'var(--color-secondary)' : currentTheme.colorDark}`,
+        color: isSaved ? '#10b981' : isDarkMode ? 'var(--color-secondary)' : currentTheme.colorThird,
+        padding: '10px 16px',
+        borderRadius: '8px',
+        fontWeight: 600,
+        cursor: isSaving ? 'not-allowed' : 'pointer',
+        transition: 'all 0.3s ease',
+        opacity: isSaving ? 0.6 : 1,
+        textDecoration: 'none',
+        fontSize: '0.9rem'
+      },
+      isHovered && !isSaving && {
+        background: isSaved
+          ? 'rgba(16, 185, 129, 0.3)'
+          : isDarkMode ? 'rgba(13, 157, 184, 0.3)' : 'rgba(255, 255, 255, 0.3)',
+        transform: 'translateY(-2px)'
+      },
+      isFocused && { outline: `2px solid ${currentTheme.colorSecondary}`, outlineOffset: '2px' },
+      isMobilePortrait && { padding: '8px 12px', fontSize: '0.85rem' }
     ),
     diseaseHeaderContent: mergeStyles(
       { display: 'flex', gap: '50px', alignItems: 'flex-start' },
@@ -607,6 +711,69 @@ const IndividualDiseasesInfo = () => {
       isHovered && { background: isDarkMode ? 'var(--color-third)' : currentTheme.colorThird, transform: 'translateY(-2px)' },
       isFocused && { outline: `2px solid ${currentTheme.colorSecondary}`, outlineOffset: '2px' }
     ),
+    toastContainer: {
+      position: 'fixed',
+      top: '80px',
+      right: '20px',
+      zIndex: 10000,
+      pointerEvents: 'none'
+    },
+    toast: (show, type) => {
+      const baseStyle = {
+        display: show ? 'flex' : 'none',
+        alignItems: 'center',
+        gap: '12px',
+        padding: '16px 24px',
+        borderRadius: '12px',
+        boxShadow: isDarkMode ? '0 8px 32px rgba(0, 0, 0, 0.5)' : '0 8px 32px rgba(0, 0, 0, 0.15)',
+        fontSize: '0.95rem',
+        fontWeight: 600,
+        minWidth: '280px',
+        maxWidth: '400px',
+        pointerEvents: 'all',
+        animation: show ? 'slideInRight 0.4s ease-out forwards' : 'none'
+      };
+
+      const typeStyles = {
+        success: {
+          background: isDarkMode
+            ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+            : 'linear-gradient(135deg, #10b981 0%, #34d399 100%)',
+          color: 'white',
+          border: '1px solid rgba(255, 255, 255, 0.2)'
+        },
+        error: {
+          background: isDarkMode
+            ? 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)'
+            : 'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)',
+          color: 'white',
+          border: '1px solid rgba(255, 255, 255, 0.2)'
+        },
+        info: {
+          background: isDarkMode
+            ? 'linear-gradient(135deg, #0d9db8 0%, #0284c7 100%)'
+            : 'linear-gradient(135deg, #0d9db8 0%, #0ea5e9 100%)',
+          color: 'white',
+          border: '1px solid rgba(255, 255, 255, 0.2)'
+        }
+      };
+
+      const responsiveStyles = isMobilePortrait ? {
+        minWidth: '250px',
+        padding: '14px 20px',
+        fontSize: '0.9rem',
+        right: '10px'
+      } : {};
+
+      return Object.assign({}, baseStyle, typeStyles[type] || {}, responsiveStyles);
+    },
+    toastIcon: {
+      flexShrink: 0
+    },
+    toastMessage: {
+      flex: 1,
+      lineHeight: 1.4
+    }
   };
   // #endregion
 
@@ -776,12 +943,63 @@ const IndividualDiseasesInfo = () => {
 
   return (
     <div style={styles.IndividualDiseasesInfo}>
+      {/* Toast Notification */}
+      <div style={styles.toastContainer}>
+        {toast.show && (
+          <div style={styles.toast(toast.show, toast.type)}>
+            <div style={styles.toastIcon}>
+              {toast.type === 'success' && <CheckCircle size={20} />}
+              {toast.type === 'error' && <AlertCircle size={20} />}
+              {toast.type === 'info' && <Info size={20} />}
+            </div>
+            <div style={styles.toastMessage}>{toast.message}</div>
+          </div>
+        )}
+      </div>
+
       <header style={styles.detailHeader}>
         <div style={styles.container}>
           <div style={styles.headerTop}>
-            <button onClick={handleBack} style={styles.backButton(hoverStates.backBtn, focusStates.backBtn)} onMouseEnter={() => handleHover('backBtn', true)} onMouseLeave={() => handleHover('backBtn', false)} onFocus={() => handleFocus('backBtn', true)} onBlur={() => handleFocus('backBtn', false)}>
+            <button
+              onClick={handleBack}
+              style={styles.backButton(hoverStates.backBtn, focusStates.backBtn)}
+              onMouseEnter={() => handleHover('backBtn', true)}
+              onMouseLeave={() => handleHover('backBtn', false)}
+              onFocus={() => handleFocus('backBtn', true)}
+              onBlur={() => handleFocus('backBtn', false)}
+            >
               <ArrowLeft size={20} />
             </button>
+
+            {/* Save Disease Button */}
+            {isAuthenticated && (
+              <button
+                onClick={handleSaveDisease}
+                disabled={isSaving}
+                style={styles.saveButton(hoverStates.saveBtn, focusStates.saveBtn)}
+                onMouseEnter={() => handleHover('saveBtn', true)}
+                onMouseLeave={() => handleHover('saveBtn', false)}
+                onFocus={() => handleFocus('saveBtn', true)}
+                onBlur={() => handleFocus('saveBtn', false)}
+              >
+                {isSaving ? (
+                  <>
+                    <RefreshCw size={16} className="animate-spin" />
+                    <span>{isSaved ? 'Removing...' : 'Saving...'}</span>
+                  </>
+                ) : isSaved ? (
+                  <>
+                    <BookmarkCheck size={16} />
+                    <span>Saved</span>
+                  </>
+                ) : (
+                  <>
+                    <BookmarkPlus size={16} />
+                    <span>Save Disease</span>
+                  </>
+                )}
+              </button>
+            )}
           </div>
           <div style={styles.diseaseHeaderContent}>
             <div style={styles.diseaseImageContainer}>

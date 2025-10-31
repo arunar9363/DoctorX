@@ -23,6 +23,7 @@ import SymptomPage from "./pages/SymptomPage";
 import RegisterPage from "./pages/RegisterPage";
 import TermsOfService from "./pages/TermsOfService";
 import DoctorXAIPage from "./pages/DoctorXAIPage";
+import HistoryPage from "./pages/HistoryPage";
 
 
 // Wrapper for login modal page
@@ -80,6 +81,7 @@ function App() {
           <Route path="/login" element={<LoginPageWrapper />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/terms" element={<TermsOfService />} />
+          <Route path="/history" element={<HistoryPage />} />
         </Routes>
       </Layout>
     </Router>

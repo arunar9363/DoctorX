@@ -585,6 +585,66 @@ const ProfilePage = ({ show, onClose, onShowToast }) => {
                   <div style={readOnlyValueStyle}>{userData.name || 'N/A'}</div>
                 )}
               </div>
+              {/* Add this inside the ProfilePage component, after the form section */}
+              <div style={{
+                padding: '24px',
+                background: isDark ? 'rgba(13, 157, 184, 0.1)' : 'rgba(13, 157, 184, 0.05)',
+                borderRadius: '12px',
+                marginTop: '24px',
+                borderLeft: '4px solid var(--color-secondary)'
+              }}>
+                <h3 style={{
+                  fontSize: '1.1rem',
+                  fontWeight: 700,
+                  color: 'var(--color-secondary)',
+                  marginBottom: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Health History
+                </h3>
+                <p style={{
+                  fontSize: '0.9rem',
+                  color: isDark ? '#9ca3af' : '#6b7280',
+                  marginBottom: '16px'
+                }}>
+                  View your saved diseases and assessment history
+                </p>
+                <button
+                  onClick={() => window.location.href = '/history'}
+                  style={{
+                    background: 'var(--color-secondary)',
+                    color: 'white',
+                    border: 'none',
+                    padding: '12px 20px',
+                    borderRadius: '10px',
+                    cursor: 'pointer',
+                    fontWeight: 600,
+                    fontSize: '0.95rem',
+                    transition: 'all 0.3s ease',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.background = 'var(--color-third)';
+                    e.target.style.transform = 'translateY(-2px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = 'var(--color-secondary)';
+                    e.target.style.transform = 'translateY(0)';
+                  }}
+                >
+                  View History
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
 
               {/* Email */}
               <div style={formGroupStyle}>
