@@ -171,7 +171,7 @@ User Query: ${userMessage}`;
                     Try asking:
                   </p>
                   <div style={styles.suggestions}>
-                    {["What are the symptoms of flu?", "How to manage diabetes?", "COVID-19 prevention tips"].map((q, i) => (
+                    {["What to do for a headache?", “How to improve immunity naturally?", "How to reduce stress and anxiety?” ].map((q, i) => (
                       <button
                         key={i}
                         onClick={() => setInput(q)}
