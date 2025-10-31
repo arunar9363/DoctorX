@@ -854,7 +854,7 @@ export default function InfermedicaTriageSymptomChecker({
     }
 
     if (!finalResult) {
-      showToast('No assessment results to save,Please Click on Get Core Recommendations', 'error');
+      showToast('No assessment results to save, Please Click on Get Core Recommendations', 'error');
       return;
     }
 
