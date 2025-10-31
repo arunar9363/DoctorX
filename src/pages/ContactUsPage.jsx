@@ -119,7 +119,7 @@ function ContactPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setPageLoading(false);
-    }, 2500);
+    }, 2000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -892,7 +892,7 @@ function ContactPage() {
           <div style={loaderStyle}>
             <div style={loaderAfterStyle}></div>
           </div>
-          <p style={loaderTextStyle}>Loading Contact Page...</p>
+          <p style={loaderTextStyle}>Loading...</p>
         </div>
       </div>
     );

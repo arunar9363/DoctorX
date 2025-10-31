@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, googleProvider, signInWithPopup, signInWithEmailAndPassword } from "../../firebase";
+import { auth, db, googleProvider, signInWithPopup, signInWithEmailAndPassword, signOut } from "../../firebase";
+import { doc, getDoc } from "firebase/firestore";
 import "../../styles/LoginModal.css";
 
 function LoginModal({ show, onClose, message, onShowToast, onLoginSuccess, redirectPath }) {
@@ -71,17 +72,28 @@ function LoginModal({ show, onClose, message, onShowToast, onLoginSuccess, redir
 
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      console.log("Google login successful:", result.user);
+      const user = result.user;
 
-      // Check if this is a new user
-      if (result._tokenResponse?.isNewUser) {
+      // Check if user exists in Firestore
+      const userDocRef = doc(db, "users", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (!userDocSnap.exists()) {
+        // User not registered in database
+        // Sign them out immediately
+        await signOut(auth);
+
         if (onShowToast) {
           onShowToast("This Google account is not registered. Please register first!", "error");
         } else {
           alert("This Google account is not registered. Please register first!");
         }
+        setIsLoading(false);
         return;
       }
+
+      // User exists, proceed with login
+      console.log("Google login successful:", user);
 
       if (onShowToast) {
         onShowToast("Welcome back! Logged in with Google successfully.", "success");
@@ -103,17 +115,10 @@ function LoginModal({ show, onClose, message, onShowToast, onLoginSuccess, redir
 
       if (err.code === "auth/popup-blocked") {
         errorMessage = "Popup blocked. Please allow popups and try again.";
-      } else if (err.code === "auth/cancelled-popup-request") {
+      } else if (err.code === "auth/cancelled-popup-request" || err.code === "auth/popup-closed-by-user") {
         errorMessage = "Login cancelled. Please try again.";
-      }
-
-      if (onLoginSuccess && redirectPath) {
-        onLoginSuccess(); // This will handle the redirect in Hero component
-      } else {
-        onClose();
-        setTimeout(() => {
-          navigate("/");
-        }, 100);
+        setIsLoading(false);
+        return; // Don't show error toast for user cancellation
       }
 
       if (onShowToast) {
@@ -208,7 +213,7 @@ function LoginModal({ show, onClose, message, onShowToast, onLoginSuccess, redir
 
         <div className="text-center mt-3">
           <p>
-            <span id="acc">Don't have an account? then Ragister first</span>
+            <span id="acc">Don't have an account? then Register first</span>
           </p>
           <p><a href="/forgot-password">Forgot password?</a></p>
         </div>

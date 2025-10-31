@@ -24,6 +24,7 @@ import RegisterPage from "./pages/RegisterPage";
 import TermsOfService from "./pages/TermsOfService";
 import DoctorXAIPage from "./pages/DoctorXAIPage";
 import HistoryPage from "./pages/HistoryPage";
+import ForgotPassword from './pages/ForgotPassword';
 
 
 // Wrapper for login modal page
@@ -82,6 +83,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/terms" element={<TermsOfService />} />
           <Route path="/history" element={<HistoryPage />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
         </Routes>
       </Layout>
     </Router>

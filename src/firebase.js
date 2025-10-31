@@ -8,6 +8,7 @@ import {
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
+import { sendPasswordResetEmail } from "firebase/auth";
 // --- 1. IMPORT getFirestore ---
 import { getFirestore } from "firebase/firestore";
 
@@ -35,5 +36,6 @@ export {
   signInWithPopup,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  sendPasswordResetEmail
 };

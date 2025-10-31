@@ -81,6 +81,7 @@ function Hero() {
   // Inject keyframe animations
   useEffect(() => {
     const styleTag = document.createElement('style');
+    styleTag.id = 'hero-page-animations-styles';
     styleTag.innerHTML = `
       @keyframes fadeInText {
         from { opacity: 0; transform: translateX(-20px); }
@@ -96,7 +97,7 @@ function Hero() {
         80% { opacity: 1; transform: translateY(0); }
         100% { opacity: 0; transform: translateY(-20px); }
       }
-      @keyframes rotation {
+      @keyframes heroLoaderRotation {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
       }
@@ -111,8 +112,9 @@ function Hero() {
     `;
     document.head.appendChild(styleTag);
     return () => {
-      if (document.head.contains(styleTag)) {
-        document.head.removeChild(styleTag);
+      const existingStyle = document.getElementById('hero-page-animations-styles');
+      if (existingStyle && document.head.contains(existingStyle)) {
+        document.head.removeChild(existingStyle);
       }
     };
   }, []);
@@ -159,8 +161,8 @@ function Hero() {
     }
   };
 
-  // Page loader styles
-  const pageLoaderOverlayStyle = {
+  // Page loader styles with unique IDs
+  const heroPageLoaderOverlayStyle = {
     position: 'fixed',
     top: 0,
     left: 0,
@@ -173,7 +175,7 @@ function Hero() {
     zIndex: 9999
   };
 
-  const loaderStyle = {
+  const heroLoaderStyle = {
     width: '48px',
     height: '48px',
     borderRadius: '50%',
@@ -183,11 +185,11 @@ function Hero() {
     borderBottom: '4px solid transparent',
     borderLeft: '4px solid transparent',
     boxSizing: 'border-box',
-    animation: 'rotation 1s linear infinite',
+    animation: 'heroLoaderRotation 1s linear infinite',
     position: 'relative'
   };
 
-  const loaderAfterStyle = {
+  const heroLoaderAfterStyle = {
     content: "''",
     boxSizing: 'border-box',
     position: 'absolute',
@@ -200,10 +202,10 @@ function Hero() {
     borderBottom: '4px solid transparent',
     borderTop: '4px solid transparent',
     borderRight: '4px solid transparent',
-    animation: 'rotation 0.5s linear infinite reverse'
+    animation: 'heroLoaderRotation 0.5s linear infinite reverse'
   };
 
-  const loaderTextStyle = {
+  const heroLoaderTextStyle = {
     marginTop: '20px',
     fontSize: '1.2rem',
     color: 'var(--color-secondary)',
@@ -343,17 +345,18 @@ function Hero() {
   const btnGroupStyle = {
     display: 'flex',
     flexDirection: isMobile ? 'column' : isTablet ? 'column' : 'row',
-    gap: isMobile ? '20px' : isTablet ? '25px' : '30px',
+    gap: isMobile ? '20px' : isTablet ? '25px' : '20px',
     justifyContent: isMobile || isTablet ? 'center' : 'flex-start',
-    alignItems: 'center'
+    alignItems: 'center',
+    flexWrap: 'wrap'
   };
 
   const btnHeroStyle = {
-    padding: isMobile ? '15px 30px' : isTablet ? '14px 32px' : '13px 35px',
+    padding: isMobile ? '14px 28px' : isTablet ? '13px 26px' : '12px 24px',
     border: 'none',
     borderRadius: '25px',
     fontWeight: '600',
-    fontSize: isMobile ? '1.1rem' : '1.2rem',
+    fontSize: isMobile ? '1rem' : '1.05rem',
     backgroundColor: 'var(--color-secondary)',
     color: 'var(--color-primary)',
     transition: 'all 0.3s ease',
@@ -361,9 +364,13 @@ function Hero() {
     boxShadow: isDarkMode
       ? '0 4px 15px rgba(13, 157, 184, 0.3)'
       : '0 4px 15px rgba(13, 157, 184, 0.2)',
-    minWidth: isMobile ? '200px' : isTablet ? '220px' : 'auto',
+    minWidth: isMobile ? '200px' : '160px',
     width: isMobile || isTablet ? '100%' : 'auto',
-    maxWidth: isMobile ? '280px' : isTablet ? '300px' : 'none'
+    maxWidth: isMobile ? '280px' : isTablet ? '300px' : '200px',
+    whiteSpace: 'nowrap',
+    textAlign: 'center',
+    fontFamily: "'Inter', sans-serif",
+    letterSpacing: '0.3px'
   };
 
   const btnHeroHoverStyle = {
@@ -395,12 +402,12 @@ function Hero() {
   // Show loader if page is loading
   if (pageLoading) {
     return (
-      <div style={pageLoaderOverlayStyle}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={loaderStyle}>
-            <div style={loaderAfterStyle}></div>
+      <div style={heroPageLoaderOverlayStyle} className="hero-page-loader-overlay">
+        <div style={{ textAlign: 'center' }} className="hero-page-loader-container">
+          <div style={heroLoaderStyle} className="hero-page-spinner">
+            <div style={heroLoaderAfterStyle}></div>
           </div>
-          <p style={loaderTextStyle}>Loading DoctorX...</p>
+          <p style={heroLoaderTextStyle} className="hero-page-loader-text">Loading DoctorX...</p>
         </div>
       </div>
     );

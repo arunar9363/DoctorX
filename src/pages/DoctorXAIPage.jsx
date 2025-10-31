@@ -482,7 +482,7 @@ const styles = {
   userContent: (c) => ({
     background: c.secondary,
     color: "white",
-    padding: "14px 18px",
+    padding: "18px 18px",
     borderRadius: "16px",
     borderBottomRight: "2px",
     wordWrap: "break-word",
@@ -494,7 +494,7 @@ const styles = {
   botContent: (c) => ({
     background: c.primary,
     color: c.dark,
-    padding: "14px 18px",
+    padding: "18px 18px",
     borderRadius: "16px",
     borderBottomLeft: "2px",
     wordWrap: "break-word",
@@ -531,7 +531,7 @@ const styles = {
   },
 
   inputContainer: (c) => ({
-    padding: "24px 32px",
+    padding: "15px 22px",
     background: c.primary,
     borderTop: `1px solid ${c.border}`,
     display: "flex",
@@ -547,7 +547,7 @@ const styles = {
 
   input: (c) => ({
     flex: 1,
-    padding: "14px 18px",
+    padding: "10px 18px",
     border: `2px solid ${c.border}`,
     borderRadius: "12px",
     fontSize: "14px",
@@ -562,7 +562,7 @@ const styles = {
     background: c.secondary,
     color: "white",
     border: "none",
-    padding: "14px 32px",
+    padding: "10px 20px",
     borderRadius: "12px",
     fontSize: "14px",
     fontWeight: "600",
