@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { saveAssessmentToFirebase } from '../../services/firebaseService';
+import { auth } from '../../firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const styles = {
   root: {
@@ -391,6 +394,34 @@ export default function InfermedicaTriageSymptomChecker({
   const [error, setError] = useState(null);
   const [questionCount, setQuestionCount] = useState(0);
   const [maxQuestions] = useState(18); // Limit to 15-20 questions for better accuracy
+
+  // Authentication and save states
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isSavingAssessment, setIsSavingAssessment] = useState(false);
+  const [assessmentSaved, setAssessmentSaved] = useState(false);
+
+  // Toast state
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+  const [toastType, setToastType] = useState('success');
+
+  // Check authentication
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsAuthenticated(!!user);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  // Show toast notification
+  const showToast = (message, type = 'success') => {
+    setToastMessage(message);
+    setToastType(type);
+    setToastVisible(true);
+    setTimeout(() => {
+      setToastVisible(false);
+    }, 4000);
+  };
 
   // Check for dark theme and handle page loading
   useEffect(() => {
@@ -815,6 +846,48 @@ export default function InfermedicaTriageSymptomChecker({
     return colors[level] || '#f3f4f6';
   };
 
+  // Save assessment to Firebase
+  const handleSaveAssessment = async () => {
+    if (!isAuthenticated) {
+      showToast('Please log in to save your assessment', 'error');
+      return;
+    }
+
+    if (!finalResult) {
+      showToast('No assessment results to save', 'error');
+      return;
+    }
+
+    setIsSavingAssessment(true);
+
+    try {
+      const assessmentData = {
+        patientName: patientInfo.name,
+        age: patientInfo.age,
+        sex: patientInfo.sex,
+        symptoms: symptoms.map(s => s.name),
+        conditions: conditions.map(c => ({
+          name: c.name,
+          probability: Math.round(c.probability * 100),
+          commonName: c.common_name
+        })),
+        triageLevel: finalResult.triage?.triage_level || 'self_care',
+        triageDescription: finalResult.triage?.description || '',
+        recommendations: getCareRecommendations(finalResult.triage?.triage_level || 'self_care'),
+        evidenceCount: evidence.length
+      };
+
+      await saveAssessmentToFirebase(assessmentData);
+      setAssessmentSaved(true);
+      showToast('Assessment saved successfully! View it in your History.', 'success');
+    } catch (error) {
+      console.error('Error saving assessment:', error);
+      showToast('Failed to save assessment. Please try again.', 'error');
+    } finally {
+      setIsSavingAssessment(false);
+    }
+  };
+
   // Reset everything
   const reset = () => {
     setStep(0);
@@ -827,6 +900,7 @@ export default function InfermedicaTriageSymptomChecker({
     setSymptomSearch("");
     setSearchResults([]);
     setQuestionCount(0);
+    setAssessmentSaved(false);
   };
 
   // Helper function to get themed styles
@@ -1232,6 +1306,36 @@ export default function InfermedicaTriageSymptomChecker({
         <button onClick={reset} style={getThemedStyle(styles.btnGhost, styles.btnGhostDark)}>
           Start New Assessment
         </button>
+
+        {/* Save Assessment Button */}
+        {isAuthenticated && !assessmentSaved && (
+          <button
+            onClick={handleSaveAssessment}
+            disabled={isSavingAssessment}
+            style={{
+              ...styles.btnPrimary,
+              opacity: isSavingAssessment ? 0.6 : 1,
+              cursor: isSavingAssessment ? 'not-allowed' : 'pointer'
+            }}
+          >
+            {isSavingAssessment ? 'Saving...' : 'Save Assessment'}
+          </button>
+        )}
+
+        {assessmentSaved && (
+          <div style={{
+            padding: "10px 20px",
+            background: "rgba(16, 185, 129, 0.1)",
+            color: "#10b981",
+            borderRadius: 12,
+            fontSize: "14px",
+            fontWeight: 600,
+            border: "1px solid rgba(16, 185, 129, 0.3)"
+          }}>
+            ✓ Assessment Saved
+          </div>
+        )}
+
         <a
           href="/contact"
           style={styles.feedbackButton}
@@ -1263,6 +1367,58 @@ export default function InfermedicaTriageSymptomChecker({
       <div style={{ color: "var(--color-secondary)", fontSize: "1.1rem", fontWeight: 500 }}>
         Loading DoctorX Symptom Analyzer...
       </div>
+    </div>
+  );
+
+  // Toast Notification Component
+  const ToastNotification = () => (
+    <div style={{
+      position: 'fixed',
+      top: '20px',
+      right: toastVisible ? '20px' : '-400px',
+      background: toastType === 'success'
+        ? 'linear-gradient(135deg, #10b981, #059669)'
+        : 'linear-gradient(135deg, #ef4444, #dc2626)',
+      color: 'white',
+      padding: '16px 24px',
+      borderRadius: '12px',
+      boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
+      zIndex: 10000,
+      transition: 'right 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+      minWidth: '300px',
+      maxWidth: '400px',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '12px'
+    }}>
+      <div style={{ fontSize: '24px' }}>
+        {toastType === 'success' ? '✓' : '✕'}
+      </div>
+      <div style={{ flex: 1, fontSize: '15px', fontWeight: 500 }}>
+        {toastMessage}
+      </div>
+      <button
+        onClick={() => setToastVisible(false)}
+        style={{
+          background: 'rgba(255, 255, 255, 0.2)',
+          border: 'none',
+          color: 'white',
+          width: '24px',
+          height: '24px',
+          borderRadius: '50%',
+          cursor: 'pointer',
+          fontSize: '16px',
+          fontWeight: 'bold',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          transition: 'all 0.2s'
+        }}
+        onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.3)'}
+        onMouseLeave={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
+      >
+        ×
+      </button>
     </div>
   );
 
@@ -1465,6 +1621,10 @@ export default function InfermedicaTriageSymptomChecker({
           }
         `}
       </style>
+
+      {/* Toast Notification */}
+      <ToastNotification />
+
       <div style={getThemedStyle(styles.root, styles.rootDark)}>
         {/* Main Title */}
         <div style={styles.mainTitle}>DoctorX</div>
