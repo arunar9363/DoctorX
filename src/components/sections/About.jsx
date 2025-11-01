@@ -44,9 +44,10 @@ function About() {
               tabIndex="0"
             >
               {/* COMPANY OVERVIEW */}
-              <h4 id="company-overview"> Overview</h4>
-              <p>DoctorX is a leading digital health information platform that revolutionizes how individuals understand and manage their health concerns. Founded with the vision of democratizing healthcare information, we bridge the gap between medical expertise and public accessibility through innovative technology solutions.</p>
-              <p>Our platform serves as a comprehensive digital health companion, utilizing advanced algorithms and evidence-based medical knowledge to provide users with reliable, accurate, and actionable health insights. DoctorX is committed to empowering individuals worldwide to make informed decisions about their health and wellness.</p>
+              <h4 id="company-overview">Overview</h4>
+              <p>DoctorX is a leading digital health information platform that revolutionizes how individuals understand and manage their health concerns. Founded with the vision of democratizing healthcare information, we bridge the gap between medical expertise and public accessibility through innovative AI-powered technology solutions.</p>
+              <p>Our platform serves as a comprehensive digital health companion, featuring an advanced AI Medical Assistant powered by Google Gemini. This intelligent assistant provides personalized medical guidance, accurate treatment recommendations, and professional health advice based on established medical guidelines. By combining evidence-based medical knowledge with state-of-the-art artificial intelligence, DoctorX delivers reliable, accurate, and actionable health insights tailored to each user's unique needs.</p>
+              <p>From symptom analysis and disease information to personalized health risk assessments, DoctorX empowers individuals worldwide to make informed decisions about their health and wellness. We are committed to ensuring that quality healthcare information and expert medical guidance are accessible to everyone, anytime, anywhere.</p>
 
               {/* MISSION & VISION */}
               <h4 id="mission-vision">Mission & Vision</h4>
@@ -57,6 +58,7 @@ function About() {
 
               {/* OUR SERVICES */}
               <h4 id="our-services">Our Services</h4>
+              <p><strong>AI Medical Assistant (Powered by Google Gemini):</strong> Our advanced AI assistant acts as your personal medical companion, providing accurate and up-to-date health information, suggesting appropriate medicines and treatments, offering professional medical advice based on established guidelines, and explaining medical concepts clearly. The AI assistant prioritizes your safety and well-being in all recommendations, ensuring you receive reliable guidance for your health concerns.</p>
               <p><strong>Symptom Analysis Engine:</strong> Our flagship service provides users with an interactive, AI-powered symptom assessment tool. Users can input their symptoms to receive detailed explanations of possible health conditions, along with clear guidance on appropriate next steps and recommendations.</p>
               <p><strong>Disease Information Library:</strong> A vast repository of medically reviewed articles and educational content covering a wide range of health conditions. This library is continuously updated with the latest health news and advisories from the <strong>World Health Organization (WHO)</strong>, providing a reliable and current resource for your health information needs.</p>
               <p><strong>Health Risk Assessment:</strong> Proactive tools that provide personalized risk evaluations. By analyzing lifestyle factors, family history, and current health data, these assessments help users understand their predisposition to various conditions and empower them to take preventive action.</p>
@@ -66,19 +68,19 @@ function About() {
               <h4 id="impact-numbers">Our Impact in Numbers</h4>
               <div className="impact-stats-grid">
                 <div className="stat-item">
-                  <h5>720+</h5>
+                  <h5>1500+</h5>
                   <p>Hours of medical research and platform development invested to ensure accuracy and reliability</p>
                 </div>
                 <div className="stat-item">
-                  <h5>***K+</h5>
+                  <h5>100+</h5>
                   <p>Symptom assessments completed by users worldwide, helping individuals better understand their health concerns</p>
                 </div>
                 <div className="stat-item">
-                  <h5>******+</h5>
+                  <h5>50+</h5>
                   <p>Monthly active users receiving health guidance and information through our platform</p>
                 </div>
                 <div className="stat-item">
-                  <h5>**%</h5>
+                  <h5>95%</h5>
                   <p>User satisfaction rate based on feedback surveys and platform reviews</p>
                 </div>
               </div>
