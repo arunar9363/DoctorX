@@ -3,14 +3,29 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 function ScrollToTop() {
-  const { pathname, key } = useLocation();
+  const location = useLocation();
 
   useEffect(() => {
-    // Force scroll to top on any route change (including back/forward)
-    window.scrollTo(0, 0);
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-  }, [pathname, key]); // Adding 'key' ensures it triggers on back/forward navigation
+    // Prevent browser from restoring scroll position
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+
+    // Multiple methods to ensure scroll happens
+    const scrollToTop = () => {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    };
+
+    // Immediate scroll
+    scrollToTop();
+
+    // Also scroll after a tiny delay to catch any late renders
+    const timer = setTimeout(scrollToTop, 0);
+
+    return () => clearTimeout(timer);
+  }, [location]);
 
   return null;
 }
