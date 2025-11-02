@@ -9,6 +9,7 @@ import { auth } from "./firebase";
 import Navbar from "./components/common/Navbar";
 import Footer from "./components/common/Footer";
 import LoginModal from "./components/common/LoginModal";
+import ScrollToTop from "./components/common/ScrollToTop";
 import Audience from "./components/sections/Audience";
 import About from "./components/sections/About";
 import DiseaseFront from "./components/features/DiseasesFront";
@@ -58,6 +59,7 @@ function Layout({ children }) {
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <Layout>
         <Routes>
           {/* Public Routes */}
