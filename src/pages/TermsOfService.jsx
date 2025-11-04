@@ -90,7 +90,29 @@ function TermsOfService() {
 
               {/* §8. COMPLAINTS */}
               <h4 id="complaints">§8. Complaints & Support</h4>
-              <p data-contact="true">For any complaints, queries, or feedback, the best way to reach us is through our <a href="/contact">Contact & Feedback Page</a>. Alternatively, you can email us directly at 📧 arunstp45@gmail.com. We aim to respond to all inquiries within 14 business days.</p>
+              <p data-contact="true" className="support-intro">For any complaints, queries, or feedback, we're here to help. You can reach us through the following channels:</p>
+
+              <div className="contact-options">
+                <div className="support-option">
+                  <div className="support-option-title">General Support</div>
+                  <div className="support-option-description">
+                    For support queries and assistance
+                  </div>
+                  <a href="mailto:support@doctorxcare.in" className="support-option-email">support@doctorxcare.in</a>
+                </div>
+
+                <div className="support-option">
+                  <div className="support-option-title">Contact & Inquiries</div>
+                  <div className="support-option-description">
+                    For general inquiries and feedback
+                  </div>
+                  <a href="mailto:contact@doctorxcare.in" className="support-option-email">
+                    contact@doctorxcare.in
+                  </a>
+                </div>
+              </div>
+
+              <p className="response-time-box">We aim to respond to all inquiries within 14 business days.</p>
               {/* §9. PRIVACY */}
               <h4 id="privacy">§9. Privacy & Cookies</h4>
               <p>Your privacy is fundamental to how DoctorX operates. We want to be clear: <strong>we do not store the personal symptom or health data you enter</strong>. The only personal information we collect is the minimal data required for account purposes, such as your email address for login. Any data we do hold is stored securely, never sold, and you can find full details in our Privacy Policy and Cookies Policy.</p>

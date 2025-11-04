@@ -115,7 +115,9 @@ function About() {
               <p><strong>Research Partnerships:</strong> Collaboration with academic institutions, research organizations, and healthcare systems to advance digital health research and improve global health outcomes.</p>
 
               <p data-contact="true">For partnership opportunities or media inquiries, please reach out to us.</p>
-              <p data-contact="true">We value your input. To provide <strong>feedback</strong> or ask a question, please visit our <a href="/contact">Contact/Feedback Page</a>.</p>
+              <p data-contact="true">We value your input. To provide <strong>feedback</strong> or ask a questions to - <a href="mailto:contact@doctorxcare.in" className="support-option-email">
+                contact@doctorxcare.in
+              </a>.</p>
             </div>
           </div>
         </div>

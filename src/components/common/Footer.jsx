@@ -287,7 +287,7 @@ function Footer() {
               </div>
             </div>
             <p style={copyrightStyles}>
-              © 2025 DoctorX <br /> Designed, Developed & Managed by{' '}
+              © 2025 DoctorX <br /> Founded, Designed & Developed by{' '}
               <a
                 href="https://www.linkedin.com/in/arun-pratap-singh-944491292"
                 target="_blank"
@@ -411,21 +411,21 @@ function Footer() {
               India, 201310
             </p>
             <p style={{ ...footerSectionPStyles, ...contactInfoStyles }}>
-              Email-1: <a
-                href="mailto:arunstp45@gmail.com"
+              Contact: <a
+                href="mailto:contact@doctorxcare.in"
                 style={contactLinkStyles}
                 onMouseOver={(e) => e.target.style.textDecoration = 'underline'}
                 onMouseOut={(e) => e.target.style.textDecoration = 'none'}
               >
-                arunstp45@gmail.com
+                contact@doctorxcare.in
               </a> <br />
-              Email-2: <a
-                href="mailto:arunps0026@gmail.com"
+              Support: <a
+                href="mailto:support@doctorxcare.in"
                 style={contactLinkStyles}
                 onMouseOver={(e) => e.target.style.textDecoration = 'underline'}
                 onMouseOut={(e) => e.target.style.textDecoration = 'none'}
               >
-                arunps0026@gmail.com
+                support@doctorxcare.in
               </a>
             </p>
             <p style={{ ...footerSectionPStyles, ...contactInfoStyles }}>
