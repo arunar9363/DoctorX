@@ -4,6 +4,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "./firebase";
+import { Analytics } from '@vercel/analytics/react';
 
 // Components
 import Navbar from "./components/common/Navbar";
@@ -38,7 +39,6 @@ const ProtectedRouter = () => {
   const [user, loading] = useAuthState(auth);
 
   if (loading) {
-    // Optionally return a loading spinner
     return <div>Loading...</div>;
   }
 
@@ -88,6 +88,7 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
         </Routes>
       </Layout>
+      <Analytics />
     </Router>
   );
 }
