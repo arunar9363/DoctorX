@@ -42,13 +42,6 @@ function Footer() {
     color: 'var(--color-primary)',
     margin: '0 0 5px 0'
   };
-
-  const rightsStyles = {
-    fontSize: '0.9rem',
-    color: 'var(--color-primary)',
-    margin: '0 0 25px 0'
-  };
-
   const socialIconsStyles = {
     display: 'flex',
     gap: '15px'
@@ -293,8 +286,20 @@ function Footer() {
                 />
               </div>
             </div>
-            <p style={copyrightStyles}>© 2025 DoctorX</p>
-            <p style={rightsStyles}>All rights reserved</p>
+            <p style={copyrightStyles}>
+              © 2025 DoctorX <br />| Designed, Developed & Managed by{' '}
+              <a
+                href="https://www.linkedin.com/in/arun-pratap-singh-944491292"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: 'var(--color-secondary)', textDecoration: 'none', fontWeight: '500' }}
+                onMouseOver={(e) => e.target.style.textDecoration = 'underline'}
+                onMouseOut={(e) => e.target.style.textDecoration = 'none'}
+              >
+                Arun Pratap Singh
+              </a>
+              {' '}| <br /> All Rights Reserved
+            </p>
 
             {/* Social Media Icons */}
             <div style={socialIconsStyles}>
@@ -322,7 +327,7 @@ function Footer() {
               >
                 <TwitterIcon />
               </a>
-              <a
+              {/* <a
                 href="https://github.com/arunar9363"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -345,8 +350,8 @@ function Footer() {
                 }}
               >
                 <GithubIcon />
-              </a>
-              <a
+              </a> */}
+              {/* <a
                 href="https://www.linkedin.com/in/arun-pratap-singh-944491292"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -369,7 +374,7 @@ function Footer() {
                 }}
               >
                 <LinkedInIcon />
-              </a>
+              </a> */}
               <a
                 href="https://www.instagram.com/arun_ps_119/"
                 target="_blank"
@@ -406,13 +411,21 @@ function Footer() {
               India, 201310
             </p>
             <p style={{ ...footerSectionPStyles, ...contactInfoStyles }}>
-              Email: <a
+              Email-1: <a
                 href="mailto:arunstp45@gmail.com"
                 style={contactLinkStyles}
                 onMouseOver={(e) => e.target.style.textDecoration = 'underline'}
                 onMouseOut={(e) => e.target.style.textDecoration = 'none'}
               >
                 arunstp45@gmail.com
+              </a> <br />
+              Email-2: <a
+                href="mailto:arunps0026@gmail.com"
+                style={contactLinkStyles}
+                onMouseOver={(e) => e.target.style.textDecoration = 'underline'}
+                onMouseOut={(e) => e.target.style.textDecoration = 'none'}
+              >
+                arunps0026@gmail.com
               </a>
             </p>
             <p style={{ ...footerSectionPStyles, ...contactInfoStyles }}>
@@ -525,20 +538,17 @@ function Footer() {
           <p style={disclaimerPStyles}>
             DoctorX does not provide professional medical advice, diagnosis, or treatment. It is designed only to give general health-related information that may help guide your next steps. Always seek the advice of a qualified healthcare professional with any questions or concerns regarding a medical condition.
           </p>
-          <p style={{ ...disclaimerPStyles, textAlign: 'center', marginTop: '20px', fontSize: '0.85rem' }}>
-            © 2025 DoctorX | Designed, Developed & Managed by{' '}
-            <a
-              href="https://www.linkedin.com/in/arun-pratap-singh-944491292"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: 'var(--color-secondary)', textDecoration: 'none', fontWeight: '500' }}
-              onMouseOver={(e) => e.target.style.textDecoration = 'underline'}
-              onMouseOut={(e) => e.target.style.textDecoration = 'none'}
-            >
-              Arun Pratap Singh
-            </a>
-            {' '}| All Rights Reserved
-          </p>
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginTop: '30px',
+            marginLeft: '2%',
+            marginRight: '2%',
+            flexWrap: 'wrap',
+            gap: '20px'
+          }}>
+          </div>
         </div>
       </footer>
     </>
