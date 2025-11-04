@@ -429,13 +429,13 @@ function Footer() {
               </a>
             </p>
             <p style={{ ...footerSectionPStyles, ...contactInfoStyles }}>
-              Phone: <a
-                href="tel:+91*******662"
+              WhatsApp: <a
+                href="tel:+91 7839059397"
                 style={contactLinkStyles}
                 onMouseOver={(e) => e.target.style.textDecoration = 'underline'}
                 onMouseOut={(e) => e.target.style.textDecoration = 'none'}
               >
-                +91 *******662
+                +91 7839059397
               </a>
             </p>
           </div>
