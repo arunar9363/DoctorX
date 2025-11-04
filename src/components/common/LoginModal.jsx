@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { auth, db, googleProvider, signInWithPopup, signInWithEmailAndPassword, signOut } from "../../firebase";
 import { doc, getDoc } from "firebase/firestore";
 import "../../styles/LoginModal.css";
@@ -213,7 +213,8 @@ function LoginModal({ show, onClose, message, onShowToast, onLoginSuccess, redir
 
         <div className="text-center mt-3">
           <p>
-            <span id="acc">Don't have an account? then Register first</span>
+            <span id="acc">Don't have an account? then </span><br />
+            <Link to="/register" className="register-link" onClick={onClose}>Register here</Link>
           </p>
           <p><a href="/forgot-password">Forgot password?</a></p>
         </div>

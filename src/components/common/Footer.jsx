@@ -287,7 +287,7 @@ function Footer() {
               </div>
             </div>
             <p style={copyrightStyles}>
-              © 2025 DoctorX <br />| Designed, Developed & Managed by{' '}
+              © 2025 DoctorX <br /> Designed, Developed & Managed by{' '}
               <a
                 href="https://www.linkedin.com/in/arun-pratap-singh-944491292"
                 target="_blank"
@@ -298,7 +298,7 @@ function Footer() {
               >
                 Arun Pratap Singh
               </a>
-              {' '}| <br /> All Rights Reserved
+              {' '} <br /> All Rights Reserved
             </p>
 
             {/* Social Media Icons */}

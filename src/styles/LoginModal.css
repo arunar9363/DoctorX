@@ -175,3 +175,14 @@
     font-size: 1.5rem;
   }
 }
+.register-link {
+  color: #007bff; /* or any color you prefer */
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+.register-link:hover {
+  color: #0056b3; /* darker shade on hover */
+  text-decoration: underline;
+}
