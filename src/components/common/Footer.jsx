@@ -394,7 +394,7 @@ function Footer() {
               >
                 <InstagramIcon />
               </a>
-              
+
             </div>
           </div>
 
@@ -524,6 +524,20 @@ function Footer() {
           </p>
           <p style={disclaimerPStyles}>
             DoctorX does not provide professional medical advice, diagnosis, or treatment. It is designed only to give general health-related information that may help guide your next steps. Always seek the advice of a qualified healthcare professional with any questions or concerns regarding a medical condition.
+          </p>
+          <p style={{ ...disclaimerPStyles, textAlign: 'center', marginTop: '20px', fontSize: '0.85rem' }}>
+            © 2025 DoctorX | Designed, Developed & Managed by{' '}
+            <a
+              href="https://www.linkedin.com/in/arun-pratap-singh-944491292"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: 'var(--color-secondary)', textDecoration: 'none', fontWeight: '500' }}
+              onMouseOver={(e) => e.target.style.textDecoration = 'underline'}
+              onMouseOut={(e) => e.target.style.textDecoration = 'none'}
+            >
+              Arun Pratap Singh
+            </a>
+            {' '}| All Rights Reserved
           </p>
         </div>
       </footer>
