@@ -1027,7 +1027,7 @@ function ContactPage() {
                   <input
                     type="tel"
                     name="phone"
-                    placeholder="Phone Number"
+                    placeholder="Phone Number(optional)"
                     disabled={feedbackSubmitted}
                     value={formData.phone}
                     onChange={handleInputChange}
