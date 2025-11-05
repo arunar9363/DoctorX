@@ -327,37 +327,14 @@ function Footer() {
               >
                 <TwitterIcon />
               </a>
-              {/* <a
-                href="https://github.com/arunar9363"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Follow us on GitHub"
-                className="social-icon-modern"
-                style={socialIconLinkStyles}
-                onMouseOver={(e) => {
-                  e.target.style.background = 'var(--color-secondary)';
-                  e.target.style.color = 'white';
-                  e.target.style.borderColor = 'var(--color-secondary)';
-                  e.target.style.transform = 'translateY(-3px) scale(1.05)';
-                  e.target.style.boxShadow = '0 10px 25px rgba(13, 157, 184, 0.4)';
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.background = 'var(--color-fourth)';
-                  e.target.style.color = 'var(--color-dark)';
-                  e.target.style.borderColor = 'var(--color-secondary)';
-                  e.target.style.transform = 'translateY(0) scale(1)';
-                  e.target.style.boxShadow = 'none';
-                }}
-              >
-                <GithubIcon />
-              </a> */}
+
               <a
                 href="https://www.linkedin.com/in/arun-pratap-singh-944491292"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Connect with us on LinkedIn"
                 className="social-icon-modern"
-                style={socialIconLinkStyles}
+                style={socialIconLinkStyles} 
                 onMouseOver={(e) => {
                   e.target.style.background = 'var(--color-secondary)';
                   e.target.style.color = 'white';

@@ -37,6 +37,20 @@ const ProfilePage = ({ show, onClose, onShowToast }) => {
             }
           } else {
             console.log("No user data found in Firestore!");
+            // Create default user data if not exists
+            const defaultData = {
+              uid: user.uid,
+              name: user.displayName || '',
+              email: user.email || '',
+              dob: '',
+              gender: '',
+              bloodGroup: '',
+              city: '',
+              existingConditions: ''
+            };
+            setUserData(defaultData);
+            setEditedData(defaultData);
+            setShowEditPrompt(true);
           }
         } catch (error) {
           console.error("Error fetching user data:", error);
@@ -225,7 +239,7 @@ const ProfilePage = ({ show, onClose, onShowToast }) => {
     alignItems: 'center',
     justifyContent: 'center',
     fontSize: '48px',
-    fontWeight: 700,
+    fontWeight: '700',
     color: '#ffffff',
     border: '4px solid var(--color-secondary)',
     boxShadow: '0 8px 24px rgba(13, 157, 184, 0.3)',
@@ -330,6 +344,7 @@ const ProfilePage = ({ show, onClose, onShowToast }) => {
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'right 14px center',
     cursor: 'pointer',
+    paddingRight: '30px',
   };
 
   const textareaStyle = {
@@ -457,14 +472,14 @@ const ProfilePage = ({ show, onClose, onShowToast }) => {
     );
   }
 
+  // Safety check - if userData is still null, don't render
   if (!userData) {
     return (
       <div style={overlayStyle} onClick={handleOverlayClick}>
         <div style={modalStyle}>
-          <button style={closeButtonStyle} onClick={onClose}>✕</button>
           <div style={loadingStyle}>
-            <div style={{ fontSize: '48px', marginBottom: '16px' }}>👤</div>
-            <div>Please log in to view your profile.</div>
+            <div style={spinnerStyle}></div>
+            <div>Loading your profile...</div>
           </div>
         </div>
       </div>
@@ -578,7 +593,6 @@ const ProfilePage = ({ show, onClose, onShowToast }) => {
 
           <h2 style={titleStyle}>Account Details</h2>
 
-          {/* Alert Banner for incomplete profile */}
           {showEditPrompt && (
             <div style={alertBannerStyle}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -588,20 +602,19 @@ const ProfilePage = ({ show, onClose, onShowToast }) => {
             </div>
           )}
 
-          {/* Profile Header with Avatar */}
           <div style={profileHeaderStyle}>
             <div style={avatarWrapperStyle}>
               <img
                 src={profileImage}
-                alt={userData.name || 'User'}
+                alt={userData?.name || 'User'}
                 style={avatarStyle}
                 onError={(e) => {
                   e.target.style.display = 'none';
-                  e.target.nextSibling.style.display = 'flex';
+                  if (e.target.nextSibling) e.target.nextSibling.style.display = 'flex';
                 }}
               />
               <div style={avatarInitialsStyle}>
-                {getInitials(userData.name)}
+                {getInitials(userData?.name)}
               </div>
               <div
                 className="profile-camera-icon"
@@ -614,15 +627,14 @@ const ProfilePage = ({ show, onClose, onShowToast }) => {
                 </svg>
               </div>
             </div>
-            {(!userData.name || userData.name.trim() === '') ? (
+            {(!userData?.name || userData?.name.trim() === '') ? (
               <h1 style={editPromptStyle}>✏️ Edit Profile</h1>
             ) : (
-              <h1 style={nameStyle}>{userData.name}</h1>
+              <h1 style={nameStyle}>{userData?.name}</h1>
             )}
-            <p style={emailStyle}>{userData.email || 'No email provided'}</p>
+            <p style={emailStyle}>{userData?.email || 'No email provided'}</p>
           </div>
 
-          {/* Health History Section - Moved to top */}
           <div style={{
             padding: '24px',
             background: isDark ? 'rgba(13, 157, 184, 0.1)' : 'rgba(13, 157, 184, 0.05)',
@@ -683,55 +695,50 @@ const ProfilePage = ({ show, onClose, onShowToast }) => {
             </button>
           </div>
 
-          {/* Form Section */}
           <div>
             <h3 style={sectionTitleStyle}>Personal Information</h3>
 
             <div className="profile-form-grid" style={formGridStyle}>
-              {/* Full Name */}
               <div style={formGroupStyle}>
                 <label style={labelStyle}>Full Name *</label>
                 {isEditing ? (
                   <input
                     type="text"
                     style={inputStyle}
-                    value={editedData.name || ''}
+                    value={editedData?.name || ''}
                     onChange={(e) => handleInputChange('name', e.target.value)}
                     placeholder="Enter your full name"
                   />
                 ) : (
-                  <div style={readOnlyValueStyle}>{userData.name || 'Not set - Click Edit to add'}</div>
+                  <div style={readOnlyValueStyle}>{userData?.name || 'Not set - Click Edit to add'}</div>
                 )}
               </div>
 
-              {/* Email */}
               <div style={formGroupStyle}>
                 <label style={labelStyle}>E-Mail *</label>
-                <div style={readOnlyValueStyle}>{userData.email || 'N/A'}</div>
+                <div style={readOnlyValueStyle}>{userData?.email || 'N/A'}</div>
               </div>
 
-              {/* Date of Birth */}
               <div style={formGroupStyle}>
                 <label style={labelStyle}>Date of Birth</label>
                 {isEditing ? (
                   <input
                     type="date"
                     style={inputStyle}
-                    value={editedData.dob || ''}
+                    value={editedData?.dob || ''}
                     onChange={(e) => handleInputChange('dob', e.target.value)}
                   />
                 ) : (
-                  <div style={readOnlyValueStyle}>{formatDate(userData.dob)}</div>
+                  <div style={readOnlyValueStyle}>{formatDate(userData?.dob)}</div>
                 )}
               </div>
 
-              {/* Gender */}
               <div style={formGroupStyle}>
                 <label style={labelStyle}>Gender</label>
                 {isEditing ? (
                   <select
                     style={selectStyle}
-                    value={editedData.gender || ''}
+                    value={editedData?.gender || ''}
                     onChange={(e) => handleInputChange('gender', e.target.value)}
                   >
                     <option value="">Select Gender</option>
@@ -740,17 +747,16 @@ const ProfilePage = ({ show, onClose, onShowToast }) => {
                     <option value="Other">Other</option>
                   </select>
                 ) : (
-                  <div style={readOnlyValueStyle}>{userData.gender || 'N/A'}</div>
+                  <div style={readOnlyValueStyle}>{userData?.gender || 'N/A'}</div>
                 )}
               </div>
 
-              {/* Blood Group */}
               <div style={formGroupStyle}>
                 <label style={labelStyle}>Blood Group</label>
                 {isEditing ? (
                   <select
                     style={selectStyle}
-                    value={editedData.bloodGroup || ''}
+                    value={editedData?.bloodGroup || ''}
                     onChange={(e) => handleInputChange('bloodGroup', e.target.value)}
                   >
                     <option value="">Select Blood Group</option>
@@ -764,46 +770,43 @@ const ProfilePage = ({ show, onClose, onShowToast }) => {
                     <option value="AB-">AB-</option>
                   </select>
                 ) : (
-                  <div style={readOnlyValueStyle}>{userData.bloodGroup || 'N/A'}</div>
+                  <div style={readOnlyValueStyle}>{userData?.bloodGroup || 'N/A'}</div>
                 )}
               </div>
 
-              {/* City */}
               <div style={formGroupStyle}>
                 <label style={labelStyle}>City / Location</label>
                 {isEditing ? (
                   <input
                     type="text"
                     style={inputStyle}
-                    value={editedData.city || ''}
+                    value={editedData?.city || ''}
                     onChange={(e) => handleInputChange('city', e.target.value)}
                     placeholder="e.g., Mumbai, Delhi"
                   />
                 ) : (
-                  <div style={readOnlyValueStyle}>{userData.city || 'N/A'}</div>
+                  <div style={readOnlyValueStyle}>{userData?.city || 'N/A'}</div>
                 )}
               </div>
 
-              {/* Medical Conditions - Full Width */}
               <div style={{ ...formGroupStyle, gridColumn: '1 / -1' }}>
                 <label style={labelStyle}>Existing Medical Conditions</label>
                 {isEditing ? (
                   <textarea
                     style={textareaStyle}
-                    value={editedData.existingConditions || ''}
+                    value={editedData?.existingConditions || ''}
                     onChange={(e) => handleInputChange('existingConditions', e.target.value)}
                     placeholder="Enter any existing medical conditions..."
                   />
                 ) : (
                   <div style={readOnlyValueStyle}>
-                    {userData.existingConditions || 'None reported'}
+                    {userData?.existingConditions || 'None reported'}
                   </div>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Action Buttons */}
           <div className="profile-action-buttons" style={actionButtonsStyle}>
             {isEditing ? (
               <>
