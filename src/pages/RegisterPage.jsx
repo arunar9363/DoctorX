@@ -102,18 +102,12 @@ const SimpleToast = ({ message, type, show, onClose }) => {
 function RegisterPage() {
   const [showLogin, setShowLogin] = useState(false);
   const [name, setName] = useState("");
-  const [gender, setGender] = useState("");
-  const [bloodGroup, setBloodGroup] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [toast, setToast] = useState({ show: false, message: '', type: 'success' });
   const navigate = useNavigate();
-
-  const [dob, setDob] = useState("");
-  const [existingConditions, setExistingConditions] = useState("");
-  const [city, setCity] = useState("");
 
   // Detect dark mode and screen size
   const [isDark, setIsDark] = useState(false);
@@ -167,26 +161,6 @@ function RegisterPage() {
       return false;
     }
 
-    if (!dob) {
-      showToast("Please enter your Date of Birth.", "error");
-      return false;
-    }
-
-    if (!gender) {
-      showToast("Please select your gender.", "error");
-      return false;
-    }
-
-    if (!bloodGroup) {
-      showToast("Please select your blood group.", "error");
-      return false;
-    }
-
-    if (!city.trim()) {
-      showToast("Please enter your city or location.", "error");
-      return false;
-    }
-
     if (!email.trim()) {
       showToast("Please enter your email address.", "error");
       return false;
@@ -234,27 +208,23 @@ function RegisterPage() {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
+      // Create user document with only name and email (rest will be added in profile)
       await setDoc(doc(db, "users", user.uid), {
         uid: user.uid,
-        name: name,
+        name: name.trim(),
         email: email,
-        dob: dob,
-        gender: gender,
-        bloodGroup: bloodGroup,
-        city: city,
-        existingConditions: existingConditions.trim() || "None",
+        dob: "",
+        gender: "",
+        bloodGroup: "",
+        city: "",
+        existingConditions: "",
         createdAt: new Date(),
       });
 
       setName("");
-      setGender("");
-      setBloodGroup("");
       setEmail("");
       setPassword("");
       setConfirmPassword("");
-      setDob("");
-      setCity("");
-      setExistingConditions("");
 
       showToast("Registration successful! Welcome to DoctorX!", "success");
 
@@ -353,13 +323,6 @@ function RegisterPage() {
     margin: '0 auto',
   };
 
-  const formRowStyle = {
-    display: 'grid',
-    gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
-    gap: isMobile ? '0' : '16px',
-    marginBottom: '0',
-  };
-
   const h2Style = {
     fontSize: isMobile ? '1.8rem' : 'clamp(1.8rem, 4vw, 2.5rem)',
     fontWeight: 600,
@@ -389,12 +352,6 @@ function RegisterPage() {
     background: isDark ? '#1e293b' : '#fff',
     fontFamily: 'inherit',
     color: isDark ? '#e2e8f0' : '#2d3748',
-  };
-
-  const textareaStyle = {
-    ...inputStyle,
-    resize: 'vertical',
-    minHeight: '60px',
   };
 
   const buttonStyle = {
@@ -436,6 +393,17 @@ function RegisterPage() {
     opacity: isLoading ? 0.6 : 1,
   };
 
+  const infoBoxStyle = {
+    background: isDark ? 'rgba(13, 157, 184, 0.1)' : 'rgba(13, 157, 184, 0.05)',
+    border: `1px solid ${isDark ? 'rgba(13, 157, 184, 0.3)' : 'rgba(13, 157, 184, 0.2)'}`,
+    borderRadius: isMobile ? '10px' : '12px',
+    padding: '16px',
+    marginBottom: '20px',
+    display: 'flex',
+    alignItems: 'start',
+    gap: '12px',
+  };
+
   return (
     <div style={pageStyle}>
       <div style={leftStyle}>
@@ -451,101 +419,35 @@ function RegisterPage() {
             Start managing your healthcare with <b>DoctorX</b>
           </p>
 
+          {/* Info Box */}
+          <div style={infoBoxStyle}>
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke={isDark ? '#0ea5c1' : '#0d9db8'}
+              strokeWidth="2"
+              style={{ flexShrink: 0, marginTop: '2px' }}
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="16" x2="12" y2="12"></line>
+              <line x1="12" y1="8" x2="12.01" y2="8"></line>
+            </svg>
+            <div style={{ fontSize: '14px', color: isDark ? '#94a3b8' : '#475569' }}>
+              We only need your name and email to get started. You can add other details like DOB, gender, blood group, and medical history later in your profile.
+            </div>
+          </div>
+
           <form onSubmit={handleSubmit}>
-            <div style={formRowStyle}>
-              <input
-                type="text"
-                placeholder="Full Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                disabled={isLoading}
-                style={inputStyle}
-              />
-
-              <div style={{ position: 'relative', marginBottom: isMobile ? '18px' : '0' }}>
-                <input
-                  type="date"
-                  value={dob}
-                  onChange={(e) => setDob(e.target.value)}
-                  required
-                  disabled={isLoading}
-                  style={{
-                    ...inputStyle,
-                    marginBottom: 0,
-                    colorScheme: isDark ? 'dark' : 'light',
-                  }}
-                  onFocus={(e) => e.target.showPicker && e.target.showPicker()}
-                />
-                {!dob && (
-                  <label style={{
-                    position: 'absolute',
-                    left: '16px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    color: isDark ? '#94a3b8' : '#6b7280',
-                    pointerEvents: 'none',
-                    fontSize: isMobile ? '16px' : '15px',
-                    backgroundColor: isDark ? '#1e293b' : '#fff',
-                    padding: '0 4px',
-                    zIndex: 1,
-                  }}>
-                    Date of Birth
-                  </label>
-                )}
-              </div>
-            </div>
-
-            <div style={formRowStyle}>
-              <select
-                value={gender}
-                onChange={(e) => setGender(e.target.value)}
-                required
-                disabled={isLoading}
-                style={inputStyle}
-              >
-                <option value="">Select Gender</option>
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-              </select>
-
-              <select
-                value={bloodGroup}
-                onChange={(e) => setBloodGroup(e.target.value)}
-                required
-                disabled={isLoading}
-                style={inputStyle}
-              >
-                <option value="">Select Blood Group</option>
-                <option value="A+">A+</option>
-                <option value="A-">A-</option>
-                <option value="B+">B+</option>
-                <option value="B-">B-</option>
-                <option value="O+">O+</option>
-                <option value="O-">O-</option>
-                <option value="AB+">AB+</option>
-                <option value="AB-">AB-</option>
-              </select>
-            </div>
-
             <input
               type="text"
-              placeholder="Where do you live? (e.g., Mumbai, Delhi)"
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
+              placeholder="Full Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
               required
               disabled={isLoading}
               style={inputStyle}
-            />
-
-            <textarea
-              placeholder="Do you have any existing medical conditions? (optional)"
-              value={existingConditions}
-              onChange={(e) => setExistingConditions(e.target.value)}
-              disabled={isLoading}
-              rows="2"
-              style={textareaStyle}
             />
 
             <input
@@ -558,28 +460,26 @@ function RegisterPage() {
               style={inputStyle}
             />
 
-            <div style={formRowStyle}>
-              <input
-                type="password"
-                placeholder="Create Password (min 6 characters)"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={isLoading}
-                minLength="6"
-                style={inputStyle}
-              />
+            <input
+              type="password"
+              placeholder="Create Password (min 6 characters)"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              disabled={isLoading}
+              minLength="6"
+              style={inputStyle}
+            />
 
-              <input
-                type="password"
-                placeholder="Confirm Password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-                disabled={isLoading}
-                style={inputStyle}
-              />
-            </div>
+            <input
+              type="password"
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              disabled={isLoading}
+              style={inputStyle}
+            />
 
             <button
               type="submit"

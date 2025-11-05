@@ -11,6 +11,7 @@ const ProfilePage = ({ show, onClose, onShowToast }) => {
   const [editedData, setEditedData] = useState({});
   const [saving, setSaving] = useState(false);
   const [isDark, setIsDark] = useState(false);
+  const [showEditPrompt, setShowEditPrompt] = useState(false);
 
   useEffect(() => {
     // Check theme
@@ -29,6 +30,11 @@ const ProfilePage = ({ show, onClose, onShowToast }) => {
             const data = userDocSnap.data();
             setUserData(data);
             setEditedData(data);
+
+            // Check if name is empty and show edit prompt
+            if (!data.name || data.name.trim() === '') {
+              setShowEditPrompt(true);
+            }
           } else {
             console.log("No user data found in Firestore!");
           }
@@ -53,7 +59,7 @@ const ProfilePage = ({ show, onClose, onShowToast }) => {
   };
 
   const getInitials = (name) => {
-    if (!name) return 'U';
+    if (!name || name.trim() === '') return 'U';
     const names = name.split(' ');
     if (names.length >= 2) {
       return (names[0][0] + names[names.length - 1][0]).toUpperCase();
@@ -63,6 +69,7 @@ const ProfilePage = ({ show, onClose, onShowToast }) => {
 
   const handleEdit = () => {
     setIsEditing(true);
+    setShowEditPrompt(false);
   };
 
   const handleCancel = () => {
@@ -71,12 +78,21 @@ const ProfilePage = ({ show, onClose, onShowToast }) => {
   };
 
   const handleSave = async () => {
+    // Validate that name is not empty
+    if (!editedData.name || editedData.name.trim() === '') {
+      if (onShowToast) {
+        onShowToast('Please enter your name before saving.', 'error');
+      }
+      return;
+    }
+
     setSaving(true);
     try {
       const userDocRef = doc(db, 'users', auth.currentUser.uid);
       await updateDoc(userDocRef, editedData);
       setUserData(editedData);
       setIsEditing(false);
+      setShowEditPrompt(false);
       if (onShowToast) {
         onShowToast('Profile updated successfully!', 'success');
       }
@@ -240,6 +256,15 @@ const ProfilePage = ({ show, onClose, onShowToast }) => {
     textAlign: 'center',
   };
 
+  const editPromptStyle = {
+    fontSize: '20px',
+    fontWeight: '600',
+    color: 'var(--color-secondary)',
+    marginBottom: '8px',
+    textAlign: 'center',
+    animation: 'pulse 2s ease-in-out infinite',
+  };
+
   const emailStyle = {
     fontSize: '15px',
     color: isDark ? 'rgba(229, 231, 235, 0.7)' : 'rgba(26, 26, 26, 0.7)',
@@ -393,6 +418,20 @@ const ProfilePage = ({ show, onClose, onShowToast }) => {
     marginBottom: '24px',
   };
 
+  const alertBannerStyle = {
+    background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+    color: 'white',
+    padding: '16px 20px',
+    borderRadius: '12px',
+    marginBottom: '24px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    fontSize: '14px',
+    fontWeight: '600',
+    boxShadow: '0 4px 12px rgba(245, 158, 11, 0.3)',
+  };
+
   if (loading) {
     return (
       <div style={overlayStyle} onClick={handleOverlayClick}>
@@ -443,6 +482,10 @@ const ProfilePage = ({ show, onClose, onShowToast }) => {
           @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+          }
+          @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
           }
           
           .profile-modal::-webkit-scrollbar {
@@ -535,6 +578,16 @@ const ProfilePage = ({ show, onClose, onShowToast }) => {
 
           <h2 style={titleStyle}>Account Details</h2>
 
+          {/* Alert Banner for incomplete profile */}
+          {showEditPrompt && (
+            <div style={alertBannerStyle}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <span>Please complete your profile by adding your name and other details.</span>
+            </div>
+          )}
+
           {/* Profile Header with Avatar */}
           <div style={profileHeaderStyle}>
             <div style={avatarWrapperStyle}>
@@ -561,8 +614,73 @@ const ProfilePage = ({ show, onClose, onShowToast }) => {
                 </svg>
               </div>
             </div>
-            <h1 style={nameStyle}>{userData.name || 'User'}</h1>
+            {(!userData.name || userData.name.trim() === '') ? (
+              <h1 style={editPromptStyle}>✏️ Edit Profile</h1>
+            ) : (
+              <h1 style={nameStyle}>{userData.name}</h1>
+            )}
             <p style={emailStyle}>{userData.email || 'No email provided'}</p>
+          </div>
+
+          {/* Health History Section - Moved to top */}
+          <div style={{
+            padding: '24px',
+            background: isDark ? 'rgba(13, 157, 184, 0.1)' : 'rgba(13, 157, 184, 0.05)',
+            borderRadius: '12px',
+            marginBottom: '32px',
+            borderLeft: '4px solid var(--color-secondary)'
+          }}>
+            <h3 style={{
+              fontSize: '1.1rem',
+              fontWeight: 700,
+              color: 'var(--color-secondary)',
+              marginBottom: '12px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px'
+            }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Health History
+            </h3>
+            <p style={{
+              fontSize: '0.9rem',
+              color: isDark ? '#9ca3af' : '#6b7280',
+              marginBottom: '16px'
+            }}>
+              View your saved diseases and assessment history
+            </p>
+            <button
+              onClick={() => window.location.href = '/history'}
+              style={{
+                background: 'var(--color-secondary)',
+                color: 'white',
+                border: 'none',
+                padding: '12px 20px',
+                borderRadius: '10px',
+                cursor: 'pointer',
+                fontWeight: 600,
+                fontSize: '0.95rem',
+                transition: 'all 0.3s ease',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
+              }}
+              onMouseEnter={(e) => {
+                e.target.style.background = 'var(--color-third)';
+                e.target.style.transform = 'translateY(-2px)';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = 'var(--color-secondary)';
+                e.target.style.transform = 'translateY(0)';
+              }}
+            >
+              View History
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </button>
           </div>
 
           {/* Form Section */}
@@ -582,68 +700,8 @@ const ProfilePage = ({ show, onClose, onShowToast }) => {
                     placeholder="Enter your full name"
                   />
                 ) : (
-                  <div style={readOnlyValueStyle}>{userData.name || 'N/A'}</div>
+                  <div style={readOnlyValueStyle}>{userData.name || 'Not set - Click Edit to add'}</div>
                 )}
-              </div>
-              {/* Add this inside the ProfilePage component, after the form section */}
-              <div style={{
-                padding: '24px',
-                background: isDark ? 'rgba(13, 157, 184, 0.1)' : 'rgba(13, 157, 184, 0.05)',
-                borderRadius: '12px',
-                marginTop: '24px',
-                borderLeft: '4px solid var(--color-secondary)'
-              }}>
-                <h3 style={{
-                  fontSize: '1.1rem',
-                  fontWeight: 700,
-                  color: 'var(--color-secondary)',
-                  marginBottom: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  Health History
-                </h3>
-                <p style={{
-                  fontSize: '0.9rem',
-                  color: isDark ? '#9ca3af' : '#6b7280',
-                  marginBottom: '16px'
-                }}>
-                  View your saved diseases and assessment history
-                </p>
-                <button
-                  onClick={() => window.location.href = '/history'}
-                  style={{
-                    background: 'var(--color-secondary)',
-                    color: 'white',
-                    border: 'none',
-                    padding: '12px 20px',
-                    borderRadius: '10px',
-                    cursor: 'pointer',
-                    fontWeight: 600,
-                    fontSize: '0.95rem',
-                    transition: 'all 0.3s ease',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.target.style.background = 'var(--color-third)';
-                    e.target.style.transform = 'translateY(-2px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.background = 'var(--color-secondary)';
-                    e.target.style.transform = 'translateY(0)';
-                  }}
-                >
-                  View History
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
-                </button>
               </div>
 
               {/* Email */}
@@ -762,7 +820,7 @@ const ProfilePage = ({ show, onClose, onShowToast }) => {
                   onClick={handleSave}
                   disabled={saving}
                 >
-                  {saving ? 'Saving...' : 'Update'}
+                  {saving ? 'Saving...' : 'Save Changes'}
                 </button>
               </>
             ) : (

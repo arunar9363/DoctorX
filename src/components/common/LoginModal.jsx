@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { auth, db, googleProvider, signInWithPopup, signInWithEmailAndPassword, signOut } from "../../firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { auth, db, googleProvider, signInWithPopup, signInWithEmailAndPassword } from "../../firebase";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import "../../styles/LoginModal.css";
 
 function LoginModal({ show, onClose, message, onShowToast, onLoginSuccess, redirectPath }) {
@@ -12,14 +12,35 @@ function LoginModal({ show, onClose, message, onShowToast, onLoginSuccess, redir
 
   if (!show) return null;
 
-  // Email/Password login
+  // Email/Password login - Auto-create user if doesn't exist
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log("Login successful:", userCredential.user);
+      const user = userCredential.user;
+      console.log("Login successful:", user);
+
+      // Check if user document exists in Firestore
+      const userDocRef = doc(db, "users", user.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (!userDocSnap.exists()) {
+        // Create user document with minimal info
+        await setDoc(userDocRef, {
+          uid: user.uid,
+          name: "", // Empty name - will show "Edit Profile" in profile
+          email: user.email,
+          dob: "",
+          gender: "",
+          bloodGroup: "",
+          city: "",
+          existingConditions: "",
+          createdAt: new Date(),
+        });
+        console.log("New user document created in Firestore");
+      }
 
       setEmail("");
       setPassword("");
@@ -31,10 +52,9 @@ function LoginModal({ show, onClose, message, onShowToast, onLoginSuccess, redir
 
       // Handle redirect or call onLoginSuccess
       if (onLoginSuccess && redirectPath) {
-        onLoginSuccess(); // This will handle the redirect in Hero component
+        onLoginSuccess();
       } else {
         onClose();
-        // Default navigation to home if no specific redirect
         setTimeout(() => {
           navigate("/");
         }, 100);
@@ -66,7 +86,7 @@ function LoginModal({ show, onClose, message, onShowToast, onLoginSuccess, redir
     }
   };
 
-  // Google login
+  // Google login - Auto-create user if doesn't exist
   const handleGoogleLogin = async () => {
     setIsLoading(true);
 
@@ -79,29 +99,34 @@ function LoginModal({ show, onClose, message, onShowToast, onLoginSuccess, redir
       const userDocSnap = await getDoc(userDocRef);
 
       if (!userDocSnap.exists()) {
-        // User not registered in database
-        // Sign them out immediately
-        await signOut(auth);
+        // Create user document with Google info
+        await setDoc(userDocRef, {
+          uid: user.uid,
+          name: user.displayName || "", // Use Google display name or empty
+          email: user.email,
+          dob: "",
+          gender: "",
+          bloodGroup: "",
+          city: "",
+          existingConditions: "",
+          createdAt: new Date(),
+        });
+        console.log("New Google user document created in Firestore");
 
         if (onShowToast) {
-          onShowToast("This Google account is not registered. Please register first!", "error");
-        } else {
-          alert("This Google account is not registered. Please register first!");
+          onShowToast("Welcome! Please complete your profile.", "success");
         }
-        setIsLoading(false);
-        return;
+      } else {
+        if (onShowToast) {
+          onShowToast("Welcome back! Logged in with Google successfully.", "success");
+        }
       }
 
-      // User exists, proceed with login
       console.log("Google login successful:", user);
-
-      if (onShowToast) {
-        onShowToast("Welcome back! Logged in with Google successfully.", "success");
-      }
 
       // Handle redirect or call onLoginSuccess
       if (onLoginSuccess && redirectPath) {
-        onLoginSuccess(); // This will handle the redirect in Hero component
+        onLoginSuccess();
       } else {
         onClose();
         setTimeout(() => {
@@ -118,7 +143,7 @@ function LoginModal({ show, onClose, message, onShowToast, onLoginSuccess, redir
       } else if (err.code === "auth/cancelled-popup-request" || err.code === "auth/popup-closed-by-user") {
         errorMessage = "Login cancelled. Please try again.";
         setIsLoading(false);
-        return; // Don't show error toast for user cancellation
+        return;
       }
 
       if (onShowToast) {
