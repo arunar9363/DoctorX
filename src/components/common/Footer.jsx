@@ -351,7 +351,7 @@ function Footer() {
               >
                 <GithubIcon />
               </a> */}
-              {/* <a
+              <a
                 href="https://www.linkedin.com/in/arun-pratap-singh-944491292"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -374,7 +374,7 @@ function Footer() {
                 }}
               >
                 <LinkedInIcon />
-              </a> */}
+              </a>
               <a
                 href="https://www.instagram.com/arun_ps_119/"
                 target="_blank"
