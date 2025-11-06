@@ -4,7 +4,7 @@ export default function DoctorXAIPage() {
   const [messages, setMessages] = useState([
     {
       type: "bot",
-      text: "Hello! I'm DoctorX, your AI medical assistant. How can I help you today? Please feel free to ask any health-related questions you might have."
+      text: "Hello! I'm DoctorXCare, your AI medical assistant. How can I help you today? Please feel free to ask any health-related questions you might have."
     }
   ]);
   const [input, setInput] = useState("");
@@ -83,7 +83,7 @@ export default function DoctorXAIPage() {
     setInput("");
     setLoading(true);
 
-    const systemPrompt = `You are DoctorX, a professional AI medical assistant and doctor. Be helpful, informative, polite, and provide accurate health information. Always give medical help as a doctor would, including suggesting appropriate medicines, treatments, and remedies when relevant. Provide SHORT and BEST solutions to medical problems - be concise, direct, and focus on the most effective treatments. Keep responses point. Provide professional medical advice, medication suggestions, and treatment options in a clear, easy-to-understand format. and always prioritize user safety and well-being. provide disclaimers when necessary. provide medical information based on established medical guidelines and practices. Never provide harmful or dangerous advice.
+    const systemPrompt = `You are DoctorXCare, a professional AI medical assistant and doctor. Be helpful, informative, polite, and provide accurate health information. Always give medical help as a doctor would, including suggesting appropriate medicines, treatments, and remedies when relevant. Provide SHORT and BEST solutions to medical problems - be concise, direct, and focus on the most effective treatments. Keep responses point. Provide professional medical advice, medication suggestions, and treatment options in a clear, easy-to-understand format. and always prioritize user safety and well-being. provide disclaimers when necessary. provide medical information based on established medical guidelines and practices. Never provide harmful or dangerous advice.
     do not answer questions outside the medical domain. do not mention disclaimer unless asked.
 
 User Query: ${userMessage}`;
@@ -151,7 +151,7 @@ User Query: ${userMessage}`;
           {messages.length > 1 && (
             <div style={styles.header(c)}>
               <img src="/assets/MAINLOGO2.png" alt="DoctorX" style={styles.headerLogo} />
-              <h2 style={styles.headerTitle(c)}>DoctorX AI Assistance</h2>
+              <h2 style={styles.headerTitle(c)}>DoctorXCare AI Assistance</h2>
             </div>
           )}
 
@@ -161,7 +161,7 @@ User Query: ${userMessage}`;
               <div style={styles.welcome}>
                 <img src="/assets/MAINLOGO2.png" alt="DoctorX" style={styles.welcomeLogo} />
                 <h2 style={{ color: c.dark, marginTop: "24px", fontSize: "28px", fontWeight: "700" }}>
-                  Welcome to DoctorX AI Assistance
+                  Welcome to DoctorXCare AI Assistance
                 </h2>
                 <p style={{ color: c.dark, opacity: 0.7, fontSize: "14px", maxWidth: "400px", margin: "12px auto 0" }}>
                   Ask me health-related questions about symptoms, diseases, treatments, and general wellness advice.

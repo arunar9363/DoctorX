@@ -287,7 +287,7 @@ function Footer() {
               </div>
             </div>
             <p style={copyrightStyles}>
-              © 2025 DoctorX <br /> Founded, Designed & Developed by{' '}
+              © 2025 DoctorXCare™ <br /> Founded, Designed & Developed by{' '}
               <a
                 href="https://www.linkedin.com/in/arun-pratap-singh-944491292"
                 target="_blank"
@@ -298,9 +298,8 @@ function Footer() {
               >
                 Arun Pratap Singh
               </a>
-              {' '} <br /> All Rights Reserved
+              {' '} <br /> Registered under MSME (Udyam-UP-28-0186274),<br />Government of India <br /> All Rights Reserved
             </p>
-
             {/* Social Media Icons */}
             <div style={socialIconsStyles}>
               <a
@@ -510,10 +509,10 @@ function Footer() {
         <div style={disclaimerStyles}>
           <h4 style={disclaimerH4Styles}>Disclaimer</h4>
           <p style={disclaimerPStyles}>
-            DoctorX is an independent web project created in India for informational and educational purposes. It is not a licensed or certified medical device under Indian authorities such as the Central Drugs Standard Control Organization (CDSCO) or the Medical Device Rules, 2017, nor under international regulators such as the FDA (United States) or the CE marking system (European Union). For more information on its intended use, please see our Terms of Service.
+            DoctorXCare is an independent web project created in India for informational and educational purposes. It is not a licensed or certified medical device under Indian authorities such as the Central Drugs Standard Control Organization (CDSCO) or the Medical Device Rules, 2017, nor under international regulators such as the FDA (United States) or the CE marking system (European Union). For more information on its intended use, please see our Terms of Service.
           </p>
           <p style={disclaimerPStyles}>
-            DoctorX does not provide professional medical advice, diagnosis, or treatment. It is designed only to give general health-related information that may help guide your next steps. Always seek the advice of a qualified healthcare professional with any questions or concerns regarding a medical condition.
+            DoctorXCare does not provide professional medical advice, diagnosis, or treatment. It is designed only to give general health-related information that may help guide your next steps. Always seek the advice of a qualified healthcare professional with any questions or concerns regarding a medical condition.
           </p>
           <div style={{
             display: 'flex',

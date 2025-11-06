@@ -407,7 +407,7 @@ function Hero() {
           <div style={heroLoaderStyle} className="hero-page-spinner">
             <div style={heroLoaderAfterStyle}></div>
           </div>
-          <p style={heroLoaderTextStyle} className="hero-page-loader-text">Loading DoctorX...</p>
+          <p style={heroLoaderTextStyle} className="hero-page-loader-text">Loading DoctorXCare...</p>
         </div>
       </div>
     );
@@ -417,7 +417,7 @@ function Hero() {
     <section style={heroStyle} className="symptoms">
       <div style={containerStyle}>
         <div style={heroTextStyle}>
-          <h5 style={h5Style}>DoctorX</h5>
+          <h5 style={h5Style}>DoctorXCare</h5>
 
           <h1 style={h1Style}>
             Smart Healthcare at Your{" "}
@@ -429,7 +429,7 @@ function Hero() {
           </h1>
 
           <p style={pStyle}>
-            DoctorX simplifies healthcare by allowing you to check symptoms,
+            DoctorXCare simplifies healthcare by allowing you to check symptoms,
             access reliable disease insights, and explore treatments and precautions with ease.
           </p>
 

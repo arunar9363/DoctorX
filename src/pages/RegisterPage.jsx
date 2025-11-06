@@ -226,7 +226,7 @@ function RegisterPage() {
       setPassword("");
       setConfirmPassword("");
 
-      showToast("Registration successful! Welcome to DoctorX!", "success");
+      showToast("Registration successful! Welcome to DoctorXCare!", "success");
 
       setTimeout(() => {
         navigate("/");
@@ -407,7 +407,7 @@ function RegisterPage() {
   return (
     <div style={pageStyle}>
       <div style={leftStyle}>
-        <h1 style={leftH1Style}>Welcome to DoctorX</h1>
+        <h1 style={leftH1Style}>Welcome to DoctorXCare</h1>
         <p style={leftPStyle}>Your trusted healthcare partner at your fingertips.</p>
         <img src={loginImage} alt="DoctorX Illustration" style={imgStyle} />
       </div>
@@ -416,7 +416,7 @@ function RegisterPage() {
         <div style={formBoxStyle}>
           <h2 style={h2Style}>Create Account</h2>
           <p style={subtitleStyle}>
-            Start managing your healthcare with <b>DoctorX</b>
+            Start managing your healthcare with <b>DoctorXCare</b>
           </p>
 
           {/* Info Box */}

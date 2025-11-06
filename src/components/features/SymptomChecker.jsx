@@ -455,7 +455,7 @@ function SymptomChecker() {
           <div style={styles.loader}>
             <div style={styles.loaderAfter}></div>
           </div>
-          <p style={styles.loadingText}>Loading DoctorX...</p>
+          <p style={styles.loadingText}>Loading DoctorXCare...</p>
         </div>
       </div>
     );

@@ -17,7 +17,7 @@ function About() {
   return (
     <div className="allContainer">
       <div className="container about-container">
-        <h2 className="mb-4">About DoctorX</h2>
+        <h2 className="mb-4">About DoctorXCare</h2>
         <div className="row">
           {/* Sidebar */}
           <div className="col-md-4 mb-3">
@@ -45,9 +45,9 @@ function About() {
             >
               {/* COMPANY OVERVIEW */}
               <h4 id="company-overview">Overview</h4>
-              <p>DoctorX is a leading digital health information platform that revolutionizes how individuals understand and manage their health concerns. Founded with the vision of democratizing healthcare information, we bridge the gap between medical expertise and public accessibility through innovative AI-powered technology solutions.</p>
-              <p>Our platform serves as a comprehensive digital health companion, featuring an advanced AI Medical Assistant powered by Google Gemini. This intelligent assistant provides personalized medical guidance, accurate treatment recommendations, and professional health advice based on established medical guidelines. By combining evidence-based medical knowledge with state-of-the-art artificial intelligence, DoctorX delivers reliable, accurate, and actionable health insights tailored to each user's unique needs.</p>
-              <p>From symptom analysis and disease information to personalized health risk assessments, DoctorX empowers individuals worldwide to make informed decisions about their health and wellness. We are committed to ensuring that quality healthcare information and expert medical guidance are accessible to everyone, anytime, anywhere.</p>
+              <p>DoctorXCare is a leading digital health information platform that revolutionizes how individuals understand and manage their health concerns. Founded with the vision of democratizing healthcare information, we bridge the gap between medical expertise and public accessibility through innovative AI-powered technology solutions.</p>
+              <p>Our platform serves as a comprehensive digital health companion, featuring an advanced AI Medical Assistant powered by Google Gemini. This intelligent assistant provides personalized medical guidance, accurate treatment recommendations, and professional health advice based on established medical guidelines. By combining evidence-based medical knowledge with state-of-the-art artificial intelligence, DoctorXCare delivers reliable, accurate, and actionable health insights tailored to each user's unique needs.</p>
+              <p>From symptom analysis and disease information to personalized health risk assessments, DoctorXCare empowers individuals worldwide to make informed decisions about their health and wellness. We are committed to ensuring that quality healthcare information and expert medical guidance are accessible to everyone, anytime, anywhere.</p>
 
               {/* MISSION & VISION */}
               <h4 id="mission-vision">Mission & Vision</h4>
@@ -101,7 +101,7 @@ function About() {
 
               {/* REGULATORY COMPLIANCE */}
               <h4 id="regulatory-compliance">Regulatory Compliance</h4>
-              <p data-warning="true"><strong>Important Regulatory Notice:</strong> DoctorX is an informational tool for educational purposes and is <strong>not a licensed medical device</strong> in any jurisdiction. It is not intended to provide a medical diagnosis.</p>
+              <p data-warning="true"><strong>Important Regulatory Notice:</strong> DoctorXCare is an informational tool for educational purposes and is <strong>not a licensed medical device</strong> in any jurisdiction. It is not intended to provide a medical diagnosis.</p>
               <p><strong>Regulatory Status:</strong> This platform has not been registered, reviewed, or approved as a medical device by regulatory authorities such as the <strong>U.S. Food and Drug Administration (FDA)</strong>, the <strong>European Medicines Agency (EMA)</strong>, or the <strong>Central Drugs Standard Control Organisation (CDSCO)</strong> in India.</p>
               <p><strong>Usage Restrictions:</strong> The use of this platform is prohibited in any country or jurisdiction where its services would be considered a regulated medical device and require formal certification. It is the user's responsibility to ensure compliance with their local regulations.</p>
               <p><strong>Permitted Use:</strong> This platform is intended for use in jurisdictions where AI-driven health information tools for educational purposes are permitted without requiring formal medical device registration.</p>

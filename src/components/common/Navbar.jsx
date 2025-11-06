@@ -593,7 +593,7 @@ function Navbar() {
                 <>
                   <li><Link style={{ ...styles.navLink, ...(isActiveLink('/symptoms') ? styles.activeNavLink : {}) }} to="/symptoms">Analyze Symptoms</Link></li>
                   <li><Link style={{ ...styles.navLink, ...(isActiveLink('/diseases-front') ? styles.activeNavLink : {}) }} to="/diseases-front">Disease Details</Link></li>
-                  <li><Link style={{ ...styles.navLink, ...(isActiveLink('/doctorx-ai') ? styles.activeNavLink : {}) }} to="/doctorx-ai">DoctorX AI Assistance</Link></li>
+                  <li><Link style={{ ...styles.navLink, ...(isActiveLink('/doctorx-ai') ? styles.activeNavLink : {}) }} to="/doctorx-ai">AI Assistance</Link></li>
                 </>
               )}
               <li><Link style={{ ...styles.navLink, ...(isActiveLink('/audience') ? styles.activeNavLink : {}) }} to="/audience">Audience</Link></li>

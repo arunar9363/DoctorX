@@ -436,7 +436,7 @@ function ForgotPassword() {
       <div style={leftStyle}>
         <h1 style={leftH1Style}>Recover Your Access</h1>
         <p style={leftPStyle}>
-          We're here to help! Follow the simple steps to reset your password and regain access to your DoctorX account.
+          We're here to help! Follow the simple steps to reset your password and regain access to your DoctorXCare account.
         </p>
         <div style={svgContainerStyle}>
           <img

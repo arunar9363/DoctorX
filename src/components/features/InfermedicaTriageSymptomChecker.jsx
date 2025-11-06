@@ -1365,7 +1365,7 @@ export default function InfermedicaTriageSymptomChecker({
         <div style={styles.loaderAfter}></div>
       </div>
       <div style={{ color: "var(--color-secondary)", fontSize: "1.1rem", fontWeight: 500 }}>
-        Loading DoctorX Symptom Analyzer...
+        Loading...
       </div>
     </div>
   );
@@ -1627,7 +1627,7 @@ export default function InfermedicaTriageSymptomChecker({
 
       <div style={getThemedStyle(styles.root, styles.rootDark)}>
         {/* Main Title */}
-        <div style={styles.mainTitle}>DoctorX</div>
+        <div style={styles.mainTitle}>DoctorXCare</div>
 
         <div style={getThemedStyle(styles.card, styles.darkCard)}>
           <div style={styles.left}>

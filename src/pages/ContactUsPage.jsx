@@ -72,7 +72,7 @@ function ContactPage() {
             type: "suggestion",
             message: "Great platform! The symptom checker is very helpful. Would love to see more personalized health tips.",
             reply: {
-              from: "DoctorX Team",
+              from: "DoctorXCare Team",
               message: "Thank you for your valuable feedback! We're working on personalized health recommendations."
             }
           },
@@ -88,7 +88,7 @@ function ContactPage() {
             type: "feature_request",
             message: "Could you add a feature to track medication schedules? That would be really useful for chronic patients.",
             reply: {
-              from: "DoctorX Team",
+              from: "DoctorXCare Team",
               message: "Great idea! We're planning to add medication tracking in our next update."
             }
           }

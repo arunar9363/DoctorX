@@ -115,12 +115,12 @@ function TermsOfService() {
               <p className="response-time-box">We aim to respond to all inquiries within 14 business days.</p>
               {/* §9. PRIVACY */}
               <h4 id="privacy">§9. Privacy & Cookies</h4>
-              <p>Your privacy is fundamental to how DoctorX operates. We want to be clear: <strong>we do not store the personal symptom or health data you enter</strong>. The only personal information we collect is the minimal data required for account purposes, such as your email address for login. Any data we do hold is stored securely, never sold, and you can find full details in our Privacy Policy and Cookies Policy.</p>
+              <p>Your privacy is fundamental to how DoctorXCare operates. We want to be clear: <strong>we do not store the personal symptom or health data you enter</strong>. The only personal information we collect is the minimal data required for account purposes, such as your email address for login. Any data we do hold is stored securely, never sold, and you can find full details in our Privacy Policy and Cookies Policy.</p>
 
               {/* §10. FINAL PROVISIONS */}
               <h4 id="final-provisions">§10. Final Provisions</h4>
-              <p>Use of DoctorX involves typical risks of online services (e.g., malware, hacking, phishing). DoctorX takes necessary steps to secure user data but cannot guarantee absolute security.</p>
-              <p>DoctorX may update these Terms of Service at any time. Continued use means acceptance of changes.</p>
+              <p>Use of DoctorXCare involves typical risks of online services (e.g., malware, hacking, phishing). DoctorXCare takes necessary steps to secure user data but cannot guarantee absolute security.</p>
+              <p>DoctorXCare may update these Terms of Service at any time. Continued use means acceptance of changes.</p>
               <p>Governing Law: These Terms are subject to the laws of India, with user protections as per local consumer law.</p>
               <p data-date="true">📅 Effective Date: September 20, 2025</p>
             </div>

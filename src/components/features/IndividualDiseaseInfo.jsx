@@ -124,7 +124,7 @@ const IndividualDiseasesInfo = () => {
         try {
           const response = await fetch('/data/diseases.json');
           if (response.ok) diseasesData = await response.json();
-        // eslint-disable-next-line no-unused-vars
+          // eslint-disable-next-line no-unused-vars
         } catch (jsonError) {
           console.warn('Could not load diseases.json, using fallback data');
         }
