@@ -303,7 +303,7 @@ function Footer() {
             {/* Social Media Icons */}
             <div style={socialIconsStyles}>
               <a
-                href="https://x.com/arun_1195"
+                href="https://x.com/DoctorxCare"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Follow us on Twitter"
@@ -327,7 +327,7 @@ function Footer() {
                 <TwitterIcon />
               </a>
 
-              <a
+              {/* <a
                 href="https://www.linkedin.com/in/arun-pratap-singh-944491292"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -350,9 +350,9 @@ function Footer() {
                 }}
               >
                 <LinkedInIcon />
-              </a>
+              </a> */}
               <a
-                href="https://www.instagram.com/arun_ps_119/"
+                href="https://www.instagram.com/doctorxcare.in/"
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Follow us on Instagram"
