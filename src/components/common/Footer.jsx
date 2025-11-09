@@ -287,7 +287,7 @@ function Footer() {
               </div>
             </div>
             <p style={copyrightStyles}>
-              © 2025 DoctorXCare™ <br /> Founded, Designed & Developed by{' '}
+              © 2025 DoctorXCare™ <br /> Founded, Designed & Developed <by>' '
               <a
                 href="https://www.linkedin.com/in/arun-pratap-singh-944491292"
                 target="_blank"
@@ -296,7 +296,7 @@ function Footer() {
                 onMouseOver={(e) => e.target.style.textDecoration = 'underline'}
                 onMouseOut={(e) => e.target.style.textDecoration = 'none'}
               >
-                Arun Pratap Singh
+                <br />Arun Pratap Singh
               </a>
               {' '} <br /> Registered under MSME (Udyam-UP-28-0186274),<br />Government of India <br /> All Rights Reserved
             </p>
