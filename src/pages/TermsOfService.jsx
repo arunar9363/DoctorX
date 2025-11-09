@@ -32,7 +32,8 @@ function TermsOfService() {
               <a className="list-group-item list-group-item-action" href="#intellectual-property">§7. Intellectual Property</a>
               <a className="list-group-item list-group-item-action" href="#complaints">§8. Complaints & Support</a>
               <a className="list-group-item list-group-item-action" href="#privacy">§9. Privacy & Cookies</a>
-              <a className="list-group-item list-group-item-action" href="#final-provisions">§10. Final Provisions</a>
+              <a className="list-group-item list-group-item-action" href="#company-info">§10. Company Information</a>
+              <a className="list-group-item list-group-item-action" href="#final-provisions">§11. Final Provisions</a>
             </div>
           </div>
 
@@ -113,12 +114,37 @@ function TermsOfService() {
               </div>
 
               <p className="response-time-box">We aim to respond to all inquiries within 14 business days.</p>
+
               {/* §9. PRIVACY */}
               <h4 id="privacy">§9. Privacy & Cookies</h4>
               <p>Your privacy is fundamental to how DoctorXCare operates. We want to be clear: <strong>we do not store the personal symptom or health data you enter</strong>. The only personal information we collect is the minimal data required for account purposes, such as your email address for login. Any data we do hold is stored securely, never sold, and you can find full details in our Privacy Policy and Cookies Policy.</p>
 
-              {/* §10. FINAL PROVISIONS */}
-              <h4 id="final-provisions">§10. Final Provisions</h4>
+              {/* §10. COMPANY INFORMATION */}
+              <h4 id="company-info">§10. Company Information</h4>
+              <div className="company-info-grid">
+                <div className="company-info-card">
+                  <div className="company-info-label">Business Name</div>
+                  <div className="company-info-value">DoctorXCare</div>
+                </div>
+                <div className="company-info-card">
+                  <div className="company-info-label">MSME Registration</div>
+                  <div className="company-info-value">Udyam-UP-28-0186274</div>
+                </div>
+                <div className="company-info-card">
+                  <div className="company-info-label">Enterprise Type</div>
+                  <div className="company-info-value">Micro, Small and Medium Enterprise</div>
+                </div>
+                <div className="company-info-card">
+                  <div className="company-info-label">Registered Under</div>
+                  <div className="company-info-value">Government of India</div>
+                </div>
+              </div>
+              <p className="company-info-description">
+                DoctorXCare is officially registered with the Ministry of Micro, Small and Medium Enterprises, Government of India, ensuring compliance with national business standards and regulations.
+              </p>
+
+              {/* §11. FINAL PROVISIONS */}
+              <h4 id="final-provisions">§11. Final Provisions</h4>
               <p>Use of DoctorXCare involves typical risks of online services (e.g., malware, hacking, phishing). DoctorXCare takes necessary steps to secure user data but cannot guarantee absolute security.</p>
               <p>DoctorXCare may update these Terms of Service at any time. Continued use means acceptance of changes.</p>
               <p>Governing Law: These Terms are subject to the laws of India, with user protections as per local consumer law.</p>
