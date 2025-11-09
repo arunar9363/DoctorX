@@ -287,8 +287,7 @@ function Footer() {
               </div>
             </div>
             <p style={copyrightStyles}>
-              © 2025 DoctorXCare™ <br /> Founded, Designed & Developed <by>' '</by><br />
-
+              © 2025 DoctorXCare™ <br /> Founded, Designed & Developed by{' '} <br />
               <a
                 href="https://www.linkedin.com/in/arun-pratap-singh-944491292"
                 target="_blank"
