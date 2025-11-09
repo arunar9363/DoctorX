@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import {
   sendPasswordResetEmail,
   confirmPasswordReset,
   verifyPasswordResetCode
 } from "firebase/auth";
+import { collection, query, where, getDocs } from "firebase/firestore";
 
 function ForgotPassword() {
   const [step, setStep] = useState(1);
@@ -40,7 +41,6 @@ function ForgotPassword() {
 
     window.addEventListener('resize', checkScreenSize);
 
-    // Check if user came from password reset email link
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('oobCode');
     const mode = urlParams.get('mode');
@@ -49,29 +49,17 @@ function ForgotPassword() {
       setOobCode(code);
       setStep(3);
 
-      // Verify the reset code is valid
       verifyPasswordResetCode(auth, code)
         .then((email) => {
           setEmail(email);
           setMessage({
-            text: "✓ Code verified! Please enter your new password.",
+            text: "âœ“ Code verified! Please enter your new password.",
             type: "success"
           });
         })
-        .catch((error) => {
-          console.error("Code verification error:", error);
-          let errorMessage = "Invalid or expired reset code. Please request a new one.";
-
-          if (error.code === "auth/expired-action-code") {
-            errorMessage = "✗ Reset link has expired. Please request a new one.";
-          } else if (error.code === "auth/invalid-action-code") {
-            errorMessage = "✗ Invalid reset link. Please request a new one.";
-          } else if (error.code === "auth/user-disabled") {
-            errorMessage = "✗ This account has been disabled.";
-          }
-
+        .catch(() => {
           setMessage({
-            text: errorMessage,
+            text: "âœ— Invalid or expired reset code. Please request a new one.",
             type: "error"
           });
           setStep(1);
@@ -84,7 +72,50 @@ function ForgotPassword() {
     };
   }, []);
 
-  // Step 1: Validate email format
+  // Check if email exists in Firestore users collection
+  const checkEmailExists = async (emailToCheck) => {
+    try {
+      const normalizedEmail = emailToCheck.toLowerCase().trim();
+      console.log("Checking email:", normalizedEmail);
+
+      const usersRef = collection(db, "users");
+
+      // Try exact match first
+      const exactQuery = query(usersRef, where("email", "==", normalizedEmail));
+      const exactSnapshot = await getDocs(exactQuery);
+
+      if (!exactSnapshot.empty) {
+        console.log("Email found in Firestore (exact match)");
+        return true;
+      }
+
+      // Also try case-insensitive search by getting all users and checking
+      const allUsersQuery = query(usersRef);
+      const allUsersSnapshot = await getDocs(allUsersQuery);
+
+      let found = false;
+      allUsersSnapshot.forEach((doc) => {
+        const userData = doc.data();
+        if (userData.email && userData.email.toLowerCase() === normalizedEmail) {
+          found = true;
+          console.log("Email found in Firestore (manual search)");
+        }
+      });
+
+      if (!found) {
+        console.log("Email NOT found in Firestore");
+      }
+
+      return found;
+    } catch (error) {
+      console.error("Error checking email in Firestore:", error);
+      // In case of error, try to send reset email anyway
+      // Firebase Auth will handle if email doesn't exist
+      return true;
+    }
+  };
+
+  // Step 1: Validate and check email
   const handleSendResetEmail = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -92,70 +123,62 @@ function ForgotPassword() {
 
     // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email.trim())) {
+    if (!emailRegex.test(email)) {
       setMessage({
-        text: "✗ Please enter a valid email address.",
+        text: "âœ— Please enter a valid email address.",
         type: "error"
       });
       setIsLoading(false);
       return;
     }
 
-    // Move to confirmation step
+    // Check if email is registered in Firestore
+    const emailExists = await checkEmailExists(email);
+
+    if (!emailExists) {
+      setMessage({
+        text: "âœ— This email is not registered. Please sign up first!",
+        type: "error"
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    // Email is registered, move to verification step
     setStep(2);
     setIsLoading(false);
   };
 
-  // Step 2: Send password reset email
+  // Step 2: Confirm email and send reset link
   const handleConfirmAndSendEmail = async () => {
     setIsLoading(true);
     setMessage({ text: "", type: "" });
 
     try {
-      // Send reset email - Firebase handles validation automatically
-      await sendPasswordResetEmail(auth, email.trim(), {
-        url: window.location.origin + '/',
-        handleCodeInApp: false
-      });
+      // Send reset email directly - Firebase will handle validation
+      await sendPasswordResetEmail(auth, email);
 
       setMessage({
-        text: "✓ Password reset email sent! Please check your inbox and spam folder. The link will expire in 1 hour.",
+        text: "âœ“ Password reset email sent! Please check your inbox and spam folder. Click the link in the email to proceed.",
         type: "success"
       });
 
-      // Auto-reset form after 6 seconds
       setTimeout(() => {
         setStep(1);
         setEmail("");
         setMessage({ text: "", type: "" });
-      }, 6000);
+      }, 5000);
 
-    } catch (error) {
-      console.error("Password reset error:", error);
+    } catch (err) {
+      console.error("Password reset error:", err);
       let errorMessage = "Failed to send reset email. Please try again.";
 
-      // Handle specific Firebase Auth errors
-      switch (error.code) {
-        case "auth/user-not-found":
-          errorMessage = "✗ No account found with this email. Please check your email or sign up.";
-          break;
-        case "auth/invalid-email":
-          errorMessage = "✗ Invalid email address format.";
-          break;
-        case "auth/too-many-requests":
-          errorMessage = "✗ Too many attempts. Please wait a few minutes and try again.";
-          break;
-        case "auth/network-request-failed":
-          errorMessage = "✗ Network error. Please check your internet connection.";
-          break;
-        case "auth/user-disabled":
-          errorMessage = "✗ This account has been disabled. Please contact support.";
-          break;
-        case "auth/operation-not-allowed":
-          errorMessage = "✗ Password reset is currently unavailable. Please contact support.";
-          break;
-        default:
-          errorMessage = `✗ ${error.message || "An error occurred. Please try again."}`;
+      if (err.code === "auth/user-not-found") {
+        errorMessage = "âœ— No account found with this email address. Please sign up first!";
+      } else if (err.code === "auth/invalid-email") {
+        errorMessage = "âœ— Please enter a valid email address.";
+      } else if (err.code === "auth/too-many-requests") {
+        errorMessage = "âœ— Too many requests. Please try again later.";
       }
 
       setMessage({
@@ -167,113 +190,59 @@ function ForgotPassword() {
     }
   };
 
-  // Step 3: Reset password with new password
+  // Step 3: Reset password
   const handleResetPassword = async (e) => {
     e.preventDefault();
-    setMessage({ text: "", type: "" });
 
-    // Validate passwords match
     if (newPassword !== confirmPassword) {
       setMessage({
-        text: "✗ Passwords do not match!",
+        text: "âœ— Passwords do not match!",
         type: "error"
       });
       return;
     }
 
-    // Validate password length
     if (newPassword.length < 6) {
       setMessage({
-        text: "✗ Password must be at least 6 characters long.",
+        text: "âœ— Password must be at least 6 characters long.",
         type: "error"
       });
       return;
-    }
-
-    // Check password strength
-    if (newPassword.length < 8) {
-      setMessage({
-        text: "⚠ Password is weak. Consider using at least 8 characters with numbers and symbols.",
-        type: "warning"
-      });
     }
 
     setIsLoading(true);
+    setMessage({ text: "", type: "" });
 
     try {
-      // Confirm the password reset with the code from URL
       await confirmPasswordReset(auth, oobCode, newPassword);
 
       setMessage({
-        text: "✓ Password reset successful! Redirecting to login...",
+        text: "âœ“ Password reset successful! Redirecting to login...",
         type: "success"
       });
 
-      // Redirect to login after 2 seconds
       setTimeout(() => {
         navigate("/");
       }, 2000);
 
-    } catch (error) {
-      console.error("Password reset error:", error);
+    } catch (err) {
+      console.error("Password reset error:", err);
       let errorMessage = "Failed to reset password. Please try again.";
 
-      // Handle specific Firebase Auth errors
-      switch (error.code) {
-        case "auth/expired-action-code":
-          errorMessage = "✗ Reset link has expired. Please request a new reset email.";
-          break;
-        case "auth/invalid-action-code":
-          errorMessage = "✗ Invalid or already used reset link. Please request a new one.";
-          break;
-        case "auth/weak-password":
-          errorMessage = "✗ Password is too weak. Please use a stronger password with letters, numbers, and symbols.";
-          break;
-        case "auth/user-disabled":
-          errorMessage = "✗ This account has been disabled. Please contact support.";
-          break;
-        case "auth/user-not-found":
-          errorMessage = "✗ Account not found. The user may have been deleted.";
-          break;
-        case "auth/network-request-failed":
-          errorMessage = "✗ Network error. Please check your internet connection.";
-          break;
-        default:
-          errorMessage = `✗ ${error.message || "An error occurred. Please try again."}`;
+      if (err.code === "auth/expired-action-code") {
+        errorMessage = "âœ— Reset code has expired. Please request a new reset email.";
+      } else if (err.code === "auth/invalid-action-code") {
+        errorMessage = "âœ— Invalid reset code. Please request a new reset email.";
+      } else if (err.code === "auth/weak-password") {
+        errorMessage = "âœ— Password is too weak. Please use a stronger password.";
       }
 
       setMessage({
         text: errorMessage,
         type: "error"
       });
-
-      // If code is expired/invalid, redirect to step 1 after 3 seconds
-      if (error.code === "auth/expired-action-code" || error.code === "auth/invalid-action-code") {
-        setTimeout(() => {
-          setStep(1);
-          setOobCode("");
-          setNewPassword("");
-          setConfirmPassword("");
-          setMessage({ text: "", type: "" });
-        }, 3000);
-      }
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  // Handle back to step 1
-  const handleBackToStep1 = () => {
-    if (!isLoading) {
-      setStep(1);
-      setMessage({ text: "", type: "" });
-    }
-  };
-
-  // Handle home navigation
-  const handleBackToHome = () => {
-    if (!isLoading) {
-      navigate("/");
     }
   };
 
@@ -392,15 +361,6 @@ function ForgotPassword() {
     borderLeft: `4px solid ${isDark ? '#fca5a5' : '#dc2626'}`,
   };
 
-  const alertWarning = {
-    ...alertStyle,
-    background: isDark
-      ? 'linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.15))'
-      : 'linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.1))',
-    color: isDark ? '#fcd34d' : '#d97706',
-    borderLeft: `4px solid ${isDark ? '#fcd34d' : '#d97706'}`,
-  };
-
   const alertInfo = {
     ...alertStyle,
     background: isDark
@@ -494,13 +454,13 @@ function ForgotPassword() {
             <>
               <h2 style={h2Style}>Reset Password</h2>
               <p style={subtitleStyle}>
-                Enter your email address and we'll send you a link to reset your password
+                Enter your email address and we'll verify it before sending a reset link
               </p>
 
               {message.text && (
-                <div style={message.type === 'success' ? alertSuccess : message.type === 'warning' ? alertWarning : alertError}>
+                <div style={message.type === 'success' ? alertSuccess : alertError}>
                   <span style={{ fontSize: '18px' }}>
-                    {message.type === 'success' ? '✓' : message.type === 'warning' ? '⚠' : '✕'}
+                    {message.type === 'success' ? 'âœ“' : 'âœ•'}
                   </span>
                   <span>{message.text}</span>
                 </div>
@@ -542,13 +502,13 @@ function ForgotPassword() {
                     e.target.style.boxShadow = 'none';
                   }}
                 >
-                  {isLoading ? "Checking..." : "Continue →"}
+                  {isLoading ? "Checking..." : "Continue â†’"}
                 </button>
               </form>
             </>
           )}
 
-          {/* Step 2: Email Confirmation */}
+          {/* Step 2: Email Verification */}
           {step === 2 && (
             <>
               <h2 style={h2Style}>Confirm Email</h2>
@@ -557,9 +517,9 @@ function ForgotPassword() {
               </p>
 
               {message.text && (
-                <div style={message.type === 'success' ? alertSuccess : message.type === 'warning' ? alertWarning : alertError}>
+                <div style={message.type === 'success' ? alertSuccess : alertError}>
                   <span style={{ fontSize: '18px' }}>
-                    {message.type === 'success' ? '✓' : message.type === 'warning' ? '⚠' : '✕'}
+                    {message.type === 'success' ? 'âœ“' : 'âœ•'}
                   </span>
                   <span>{message.text}</span>
                 </div>
@@ -567,14 +527,14 @@ function ForgotPassword() {
 
               {/* Email Display */}
               <div style={alertInfo}>
-                <span style={{ fontSize: '18px' }}>✉️</span>
+                <span style={{ fontSize: '18px' }}>âœ‰ï¸</span>
                 <div>
                   <strong>Email:</strong> {email}
                 </div>
               </div>
 
               <p style={{ ...subtitleStyle, marginBottom: '24px', fontSize: '14px' }}>
-                A password reset link will be sent to this email. The link will expire in 1 hour for security purposes.
+                A password reset link will be sent to this email. You'll have 24 hours to reset your password.
               </p>
 
               {/* Confirm Button */}
@@ -593,12 +553,15 @@ function ForgotPassword() {
                   e.target.style.boxShadow = 'none';
                 }}
               >
-                {isLoading ? "Sending..." : "Yes, Send Reset Link →"}
+                {isLoading ? "Sending..." : "Yes, Send Reset Link â†’"}
               </button>
 
               {/* Cancel Button */}
               <button
-                onClick={handleBackToStep1}
+                onClick={() => {
+                  setStep(1);
+                  setMessage({ text: "", type: "" });
+                }}
                 disabled={isLoading}
                 style={{ ...secondaryButtonStyle, marginTop: '12px' }}
                 onMouseEnter={(e) => {
@@ -608,7 +571,7 @@ function ForgotPassword() {
                   e.target.style.opacity = '1';
                 }}
               >
-                ← Change Email
+                â† Change Email
               </button>
             </>
           )}
@@ -622,9 +585,9 @@ function ForgotPassword() {
               </p>
 
               {message.text && (
-                <div style={message.type === 'success' ? alertSuccess : message.type === 'warning' ? alertWarning : alertError}>
+                <div style={message.type === 'success' ? alertSuccess : alertError}>
                   <span style={{ fontSize: '18px' }}>
-                    {message.type === 'success' ? '✓' : message.type === 'warning' ? '⚠' : '✕'}
+                    {message.type === 'success' ? 'âœ“' : 'âœ•'}
                   </span>
                   <span>{message.text}</span>
                 </div>
@@ -688,7 +651,7 @@ function ForgotPassword() {
                     e.target.style.boxShadow = 'none';
                   }}
                 >
-                  {isLoading ? "Resetting..." : "Reset Password →"}
+                  {isLoading ? "Resetting..." : "Reset Password â†’"}
                 </button>
               </form>
             </>
@@ -696,12 +659,12 @@ function ForgotPassword() {
 
           <p style={backLinkStyle}>
             <button
-              onClick={handleBackToHome}
+              onClick={() => navigate("/")}
               type="button"
               disabled={isLoading}
               style={btnBackStyle}
             >
-              ← Back to Home
+              â† Back to Home
             </button>
           </p>
         </div>
