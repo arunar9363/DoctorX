@@ -164,7 +164,7 @@ User Query: ${userMessage}`;
                   Welcome to DoctorXCare AI Assistance
                 </h2>
                 <p style={{ color: c.dark, opacity: 0.7, fontSize: "14px", maxWidth: "400px", margin: "12px auto 0" }}>
-                  Ask me health-related questions about symptoms, diseases, treatments, and general wellness advice.
+                  Ask me health-related questions about symptoms, diseases, treatments, and general wellness advice <br />Powered by Gemini-pro.
                 </p>
                 <div style={styles.suggestionBox(c)}>
                   <p style={{ fontSize: "12px", opacity: 0.6, margin: "0 0 12px 0", textAlign: "left" }}>

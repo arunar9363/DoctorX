@@ -7,17 +7,17 @@ function Audience() {
         <h2>Support for Every Stage of Life</h2>
 
         <div className="audience-rows">
-          {/* Row 1: Text Left, Image Right */}
+          {/* Row 1: INDIVIDUALS - Focus on Self-Empowerment & Privacy */}
           <div className="audience-row" id="audience-row-1">
             <div className="audience-card">
               <div className="content-wrapper">
-                <h3>Individuals</h3>
+                <h3>For Individuals</h3>
                 <ul>
-                  <li>Personal symptom checker for your specific health concerns.</li>
-                  <li>Access a comprehensive library of medically-vetted health conditions.</li>
-                  <li>Receive clear recommendations for self-care or seeing a doctor.</li>
-                  <li>Medical information explained in simple, everyday language.</li>
-                  <li>Track your health journey and understand your body better.</li>
+                  <li><strong>Instant Analysis:</strong> Check your symptoms privately with clinical-grade AI.</li>
+                  <li><strong>Verified Knowledge:</strong> Access a library of medically reviewed health conditions.</li>
+                  <li><strong>Actionable Advice:</strong> Know exactly whether to see a doctor or treat at home.</li>
+                  <li><strong>Health Mastery:</strong> Understand medical terms in simple, clear language.</li>
+                  <li><strong>24/7 Access:</strong> Get answers anytime, without waiting for an appointment.</li>
                 </ul>
               </div>
               <div className="image-wrapper">
@@ -26,36 +26,36 @@ function Audience() {
             </div>
           </div>
 
-          {/* Row 2: Image Left, Text Right */}
+          {/* Row 2: PARENTS - Focus on Child Safety & Peace of Mind */}
           <div className="audience-row" id="audience-row-2">
             <div className="audience-card">
               <div className="image-wrapper">
                 <img src="/assets/wtt-2.svg" alt="Parents" />
               </div>
               <div className="content-wrapper">
-                <h3>Parents</h3>
+                <h3>For Parents</h3>
                 <ul>
-                  <li>Specialized guidance for your child's symptoms and illnesses.</li>
-                  <li>Understand when to seek immediate care with our child safety protocols.</li>
-                  <li>Explore a pediatric-focused database of common childhood conditions.</li>
-                  <li>Age-appropriate analysis from newborns to teenagers.</li>
-                  <li>Get actionable tips for home care and keeping your family healthy.</li>
+                  <li><strong>Pediatric Focus:</strong> Symptom checks tailored specifically for children and infants.</li>
+                  <li><strong>Urgency Detection:</strong> instantly understand if your child needs emergency care.</li>
+                  <li><strong>Age-Smart:</strong> Accurate analysis adapted for newborns, toddlers, and teens.</li>
+                  <li><strong>Home Relief:</strong> Safe, doctor-approved tips to manage fevers and minor ailments.</li>
+                  <li><strong>Peace of Mind:</strong> Reduce anxiety with reliable guidance day or night.</li>
                 </ul>
               </div>
             </div>
           </div>
 
-          {/* Row 3: Text Left, Image Right */}
+          {/* Row 3: CAREGIVERS - Focus on Supporting Loved Ones */}
           <div className="audience-row" id="audience-row-3">
             <div className="audience-card">
               <div className="content-wrapper">
-                <h3>Family Members</h3>
+                <h3>For Caregivers</h3>
                 <ul>
-                  <li>Use our symptom checker on behalf of a loved one with third-person mode.</li>
-                  <li>Help coordinate care with easy-to-share health summaries.</li>
-                  <li>Gain a deeper understanding of their diagnosis and treatment options.</li>
-                  <li>Access dedicated tools and resources for caregiver support.</li>
-                  <li>Emergency contact features</li>
+                  <li><strong>Remote Assessment:</strong> Check symptoms on behalf of parents or partners.</li>
+                  <li><strong>Decision Support:</strong> Validate your concerns before rushing to the hospital.</li>
+                  <li><strong>Care Coordination:</strong> Easily explain symptoms to doctors using generated reports.</li>
+                  <li><strong>Elderly Care:</strong> Specialized insights for age-related health conditions.</li>
+                  <li><strong>Emergency Prep:</strong> Quick access to triage advice when every second counts.</li>
                 </ul>
               </div>
               <div className="image-wrapper">

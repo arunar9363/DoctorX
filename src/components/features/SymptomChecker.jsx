@@ -462,9 +462,9 @@ function SymptomChecker() {
   }
 
   const listItems = [
-    "Possible causes of your symptoms",
-    "Recommendations on next steps",
-    "Guidance on when to seek professional care"
+    "Top potential causes ranked by probability", // Better than "Possible causes"
+    "Urgency level: See a doctor vs. Self-care",  // Specific actionable advice
+    "Recommended specialists & home treatment options" // Complete care plan
   ];
 
   return (
@@ -479,12 +479,15 @@ function SymptomChecker() {
         </div>
         <div style={styles.symText}>
           <h2 style={styles.h2}>
-            Start your analysis now and take the first step towards smarter healthcare:
+            Get Clear Answers About Your Health in Minutes
           </h2>
           <p style={styles.p}>
-            Take a quick AI-powered symptom assessment designed to guide you with clarity and care. Your information remains completely private and secure, because your trust matters most to us.
+            Experience a clinical-grade assessment designed to give you instant peace of mind.
+            Our AI compares your symptoms against thousands of medical cases.
+            <strong>100% Anonymous & Secure</strong>.
           </p>
-          <h3 style={styles.h3}>Your results will include:</h3>
+
+          <h3 style={styles.h3}>Your personal health report includes:</h3>
           <ul style={styles.ul}>
             {listItems.map((item, index) => (
               <li

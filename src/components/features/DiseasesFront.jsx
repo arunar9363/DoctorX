@@ -323,17 +323,32 @@ function DiseaseFront() {
     <section style={styles.DiseaseFront}>
       <div style={styles.diseaseInfo}>
         <div style={styles.diseaseText}>
-          <h2 style={styles.h2}>Access comprehensive disease information and global health insights:</h2>
+          <h2 style={styles.h2}>Global Health Intelligence & Verified Disease Data</h2>
           <p style={styles.p}>
-            Search our extensive medical database for detailed information on diseases, conditions, and health topics. Get evidence-based insights from trusted medical sources, presented in clear, accessible language for educational purposes.
+            Stop searching through unreliable forums. Access our clinically vetted database to understand diseases, conditions, and treatments. We translate complex medical data into clear, actionable insights backed by global health standards.
           </p>
-          <h3 style={styles.h3}>Your comprehensive disease profile will include:</h3>
+          <h3 style={styles.h3}>Inside every disease profile, you will find:</h3>
           <ul style={styles.ul}>
-            <li style={styles.li}><span style={styles.liCheckmark}>✓</span>Complete medical description and overview</li>
-            <li style={styles.li}><span style={styles.liCheckmark}>✓</span>Common signs and symptoms to recognize</li>
-            <li style={styles.li}><span style={styles.liCheckmark}>✓</span>Evidence-based prevention strategies</li>
-            <li style={styles.li}><span style={styles.liCheckmark}>✓</span>Current treatment options and approaches</li>
-            <li style={styles.li}><span style={styles.liCheckmark}>✓</span>Latest health updates from WHO and global health authorities</li>
+            <li style={styles.li}>
+              <span style={styles.liCheckmark}>✓</span>
+              <strong>Clinical Overview:</strong> Clear, jargon-free medical summaries.
+            </li>
+            <li style={styles.li}>
+              <span style={styles.liCheckmark}>✓</span>
+              <strong>Symptom Identification:</strong> Early warning signs & red flags.
+            </li>
+            <li style={styles.li}>
+              <span style={styles.liCheckmark}>✓</span>
+              <strong>Proven Prevention:</strong> Lifestyle guides to stay protected.
+            </li>
+            <li style={styles.li}>
+              <span style={styles.liCheckmark}>✓</span>
+              <strong>Care Protocols:</strong> Standard treatments & recovery paths.
+            </li>
+            <li style={styles.li}>
+              <span style={styles.liCheckmark}>✓</span>
+              <strong>Live Updates:</strong> Real-time data from WHO & CDC.
+            </li>
           </ul>
           <button
             style={styles.btnHero}

@@ -429,26 +429,49 @@ function Hero() {
           </h1>
 
           <p style={pStyle}>
-            DoctorXCare simplifies healthcare by allowing you to check symptoms,
-            access reliable disease insights, and explore treatments and precautions with ease.
+            Empower your health decisions with DoctorXCare. Get instant,
+            AI-driven symptom analysis and access a library of medically
+            verified insights to understand treatments and precautions with confidence.
           </p>
 
           <ul style={ulStyle}>
+            {/* Service 1: Symptom Analysis */}
             <li style={liStyle}>
               <span style={liCheckmarkStyle}>✓</span>
-              <span style={{ margin: 0 }}>Analyze your symptoms</span>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ margin: 0, fontWeight: '600' }}>
+                  Advanced Symptom Analysis
+                </span>
+                <span style={{ fontSize: '0.85em', color: '#666' }}>
+                  Powered by Infermedica technology
+                </span>
+              </div>
             </li>
+
+            {/* Service 2: Disease Library */}
             <li style={liStyle}>
               <span style={liCheckmarkStyle}>✓</span>
-              <span style={{ margin: 0 }}>Understand your health</span>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ margin: 0, fontWeight: '600' }}>
+                  Verified Disease Library
+                </span>
+                <span style={{ fontSize: '0.85em', color: '#666' }}>
+                  Curated & trusted medical data
+                </span>
+              </div>
             </li>
+
+            {/* Service 3: AI Doctor */}
             <li style={liStyle}>
               <span style={liCheckmarkStyle}>✓</span>
-              <span style={{ margin: 0 }}>Plan your next steps</span>
-            </li>
-            <li style={liStyle}>
-              <span style={liCheckmarkStyle}>✓</span>
-              <span style={{ margin: 0 }}>Get ready for your visit</span>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ margin: 0, fontWeight: '600' }}>
+                  Personal AI Health Assistant
+                </span>
+                <span style={{ fontSize: '0.85em', color: '#666' }}>
+                  Free, instant, 24/7 access
+                </span>
+              </div>
             </li>
           </ul>
 
