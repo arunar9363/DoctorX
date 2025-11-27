@@ -255,6 +255,7 @@ function RegisterPage() {
 
   // Inline Styles
   const pageStyle = {
+    marginTop: '20px',
     display: 'flex',
     flexDirection: isMobile ? 'column' : 'row',
     minHeight: '100vh',

@@ -285,6 +285,7 @@ function ForgotPassword() {
   const colorDark = isDark ? '#e5e7eb' : '#1a1a1a';
 
   const pageStyle = {
+    marginTop: '60px',
     display: 'flex',
     flexDirection: isMobile ? 'column' : 'row',
     minHeight: '100vh',

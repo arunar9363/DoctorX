@@ -150,6 +150,7 @@ const HistoryPage = () => {
 
   const styles = {
     container: {
+      marginTop: '20px',
       minHeight: '100vh',
       background: isDarkMode
         ? 'linear-gradient(135deg, #1f2937 0%, #0f172a 50%, #121212 100%)'

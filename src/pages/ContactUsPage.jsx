@@ -362,7 +362,8 @@ function ContactPage() {
       flexDirection: 'column',
       minHeight: '100vh',
       width: '100%',
-      fontFamily: '"Merriweather", serif'
+      fontFamily: '"Merriweather", serif',
+      marginTop: '60px'
     };
 
     return baseStyle;
