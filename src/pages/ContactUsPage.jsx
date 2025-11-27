@@ -119,7 +119,7 @@ function ContactPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setPageLoading(false);
-    }, 2000);
+    }, 1000);
     return () => clearTimeout(timer);
   }, []);
 
