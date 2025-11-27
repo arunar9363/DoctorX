@@ -9,8 +9,6 @@ function Home() {
     <>
       <Hero />
       <Audience />
-      <About />
-      <TermsOfService />
       <ContactPage />
     </>
   );
