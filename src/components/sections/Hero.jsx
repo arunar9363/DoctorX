@@ -6,13 +6,13 @@ import LoginModal from "../common/LoginModal";
 
 function Hero() {
   const [showLogin, setShowLogin] = useState(false);
-  const [redirectPath, setRedirectPath] = useState("");
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [pageLoading, setPageLoading] = useState(true);
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [isTablet, setIsTablet] = useState(window.innerWidth > 768 && window.innerWidth <= 1024);
+
   const navigate = useNavigate();
 
   const words = [
@@ -69,14 +69,19 @@ function Hero() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Listen for authentication state changes
+  // Listen for authentication state changes & REDIRECT IF LOGGED IN
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
+
+      // If user is logged in, immediately redirect to Dashboard
+      if (currentUser) {
+        navigate('/dashboard');
+      }
     });
     return () => unsubscribe();
-  }, []);
+  }, [navigate]);
 
   // Inject keyframe animations
   useEffect(() => {
@@ -119,49 +124,22 @@ function Hero() {
     };
   }, []);
 
-  const isAuthenticated = user !== null;
-
-  const handleStartChecking = () => {
-    if (loading) return;
-    if (isAuthenticated) {
-      navigate('/symptoms');
-    } else {
-      setRedirectPath('/symptoms');
-      setShowLogin(true);
-    }
+  // Button Handlers
+  const handleGetStarted = () => {
+    navigate('/register');
   };
 
-  const handleExploreDiseases = () => {
-    if (loading) return;
-    if (isAuthenticated) {
-      navigate('/diseases-front');
-    } else {
-      setRedirectPath('/diseases-front');
-      setShowLogin(true);
-    }
-  };
-
-  const handleAIAssistance = () => {
-    if (loading) return;
-    if (isAuthenticated) {
-      navigate('/doctorx-ai');
-    } else {
-      setRedirectPath('/doctorx-ai');
-      setShowLogin(true);
-    }
+  const handleLoginClick = () => {
+    setShowLogin(true);
   };
 
   const handleLoginSuccess = () => {
     setShowLogin(false);
-    if (redirectPath) {
-      setTimeout(() => {
-        navigate(redirectPath);
-        setRedirectPath("");
-      }, 100);
-    }
+    // Redirect to dashboard after successful login from modal
+    navigate('/dashboard');
   };
 
-  // Page loader styles with unique IDs
+  // Page loader styles
   const heroPageLoaderOverlayStyle = {
     position: 'fixed',
     top: 0,
@@ -213,7 +191,7 @@ function Hero() {
     fontFamily: "'Merriweather', serif"
   };
 
-  // Main component styles
+  // Main styles
   const heroStyle = {
     minHeight: '100vh',
     width: '100%',
@@ -335,6 +313,7 @@ function Hero() {
     width: '24px',
     height: '24px',
     marginRight: '1rem',
+    marginTop: '2px',
     fontWeight: 700,
     borderRadius: '50%',
     backgroundColor: isDarkMode ? 'rgba(13, 157, 184, 0.2)' : 'rgba(13, 157, 184, 0.1)',
@@ -395,12 +374,12 @@ function Hero() {
     justifyContent: 'center',
     alignItems: 'center',
     animation: 'fadeInImage 0.8s ease-in-out forwards',
-    order: isMobile || isTablet ? -1 : 0,
+    order: isMobile || isTablet ? 0 : 0,
     marginBottom: isMobile ? '20px' : isTablet ? '30px' : 0
   };
 
-  // Show loader if page is loading
-  if (pageLoading) {
+  // If loading, show loader
+  if (pageLoading || (loading && user)) {
     return (
       <div style={heroPageLoaderOverlayStyle} className="hero-page-loader-overlay">
         <div style={{ textAlign: 'center' }} className="hero-page-loader-container">
@@ -412,6 +391,9 @@ function Hero() {
       </div>
     );
   }
+
+  // If user is logged in, return null (the useEffect will redirect them)
+  if (user) return null;
 
   return (
     <section style={heroStyle} className="symptoms">
@@ -435,7 +417,7 @@ function Hero() {
           </p>
 
           <ul style={ulStyle}>
-            {/* Service 1: Symptom Analysis */}
+            {/* Service 1 */}
             <li style={liStyle}>
               <span style={liCheckmarkStyle}>✓</span>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -448,7 +430,7 @@ function Hero() {
               </div>
             </li>
 
-            {/* Service 2: Disease Library */}
+            {/* Service 2 */}
             <li style={liStyle}>
               <span style={liCheckmarkStyle}>✓</span>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -461,7 +443,7 @@ function Hero() {
               </div>
             </li>
 
-            {/* Service 3: AI Doctor */}
+            {/* Service 3 */}
             <li style={liStyle}>
               <span style={liCheckmarkStyle}>✓</span>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -478,42 +460,21 @@ function Hero() {
           <div style={btnGroupStyle}>
             <button
               style={btnHeroStyle}
-              onMouseEnter={(e) => {
-                Object.assign(e.target.style, btnHeroHoverStyle);
-              }}
-              onMouseLeave={(e) => {
-                Object.assign(e.target.style, btnHeroStyle);
-              }}
-              onClick={handleStartChecking}
+              onMouseEnter={(e) => Object.assign(e.target.style, btnHeroHoverStyle)}
+              onMouseLeave={(e) => Object.assign(e.target.style, btnHeroStyle)}
+              onClick={handleGetStarted}
               disabled={loading}
             >
-              {loading ? "Loading..." : "Analyze Symptoms"}
+              Get Started
             </button>
             <button
               style={btnHeroStyle}
-              onMouseEnter={(e) => {
-                Object.assign(e.target.style, btnHeroHoverStyle);
-              }}
-              onMouseLeave={(e) => {
-                Object.assign(e.target.style, btnHeroStyle);
-              }}
-              onClick={handleExploreDiseases}
+              onMouseEnter={(e) => Object.assign(e.target.style, btnHeroHoverStyle)}
+              onMouseLeave={(e) => Object.assign(e.target.style, btnHeroStyle)}
+              onClick={handleLoginClick}
               disabled={loading}
             >
-              {loading ? "Loading..." : "Explore Diseases"}
-            </button>
-            <button
-              style={btnHeroStyle}
-              onMouseEnter={(e) => {
-                Object.assign(e.target.style, btnHeroHoverStyle);
-              }}
-              onMouseLeave={(e) => {
-                Object.assign(e.target.style, btnHeroStyle);
-              }}
-              onClick={handleAIAssistance}
-              disabled={loading}
-            >
-              {loading ? "Loading..." : "AI Assistance"}
+              Login
             </button>
           </div>
         </div>
@@ -535,10 +496,8 @@ function Hero() {
         show={showLogin}
         onClose={() => {
           setShowLogin(false);
-          setRedirectPath("");
         }}
         onLoginSuccess={handleLoginSuccess}
-        redirectPath={redirectPath}
       />
     </section>
   );

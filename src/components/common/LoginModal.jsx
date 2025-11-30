@@ -56,7 +56,7 @@ function LoginModal({ show, onClose, message, onShowToast, onLoginSuccess, redir
       } else {
         onClose();
         setTimeout(() => {
-          navigate("/");
+          navigate("/dashboard");
         }, 100);
       }
 
@@ -130,7 +130,7 @@ function LoginModal({ show, onClose, message, onShowToast, onLoginSuccess, redir
       } else {
         onClose();
         setTimeout(() => {
-          navigate("/");
+          navigate("/dashboard");
         }, 100);
       }
 

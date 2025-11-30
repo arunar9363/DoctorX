@@ -581,14 +581,21 @@ function Navbar() {
     <>
       <nav style={styles.navbar}>
         <div style={styles.container}>
-          <Link style={styles.brand} to="/" onClick={closeMenu}>
+          {/* LOGO LINK: Redirects based on auth status */}
+          <Link style={styles.brand} to={user ? "/dashboard" : "/"} onClick={closeMenu}>
             <img style={styles.logo} src="/assets/MAINLOGO1.png" alt="DoctorX Logo" />
           </Link>
 
           {/* Desktop Navigation */}
           <div style={styles.desktopNav}>
             <ul style={styles.navLinks}>
-              <li><Link style={{ ...styles.navLink, ...(isActiveLink('/') ? styles.activeNavLink : {}) }} to="/">Home</Link></li>
+              {/* HOME/DASHBOARD TOGGLE */}
+              {!user ? (
+                <li><Link style={{ ...styles.navLink, ...(isActiveLink('/') ? styles.activeNavLink : {}) }} to="/">Home</Link></li>
+              ) : (
+                <li><Link style={{ ...styles.navLink, ...(isActiveLink('/dashboard') ? styles.activeNavLink : {}) }} to="/dashboard">Dashboard</Link></li>
+              )}
+
               {user && (
                 <>
                   <li><Link style={{ ...styles.navLink, ...(isActiveLink('/symptoms') ? styles.activeNavLink : {}) }} to="/symptoms">Analyze Symptoms</Link></li>
@@ -641,7 +648,13 @@ function Navbar() {
         {/* Mobile Menu */}
         <div style={styles.mobileMenu}>
           <ul style={styles.mobileNavLinks}>
-            <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/') ? styles.activeNavLink : {}) }} to="/" onClick={closeMenu}>Home</Link></li>
+            {/* MOBILE HOME/DASHBOARD TOGGLE */}
+            {!user ? (
+              <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/') ? styles.activeNavLink : {}) }} to="/" onClick={closeMenu}>Home</Link></li>
+            ) : (
+              <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/dashboard') ? styles.activeNavLink : {}) }} to="/dashboard" onClick={closeMenu}>Dashboard</Link></li>
+            )}
+
             {user && (
               <>
                 <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/symptoms') ? styles.activeNavLink : {}) }} to="/symptoms" onClick={closeMenu}>Analyze Symptoms</Link></li>

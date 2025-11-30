@@ -27,6 +27,7 @@ import TermsOfService from "./pages/TermsOfService";
 import DoctorXAIPage from "./pages/DoctorXAIPage";
 import HistoryPage from "./pages/HistoryPage";
 import ForgotPassword from './pages/ForgotPassword';
+import Dashboard from "./pages/Dashboard"; // --- ADDED: Dashboard Import ---
 
 
 // Wrapper for login modal page
@@ -86,6 +87,12 @@ function App() {
           <Route path="/terms" element={<TermsOfService />} />
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+
+          {/* --- ADDED: Protected Routes for Dashboard --- */}
+          <Route element={<ProtectedRouter />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+          </Route>
+
         </Routes>
       </Layout>
       <Analytics />
