@@ -369,7 +369,7 @@ function Dashboard() {
             }}
           >
             <div style={styles.textContainer}>
-              <h3 style={styles.cardTitle}>AI Assistant</h3>
+              <h3 style={styles.cardTitle}>Free AI Assistant</h3>
               <p style={styles.cardDesc}>Chat with DoctorXCare for personalized health guidance 24/7.</p>
               <div style={styles.arrowLink}>Chat Now →</div>
             </div>
