@@ -282,7 +282,7 @@ function Footer() {
               </div>
             </div>
             <p style={copyrightStyles}>Your AI-powered health companion. Instant symptom analysis, verified disease info, and 24/7 medical guidance. <br />
-              Founded, Designed & Developed by{' '} <br />
+              Founder & Developer: {' '}
               <a
                 href="https://www.linkedin.com/in/arun-pratap-singh-944491292"
                 target="_blank"
