@@ -3,7 +3,7 @@ import logo from '/assets/MAINLOGO1.png';
 function Footer() {
   const footerStyles = {
     background: 'var(--color-dark)',
-    padding: '60px 20px 40px',
+    padding: '60px 20px 20px', // Adjusted bottom padding
     fontFamily: '"Inter", sans-serif',
     borderTop: '1px solid #e5e5e5'
   };
@@ -70,7 +70,7 @@ function Footer() {
     fontSize: '1.1rem',
     fontWeight: '600',
     marginBottom: '20px',
-    color: 'var(--color-secondary)'
+    color: 'var(--color-primary)'
   };
 
   const footerSectionPStyles = {
@@ -104,7 +104,7 @@ function Footer() {
   };
 
   const linkStyles = {
-    color: 'var(--color-primary)',
+    color: 'var(--color-secondary)',
     textDecoration: 'none',
     fontSize: '0.9rem',
     transition: 'color 0.2s'
@@ -176,12 +176,7 @@ function Footer() {
     </svg>
   );
 
-  const YouTubeIcon = () => (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
-    </svg>
-  );
-
+  // ADDED THIS BACK TO FIX THE ERROR
   const LinkedInIcon = () => (
     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
       <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
@@ -286,8 +281,8 @@ function Footer() {
                 />
               </div>
             </div>
-            <p style={copyrightStyles}>
-              © 2025 DoctorXCare™ <br /> Founded, Designed & Developed by{' '} <br />
+            <p style={copyrightStyles}>Your AI-powered health companion. Instant symptom analysis, verified disease info, and 24/7 medical guidance. <br />
+              Founded, Designed & Developed by{' '} <br />
               <a
                 href="https://www.linkedin.com/in/arun-pratap-singh-944491292"
                 target="_blank"
@@ -298,7 +293,7 @@ function Footer() {
               >
                 Arun Pratap Singh
               </a>
-              {' '} <br /> Registered under MSME (Udyam-UP-28-0186274),<br />Government of India <br /> All Rights Reserved
+              {' '} <br /> Registered under MSME (Udyam-UP-28-0186274),<br />Government of India <br />.
             </p>
             {/* Social Media Icons */}
             <div style={socialIconsStyles}>
@@ -327,30 +322,8 @@ function Footer() {
                 <TwitterIcon />
               </a>
 
-              {/* <a
-                href="https://www.linkedin.com/in/arun-pratap-singh-944491292"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="Connect with us on LinkedIn"
-                className="social-icon-modern"
-                style={socialIconLinkStyles} 
-                onMouseOver={(e) => {
-                  e.target.style.background = 'var(--color-secondary)';
-                  e.target.style.color = 'white';
-                  e.target.style.borderColor = 'var(--color-secondary)';
-                  e.target.style.transform = 'translateY(-3px) scale(1.05)';
-                  e.target.style.boxShadow = '0 10px 25px rgba(13, 157, 184, 0.4)';
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.background = 'var(--color-fourth)';
-                  e.target.style.color = 'var(--color-dark)';
-                  e.target.style.borderColor = 'var(--color-secondary)';
-                  e.target.style.transform = 'translateY(0) scale(1)';
-                  e.target.style.boxShadow = 'none';
-                }}
-              >
-                <LinkedInIcon />
-              </a> */}
+              {/* LinkedIn icon is defined but unused to prevent error */}
+
               <a
                 href="https://www.instagram.com/doctorxcare.in/"
                 target="_blank"
@@ -406,7 +379,7 @@ function Footer() {
             </p>
             <p style={{ ...footerSectionPStyles, ...contactInfoStyles }}>
               WhatsApp: <a
-                href="tel:+91 7839059397"
+                href="https://wa.me/917839059397"
                 style={contactLinkStyles}
                 onMouseOver={(e) => e.target.style.textDecoration = 'underline'}
                 onMouseOut={(e) => e.target.style.textDecoration = 'none'}
@@ -457,7 +430,7 @@ function Footer() {
                   onMouseOver={(e) => e.target.style.color = 'var(--color-secondary)'}
                   onMouseOut={(e) => e.target.style.color = 'var(--color-primary)'}
                 >
-                  Audience
+                  For Patient
                 </a>
               </li>
               <li style={liStyles}>
@@ -507,13 +480,11 @@ function Footer() {
 
         {/* Disclaimer Section */}
         <div style={disclaimerStyles}>
-          <h4 style={disclaimerH4Styles}>Disclaimer</h4>
+          <h4 style={disclaimerH4Styles}>Medical Disclaimer</h4>
           <p style={disclaimerPStyles}>
-            DoctorXCare is an independent web project created in India for informational and educational purposes. It is not a licensed or certified medical device under Indian authorities such as the Central Drugs Standard Control Organization (CDSCO) or the Medical Device Rules, 2017, nor under international regulators such as the FDA (United States) or the CE marking system (European Union). For more information on its intended use, please see our Terms of Service.
+            DoctorXCare is an advanced digital health platform registered under the Ministry of MSME, Government of India. We leverage Artificial Intelligence to provide informational health insights and symptom analysis. While we strive for clinical accuracy, this platform is not a replacement for professional medical advice, diagnosis, or treatment. Always seek the advice of a qualified healthcare provider with any questions you may have regarding a medical condition. In case of a medical emergency, please contact your local emergency services immediately.
           </p>
-          <p style={disclaimerPStyles}>
-            DoctorXCare does not provide professional medical advice, diagnosis, or treatment. It is designed only to give general health-related information that may help guide your next steps. Always seek the advice of a qualified healthcare professional with any questions or concerns regarding a medical condition.
-          </p>
+
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -526,6 +497,19 @@ function Footer() {
           }}>
           </div>
         </div>
+
+        <div style={{
+          textAlign: 'center',
+          marginTop: '20px',
+          paddingTop: '20px',
+          borderTop: '1px solid rgba(128, 128, 128, 0.2)',
+          color: 'var(--color-primary)',
+          fontSize: '0.9rem',
+          opacity: 0.8
+        }}>
+          © 2025 DoctorXCare™ All Rights Reserved
+        </div>
+
       </footer>
     </>
   );
