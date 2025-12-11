@@ -293,7 +293,7 @@ function Footer() {
               >
                 Arun Pratap Singh
               </a>
-              {' '} <br /> Registered under MSME (Udyam-UP-28-0186274),<br />Government of India <br />.
+              {' '} <br /> Registered under MSME,<br />Government of India <br />.
             </p>
             {/* Social Media Icons */}
             <div style={socialIconsStyles}>
