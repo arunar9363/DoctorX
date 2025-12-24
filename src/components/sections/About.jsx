@@ -37,7 +37,7 @@ function About() {
               {/* Social Links */}
               <div className="founder-social-links">
                 <a 
-                  href="https://www.linkedin.com/in/arun-pratap-singh" 
+                  href="https://www.linkedin.com/in/arun-pratap-singh-944491292" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="social-link linkedin-link"
