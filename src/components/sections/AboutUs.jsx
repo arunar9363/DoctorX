@@ -18,7 +18,7 @@ function About() {
   return (
     <div className="allContainer">
       <div className="container about-container">
-        <h2 className="mb-4">About DoctorXCare</h2>
+        <h2 className="mb-4">About Us</h2>
 
         {/* ===== FOUNDER SECTION ===== */}
         <div className="founder-showcase-section">
