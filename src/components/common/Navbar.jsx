@@ -604,7 +604,7 @@ function Navbar() {
                 </>
               )}
               <li><Link style={{ ...styles.navLink, ...(isActiveLink('/audience') ? styles.activeNavLink : {}) }} to="/audience">Audience</Link></li>
-              <li><Link style={{ ...styles.navLink, ...(isActiveLink('/about') ? styles.activeNavLink : {}) }} to="/about">About Us</Link></li>
+              <li><Link style={{ ...styles.navLink, ...(isActiveLink('/aboutus') ? styles.activeNavLink : {}) }} to="/aboutus">About Us</Link></li>
               <li><Link style={{ ...styles.navLink, ...(isActiveLink('/terms') ? styles.activeNavLink : {}) }} to="/terms">Terms & Conditions</Link></li>
               <li><Link style={{ ...styles.navLink, ...(isActiveLink('/contact') ? styles.activeNavLink : {}) }} to="/contact">Feedback</Link></li>
             </ul>
@@ -663,7 +663,7 @@ function Navbar() {
               </>
             )}
             <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/audience') ? styles.activeNavLink : {}) }} to="/audience" onClick={closeMenu}>Audience</Link></li>
-            <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/about') ? styles.activeNavLink : {}) }} to="/about" onClick={closeMenu}>About Us</Link></li>
+            <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/aboutus') ? styles.activeNavLink : {}) }} to="/aboutus" onClick={closeMenu}>About Us</Link></li>
             <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/terms') ? styles.activeNavLink : {}) }} to="/terms" onClick={closeMenu}>Terms & Conditions</Link></li>
             <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/contact') ? styles.activeNavLink : {}) }} to="/contact" onClick={closeMenu}>Feedback</Link></li>
           </ul>

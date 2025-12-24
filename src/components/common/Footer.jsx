@@ -395,7 +395,7 @@ function Footer() {
             <ul style={ulStyles}>
               <li style={liStyles}>
                 <a
-                  href="/about"
+                  href="/aboutus"
                   style={linkStyles}
                   onMouseOver={(e) => e.target.style.color = 'var(--color-secondary)'}
                   onMouseOut={(e) => e.target.style.color = 'var(--color-primary)'}

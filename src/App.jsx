@@ -12,7 +12,7 @@ import Footer from "./components/common/Footer";
 import LoginModal from "./components/common/LoginModal";
 import ScrollToTop from "./components/common/ScrollToTop";
 import Audience from "./components/sections/Audience";
-import About from "./components/sections/About";
+import About from "./components/sections/AboutUs";
 import DiseaseFront from "./components/features/DiseasesFront";
 import DiseaseSearch from "./components/features/DiseaseSearch";
 import IndividualDiseasesInfo from "./components/features/IndividualDiseaseInfo";
@@ -80,7 +80,7 @@ function App() {
           />
           <Route path="/doctorx-ai" element={<DoctorXAIPage />} />
           <Route path="/audience" element={<Audience />} />
-          <Route path="/about" element={<About />} />
+          <Route path="/aboutus" element={<About />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/login" element={<LoginPageWrapper />} />
           <Route path="/register" element={<RegisterPage />} />

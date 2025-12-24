@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ScrollSpy from "bootstrap/js/dist/scrollspy";
-import '../../styles/About.css';
+import '../../styles/AboutUs.css';
 import { Github, Linkedin, Mail, ExternalLink } from 'lucide-react';
 
 function About() {
