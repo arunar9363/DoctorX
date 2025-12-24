@@ -27,7 +27,7 @@ function About() {
             <div className="founder-left">
               <div className="profile-image-wrapper">
                 <img 
-                  src="/public/assets/arun.jpg" 
+                  src="/assets/arun.jpg" 
                   alt="Arun Pratap Singh - Founder & Developer"
                   className="profile-image-circle"
                 />
