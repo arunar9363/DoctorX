@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import ScrollSpy from "bootstrap/js/dist/scrollspy";
 import '../../styles/About.css';
+import { Github, Linkedin, Mail, ExternalLink } from 'lucide-react';
 
 function About() {
   useEffect(() => {
@@ -18,7 +19,105 @@ function About() {
     <div className="allContainer">
       <div className="container about-container">
         <h2 className="mb-4">About DoctorXCare</h2>
-        <div className="row">
+
+        {/* ===== FOUNDER SECTION ===== */}
+        <div className="founder-showcase-section">
+          <div className="founder-container">
+            {/* Left Side - Image and Quick Links */}
+            <div className="founder-left">
+              <div className="profile-image-wrapper">
+                <img 
+                  src="/public/assets/arun.jpg" 
+                  alt="Arun Pratap Singh - Founder & Developer"
+                  className="profile-image-circle"
+                />
+                <div className="profile-badge">Founder</div>
+              </div>
+
+              {/* Social Links */}
+              <div className="founder-social-links">
+                <a 
+                  href="https://www.linkedin.com/in/arun-pratap-singh" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="social-link linkedin-link"
+                  title="LinkedIn Profile"
+                >
+                  <Linkedin size={20} />
+                  <span>LinkedIn</span>
+                </a>
+                
+                <a 
+                  href="mailto:arunstp45@gmail.com"
+                  className="social-link email-link"
+                  title="Send Email"
+                >
+                  <Mail size={20} />
+                  <span>Email</span>
+                </a>
+              </div>
+            </div>
+
+            {/* Right Side - Founder Details */}
+            <div className="founder-right">
+              <div className="founder-header">
+                <h3 className="founder-name">Arun Pratap Singh</h3>
+                <p className="founder-tagline">Founder, Full-Stack Developer & Designer</p>
+              </div>
+
+              <div className="founder-bio">
+                <p>
+                  Designed and developed single-handedly by <strong>Arun Pratap Singh</strong>, a visionary Full-Stack Developer and Founder. With deep expertise in Information Technology and AI integration, Arun architected DoctorXCare to bridge the critical gap between complex medical data and public accessibility. His mission is to democratize healthcare information, ensuring that smart, reliable, and user-friendly health guidance is available to everyone, everywhere.
+                </p>
+              </div>
+
+              {/* Roles & Responsibilities */}
+              <div className="founder-roles">
+                <div className="role-card">
+                  <h5 className="role-title">👨‍💻 Lead Architect</h5>
+                  <p className="role-description">
+                    Engineering a secure full-stack architecture using React.js and Node.js. Focused on integrating clinical AI, optimizing performance, and building a scalable digital health ecosystem.
+                  </p>
+                </div>
+                <div className="role-card">
+                  <h5 className="role-title">🎨 Product Designer</h5>
+                  <p className="role-description">
+                    Crafting empathetic, patient-centric interfaces that translate complex medical data into clarity. Prioritizing accessibility and intuitive design to ensure a stress-free experience for users of all ages.
+                  </p>
+                </div>
+                <div className="role-card">
+                  <h5 className="role-title">🚀 Founder & Visionary</h5>
+                  <p className="role-description">
+                    Driving the mission to democratize healthcare access through ethical AI. Strategizing a future where trusted medical guidance is instant, accessible, and free from misinformation for everyone.
+                  </p>
+                </div>
+              </div>
+
+              {/* CTA */}
+              <div className="founder-cta">
+                <a 
+                  href="https://www.linkedin.com/in/arun-pratap-singh"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="cta-button primary"
+                >
+                  <span>Connect on LinkedIn</span>
+                  <ExternalLink size={16} />
+                </a>
+                <a 
+                  href="mailto:arunstp45@gmail.com"
+                  className="cta-button secondary"
+                >
+                  <span>Get in Touch</span>
+                  <Mail size={16} />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ===== MAIN CONTENT WITH SIDEBAR ===== */}
+        <div className="row mt-5">
           {/* Sidebar */}
           <div className="col-md-4 mb-3">
             <div id="list-example" className="list-group sticky-top">
