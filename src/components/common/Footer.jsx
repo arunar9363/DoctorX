@@ -282,9 +282,7 @@ function Footer() {
               </div>
             </div>
             <p style={copyrightStyles}>Your AI-powered health companion. Instant symptom analysis, verified disease info, and 24/7 medical guidance. <br />
-              Founder & Developer: {' '}
-              
-              {' '} <br /> Registered under MSME,<br />Government of India <br />.
+              Registered under MSME,<br />Government of India <br /><br />
             </p>
             {/* Social Media Icons */}
             <div style={socialIconsStyles}>
@@ -346,16 +344,18 @@ function Footer() {
           {/* Get in Touch */}
           <div>
             <h4 style={footerSectionH4Styles}>Get in Touch</h4>
-            <p style={{ ...footerSectionPStyles, ...addressStyles }}><a
-              href="https://www.linkedin.com/in/arun-pratap-singh-944491292"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: 'var(--color-secondary)', textDecoration: 'none', fontWeight: '500' }}
-              onMouseOver={(e) => e.target.style.textDecoration = 'underline'}
-              onMouseOut={(e) => e.target.style.textDecoration = 'none'}
-            >
-              Arun Pratap Singh
-            </a>
+            <p style={{ ...footerSectionPStyles, ...addressStyles }}> Founder & Developer: {' '}
+              <a
+                href="https://www.linkedin.com/in/arun-pratap-singh-944491292"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: 'var(--color-secondary)', textDecoration: 'none', fontWeight: '500' }}
+                onMouseOver={(e) => e.target.style.textDecoration = 'underline'}
+                onMouseOut={(e) => e.target.style.textDecoration = 'none'}
+              >
+                Arun Pratap Singh
+              </a>
+              {' '}<br />
               Pocket-4 Phi-2 Greater Noida<br />
               India, 201310
             </p>
