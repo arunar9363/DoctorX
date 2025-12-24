@@ -62,7 +62,7 @@ function About() {
             <div className="founder-right">
               <div className="founder-header">
                 <h3 className="founder-name">Arun Pratap Singh</h3>
-                <p className="founder-tagline">Founder, Full-Stack Developer & Designer</p>
+                <p className="founder-tagline">Founder & Lead Developer of DoctorXCare</p>
               </div>
 
               <div className="founder-bio">
