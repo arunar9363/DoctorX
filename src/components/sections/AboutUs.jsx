@@ -98,7 +98,7 @@ function About() {
               {/* CTA */}
               <div className="founder-cta">
                 <a
-                  href="https://www.linkedin.com/in/arun-pratap-singh"
+                  href="https://www.linkedin.com/in/arun-pratap-singh-944491292"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="cta-button primary"
