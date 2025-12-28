@@ -168,15 +168,15 @@ function About() {
           <h4 id="sec-impact">Our Impact in Numbers</h4>
           <div className="impact-stats-grid">
             <div className="stat-item">
-              <h5>1500+</h5>
+              <h5>2000+</h5>
               <p>Hours of medical research and platform development invested to ensure accuracy and reliability</p>
             </div>
             <div className="stat-item">
-              <h5>100+</h5>
+              <h5>250+</h5>
               <p>Symptom assessments completed by users worldwide, helping individuals better understand their health concerns</p>
             </div>
             <div className="stat-item">
-              <h5>50+</h5>
+              <h5>200+</h5>
               <p>Monthly active users receiving health guidance and information through our platform</p>
             </div>
             <div className="stat-item">
