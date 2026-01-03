@@ -10,7 +10,7 @@ const styles = {
     color: "var(--color-dark, #1a1a1a)",
     minHeight: "100vh",
     marginTop: "50px",
-    padding: 20,
+    padding: 16,
     boxSizing: "border-box",
     animation: "fadeInUp 0.8s ease-out",
   },
@@ -20,81 +20,76 @@ const styles = {
   },
   mainTitle: {
     textAlign: "center",
-    fontSize: "2.5rem",
+    fontSize: "1.8rem",
     fontWeight: 700,
     color: "var(--color-secondary)",
-    marginBottom: 30,
+    marginBottom: 20,
     fontFamily: "'Merriweather', serif",
     animation: "slideInFromTop 0.8s ease-out 0.2s both",
   },
   card: {
-    borderRadius: 12,
-    padding: 30,
-    maxWidth: 900,
-    margin: "12px auto",
+    borderRadius: 10,
+    padding: 20,
+    maxWidth: 800,
+    margin: "10px auto",
     background: "rgba(255, 255, 255, 0.8)",
     backdropFilter: "blur(10px)",
     WebkitBackdropFilter: "blur(10px)",
-    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+    boxShadow: "0 6px 24px rgba(0, 0, 0, 0.1)",
     animation: "fadeInScale 0.8s ease-out 0.4s both",
     color: "var(--color-dark, #1a1a1a)",
   },
   left: {
     width: "100%",
   },
-  rightImg: {
-    width: 180,
-    height: "auto",
-    alignSelf: "center",
-  },
   header: {
     textAlign: "left",
-    marginBottom: 20,
+    marginBottom: 16,
   },
   title: {
-    fontSize: "2rem",
+    fontSize: "1.5rem",
     fontWeight: 700,
     color: "var(--color-secondary)",
-    marginBottom: 8,
+    marginBottom: 6,
   },
   subtitle: {
-    fontSize: "1rem",
+    fontSize: "0.85rem",
     color: "var(--color-text-secondary, #666666)",
     opacity: 0.9,
-    lineHeight: 1.5,
+    lineHeight: 1.4,
   },
-  field: { marginBottom: 16 },
+  field: { marginBottom: 14 },
   label: {
     display: "block",
-    marginBottom: 8,
+    marginBottom: 6,
     fontWeight: 600,
     color: "var(--color-text-primary, #1a1a1a)",
-    fontSize: "0.95rem"
+    fontSize: "0.85rem"
   },
   input: {
     width: "100%",
-    padding: "14px 16px",
-    borderRadius: 12,
+    padding: "10px 12px",
+    borderRadius: 10,
     border: "none",
     outline: "none",
     boxSizing: "border-box",
-    fontSize: "16px",
+    fontSize: "14px",
     background: "rgba(107, 114, 128, 0.1)",
     color: "var(--color-text-primary, #1a1a1a)",
     backdropFilter: "blur(10px)",
     WebkitBackdropFilter: "blur(10px)",
-    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)",
+    boxShadow: "0 3px 5px -1px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)",
     transition: "all 0.3s ease",
     fontFamily: "'Inter', sans-serif",
   },
   darkInput: {
     background: "rgba(55, 65, 81, 0.8)",
     color: "#e5e7eb",
-    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
+    boxShadow: "0 3px 5px -1px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
   },
   darkCard: {
     background: "rgba(15, 23, 42, 0.9)",
-    boxShadow: "0 8px 32px rgba(0, 0, 0, 0.3)",
+    boxShadow: "0 6px 24px rgba(0, 0, 0, 0.3)",
     color: "#e5e7eb",
   },
   darkConditionItem: {
@@ -120,22 +115,22 @@ const styles = {
     background: "var(--color-secondary, #0d9db8)",
     color: "var(--color-primary, #ffffff)",
     border: "none",
-    padding: "14px 24px",
-    borderRadius: 12,
+    padding: "10px 18px",
+    borderRadius: 10,
     cursor: "pointer",
     fontWeight: 600,
-    fontSize: "16px",
+    fontSize: "14px",
     transition: "all 0.3s ease",
-    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+    boxShadow: "0 3px 10px rgba(0, 0, 0, 0.15)",
   },
   btnGhost: {
     background: "transparent",
     color: "var(--color-text-primary, #1a1a1a)",
     border: "1px solid rgba(13, 157, 184, 0.3)",
-    padding: "12px 20px",
-    borderRadius: 12,
+    padding: "9px 16px",
+    borderRadius: 10,
     cursor: "pointer",
-    fontSize: "16px",
+    fontSize: "14px",
     fontWeight: 500,
     transition: "all 0.3s ease",
   },
@@ -147,13 +142,13 @@ const styles = {
     background: "rgba(13, 157, 184, 0.1)",
     color: "var(--color-secondary)",
     border: "1px solid var(--color-secondary)",
-    padding: "12px 20px",
-    borderRadius: 12,
+    padding: "9px 16px",
+    borderRadius: 10,
     cursor: "pointer",
-    fontSize: "16px",
+    fontSize: "14px",
     fontWeight: 500,
     transition: "all 0.3s ease",
-    margin: "20px auto",
+    margin: "16px auto",
     display: "block",
     textAlign: "center",
     textDecoration: "none",
@@ -163,41 +158,42 @@ const styles = {
     alignItems: "center",
     background: "rgba(13,157,184,0.1)",
     color: "var(--color-secondary, #0d9db8)",
-    padding: "6px 12px",
-    borderRadius: 12,
-    marginRight: 8,
-    marginBottom: 8,
-    fontSize: "0.9rem",
+    padding: "5px 10px",
+    borderRadius: 10,
+    marginRight: 6,
+    marginBottom: 6,
+    fontSize: "0.8rem",
     border: "1px solid rgba(13,157,184,0.2)",
   },
   removeBtn: {
     background: "none",
     border: "none",
     color: "#ef4444",
-    marginLeft: 8,
+    marginLeft: 6,
     cursor: "pointer",
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "bold",
   },
   questionCard: {
     background: "rgba(13,157,184,0.05)",
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 16,
+    padding: 16,
+    borderRadius: 10,
+    marginBottom: 14,
     border: "1px solid rgba(13,157,184,0.2)",
     backdropFilter: "blur(5px)",
     WebkitBackdropFilter: "blur(5px)",
     color: "var(--color-text-primary, #1a1a1a)",
+    animation: "slideInQuestion 0.5s ease-out",
   },
   choiceButton: {
     background: "var(--color-primary, #ffffff)",
     border: "1px solid rgba(13,157,184,0.3)",
-    padding: "10px 18px",
-    borderRadius: 10,
-    margin: "4px 8px 4px 0",
+    padding: "10px 14px",
+    borderRadius: 8,
+    margin: "6px 10px 6px 0",
     cursor: "pointer",
     transition: "all 0.2s",
-    fontSize: "0.95rem",
+    fontSize: "0.85rem",
     color: "var(--color-text-primary, #1a1a1a)",
   },
   choiceButtonDark: {
@@ -207,9 +203,9 @@ const styles = {
   },
   conditionItem: {
     background: "rgba(255, 255, 255, 0.6)",
-    padding: 16,
-    borderRadius: 10,
-    marginBottom: 10,
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 8,
     border: "1px solid rgba(13,157,184,0.1)",
     backdropFilter: "blur(5px)",
     WebkitBackdropFilter: "blur(5px)",
@@ -218,10 +214,11 @@ const styles = {
   errorBox: {
     background: "#fee",
     color: "#c00",
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 12,
+    padding: 10,
+    borderRadius: 6,
+    marginBottom: 10,
     border: "1px solid #fcc",
+    fontSize: "0.85rem",
   },
   errorBoxDark: {
     background: "rgba(239, 68, 68, 0.1)",
@@ -231,10 +228,11 @@ const styles = {
   warningBox: {
     background: "#fff3cd",
     color: "#856404",
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 12,
+    padding: 10,
+    borderRadius: 6,
+    marginBottom: 10,
     border: "1px solid #ffeaa7",
+    fontSize: "0.85rem",
   },
   warningBoxDark: {
     background: "rgba(245, 158, 11, 0.1)",
@@ -245,39 +243,24 @@ const styles = {
     textAlign: 'center'
   },
   loader: {
-    width: '48px',
-    height: '48px',
+    width: '40px',
+    height: '40px',
     borderRadius: '50%',
     display: 'inline-block',
-    borderTop: '4px solid var(--color-secondary)',
-    borderRight: '4px solid transparent',
-    borderBottom: '4px solid transparent',
-    borderLeft: '4px solid transparent',
+    borderTop: '3px solid var(--color-secondary)',
+    borderRight: '3px solid transparent',
+    borderBottom: '3px solid transparent',
+    borderLeft: '3px solid transparent',
     boxSizing: 'border-box',
     animation: 'rotation 1s linear infinite',
     position: 'relative'
   },
-  loaderAfter: {
-    content: "''",
-    boxSizing: 'border-box',
-    position: 'absolute',
-    left: '0',
-    top: '0',
-    width: '48px',
-    height: '48px',
-    borderRadius: '50%',
-    borderLeft: '4px solid var(--color-third)',
-    borderBottom: '4px solid transparent',
-    borderTop: '4px solid transparent',
-    borderRight: '4px solid transparent',
-    animation: 'rotation 0.5s linear infinite reverse'
-  },
   searchResultsContainer: {
-    marginBottom: 16,
-    maxHeight: 200,
+    marginBottom: 14,
+    maxHeight: 180,
     overflowY: "auto",
     border: "1px solid rgba(13,157,184,0.2)",
-    borderRadius: 12,
+    borderRadius: 10,
     background: "rgba(255, 255, 255, 0.8)",
     backdropFilter: "blur(5px)",
     WebkitBackdropFilter: "blur(5px)",
@@ -290,9 +273,10 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 12,
+    padding: 10,
     borderBottom: "1px solid rgba(13,157,184,0.1)",
     color: "var(--color-text-primary, #1a1a1a)",
+    fontSize: "0.85rem",
   },
   searchResultItemDark: {
     color: "#e5e7eb",
@@ -301,12 +285,13 @@ const styles = {
   searchResultName: {
     fontWeight: "bold",
     color: "var(--color-text-primary, #1a1a1a)",
+    fontSize: "0.85rem",
   },
   searchResultNameDark: {
     color: "#e5e7eb",
   },
   searchResultCommonName: {
-    fontSize: 12,
+    fontSize: 11,
     color: "#666",
   },
   searchResultCommonNameDark: {
@@ -314,22 +299,23 @@ const styles = {
   },
   infoBox: {
     background: "rgba(13,157,184,0.05)",
-    padding: 16,
-    borderRadius: 8,
-    marginBottom: 20,
-    borderLeft: "4px solid var(--color-secondary, #0d9db8)",
+    padding: 12,
+    borderRadius: 6,
+    marginBottom: 16,
+    borderLeft: "3px solid var(--color-secondary, #0d9db8)",
     color: "var(--color-text-primary, #1a1a1a)",
+    fontSize: "0.85rem",
   },
   infoBoxDark: {
     background: "rgba(13,157,184,0.1)",
     color: "#e5e7eb",
   },
   disclaimerBox: {
-    marginTop: 20,
-    padding: 12,
+    marginTop: 16,
+    padding: 10,
     background: "#fff3cd",
-    borderRadius: 8,
-    fontSize: 12,
+    borderRadius: 6,
+    fontSize: 11,
     color: "#856404",
   },
   disclaimerBoxDark: {
@@ -338,10 +324,11 @@ const styles = {
   },
   careRecommendations: {
     background: "#f8f9fa",
-    padding: 16,
-    borderRadius: 8,
+    padding: 12,
+    borderRadius: 6,
     border: "1px solid #e9ecef",
     color: "#1a1a1a",
+    fontSize: "0.85rem",
   },
   careRecommendationsDark: {
     background: "rgba(31, 41, 55, 0.6)",
@@ -350,24 +337,32 @@ const styles = {
   },
   takeCareMessage: {
     background: "linear-gradient(135deg, rgba(13,157,184,0.1), rgba(13,157,184,0.05))",
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 20,
+    padding: 14,
+    borderRadius: 10,
+    marginBottom: 16,
     border: "1px solid rgba(13,157,184,0.2)",
     color: "var(--color-text-primary, #1a1a1a)",
+    fontSize: "0.85rem",
   },
   takeCareMessageDark: {
     background: "linear-gradient(135deg, rgba(13,157,184,0.15), rgba(13,157,184,0.08))",
     border: "1px solid rgba(13,157,184,0.3)",
     color: "#e5e7eb",
+  },
+  probabilityBadge: {
+    display: "inline-block",
+    padding: "4px 10px",
+    borderRadius: 6,
+    fontWeight: "bold",
+    fontSize: "0.8rem",
+    marginLeft: 8,
   }
 };
 
 export default function InfermedicaTriageSymptomChecker({
   // eslint-disable-next-line no-undef
-  apiBaseUrl = process.env.NODE_ENV === 'production' ? "/api" : "/api", // Use relative URLs for both
+  apiBaseUrl = process.env.NODE_ENV === 'production' ? "/api" : "/api",
 }) {
-  // Patient info state
   const [step, setStep] = useState(0);
   const [patientInfo, setPatientInfo] = useState({
     name: "",
@@ -375,37 +370,31 @@ export default function InfermedicaTriageSymptomChecker({
     sex: "male",
   });
 
-  // UI state
   const [isDarkTheme, setIsDarkTheme] = useState(false);
   const [isPageLoading, setIsPageLoading] = useState(true);
 
-  // Symptoms and evidence state
   const [symptoms, setSymptoms] = useState([]);
   const [symptomSearch, setSymptomSearch] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [evidence, setEvidence] = useState([]);
-  const [allSymptoms, setAllSymptoms] = useState([]); // Cache all symptoms
+  const [allSymptoms, setAllSymptoms] = useState([]);
 
-  // Diagnosis flow state
   const [currentQuestion, setCurrentQuestion] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [conditions, setConditions] = useState([]);
   const [finalResult, setFinalResult] = useState(null);
   const [error, setError] = useState(null);
   const [questionCount, setQuestionCount] = useState(0);
-  const [maxQuestions] = useState(18); // Limit to 15-20 questions for better accuracy
+  const [maxQuestions] = useState(18);
 
-  // Authentication and save states
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isSavingAssessment, setIsSavingAssessment] = useState(false);
   const [assessmentSaved, setAssessmentSaved] = useState(false);
 
-  // Toast state
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState('success');
 
-  // Check authentication
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setIsAuthenticated(!!user);
@@ -413,7 +402,6 @@ export default function InfermedicaTriageSymptomChecker({
     return () => unsubscribe();
   }, []);
 
-  // Show toast notification
   const showToast = (message, type = 'success') => {
     setToastMessage(message);
     setToastType(type);
@@ -423,7 +411,6 @@ export default function InfermedicaTriageSymptomChecker({
     }, 4000);
   };
 
-  // Check for dark theme and handle page loading
   useEffect(() => {
     const checkTheme = () => {
       const theme = document.documentElement.getAttribute('data-theme');
@@ -434,7 +421,6 @@ export default function InfermedicaTriageSymptomChecker({
     const observer = new MutationObserver(checkTheme);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
-    // Simulate page loading
     const loadingTimer = setTimeout(() => {
       setIsPageLoading(false);
     }, 1500);
@@ -445,14 +431,12 @@ export default function InfermedicaTriageSymptomChecker({
     };
   }, []);
 
-  // Load all symptoms on component mount
   useEffect(() => {
     if (!isPageLoading) {
       loadAllSymptoms();
     }
   }, [patientInfo.age, isPageLoading]);
 
-  // API helper function with better error handling
   const apiCall = async (endpoint, options = {}) => {
     setError(null);
     try {
@@ -487,7 +471,6 @@ export default function InfermedicaTriageSymptomChecker({
     }
   };
 
-  // Load all symptoms for local filtering
   const loadAllSymptoms = async () => {
     try {
       const result = await apiCall(`/symptoms?age=${patientInfo.age}`);
@@ -495,7 +478,6 @@ export default function InfermedicaTriageSymptomChecker({
       setAllSymptoms(Array.isArray(result) ? result : []);
     } catch (err) {
       console.error("Failed to load symptoms:", err);
-      // Fallback: use common symptoms if API fails
       setAllSymptoms([
         { id: "s_1193", name: "Headache", common_name: "Headache" },
         { id: "s_1394", name: "Fever", common_name: "Fever" },
@@ -506,7 +488,6 @@ export default function InfermedicaTriageSymptomChecker({
     }
   };
 
-  // Search symptoms with local filtering and API suggest as fallback
   const searchSymptoms = async (query) => {
     if (!query || query.length < 2) {
       setSearchResults([]);
@@ -514,7 +495,6 @@ export default function InfermedicaTriageSymptomChecker({
     }
 
     try {
-      // First try local filtering of all symptoms
       const localResults = allSymptoms.filter(symptom =>
         symptom.name.toLowerCase().includes(query.toLowerCase()) ||
         (symptom.common_name && symptom.common_name.toLowerCase().includes(query.toLowerCase()))
@@ -526,7 +506,6 @@ export default function InfermedicaTriageSymptomChecker({
         return;
       }
 
-      // Fallback to API suggest endpoint if no local results
       console.log("No local results, trying API suggest...");
 
       const response = await fetch(`${apiBaseUrl}/symptoms?q=${encodeURIComponent(query)}&age=${patientInfo.age}`, {
@@ -542,14 +521,12 @@ export default function InfermedicaTriageSymptomChecker({
       }
     } catch (err) {
       console.error("Symptom search failed:", err);
-      // Show available symptoms as fallback
       const fallbackResults = allSymptoms.slice(0, 10);
       setSearchResults(fallbackResults);
       setError("Search temporarily unavailable. Showing common symptoms.");
     }
   };
 
-  // Debounced search effect
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (symptomSearch) {
@@ -559,7 +536,6 @@ export default function InfermedicaTriageSymptomChecker({
     return () => clearTimeout(timeoutId);
   }, [symptomSearch, patientInfo.age, allSymptoms]);
 
-  // Add symptom to evidence
   const addSymptom = (symptom) => {
     const newEvidenceItem = {
       id: symptom.id,
@@ -584,13 +560,11 @@ export default function InfermedicaTriageSymptomChecker({
     setSearchResults([]);
   };
 
-  // Remove symptom from evidence
   const removeSymptom = (symptomId) => {
     setEvidence(prev => prev.filter(e => e.id !== symptomId));
     setSymptoms(prev => prev.filter(s => s.id !== symptomId));
   };
 
-  // Start diagnosis flow with better validation
   const startDiagnosis = async () => {
     if (evidence.length === 0) {
       setError("Please add at least one symptom before starting diagnosis.");
@@ -606,7 +580,7 @@ export default function InfermedicaTriageSymptomChecker({
         sex: patientInfo.sex,
         age: {
           value: parseInt(patientInfo.age),
-          unit: "year" // Fixed: use "year" not "years"
+          unit: "year"
         },
         evidence: evidence
       };
@@ -619,20 +593,17 @@ export default function InfermedicaTriageSymptomChecker({
 
       console.log("Diagnosis result:", result);
 
-      // Check if we have questions
       if (result.question && result.question.text) {
         setCurrentQuestion(result.question);
         setConditions(result.conditions || []);
         setQuestionCount(1);
         setStep(2);
       } else if (result.conditions && result.conditions.length > 0) {
-        // No questions but we have conditions
         setConditions(result.conditions);
         setFinalResult(result);
         setStep(3);
       } else {
         setError("No diagnosis results received. This might indicate an issue with the selected symptoms.");
-        // Still proceed to show what we have
         setConditions([]);
         setStep(3);
       }
@@ -644,7 +615,6 @@ export default function InfermedicaTriageSymptomChecker({
     }
   };
 
-  // Answer a diagnosis question
   const answerQuestion = async (answerId, choiceId) => {
     if (answerId === "skip") {
       return continueDialogue();
@@ -671,12 +641,10 @@ export default function InfermedicaTriageSymptomChecker({
     }
   };
 
-  // Continue the diagnosis dialogue with question limit
   const continueDialogue = async (updatedEvidence = evidence) => {
     setIsLoading(true);
     setError(null);
 
-    // Check if we've reached the question limit
     if (questionCount >= maxQuestions) {
       console.log(`Reached question limit (${maxQuestions}), proceeding to results`);
       setCurrentQuestion(null);
@@ -708,7 +676,6 @@ export default function InfermedicaTriageSymptomChecker({
         setConditions(result.conditions || []);
         setQuestionCount(prev => prev + 1);
       } else {
-        // No more questions or reached limit, show final results
         setCurrentQuestion(null);
         setConditions(result.conditions || []);
         setFinalResult(result);
@@ -722,7 +689,6 @@ export default function InfermedicaTriageSymptomChecker({
     }
   };
 
-  // Get triage recommendation
   const getTriage = async () => {
     setIsLoading(true);
     setError(null);
@@ -732,7 +698,7 @@ export default function InfermedicaTriageSymptomChecker({
         sex: patientInfo.sex,
         age: {
           value: parseInt(patientInfo.age),
-          unit: "year" // Fixed: use "year" not "years"
+          unit: "year"
         },
         evidence: evidence,
       };
@@ -753,7 +719,6 @@ export default function InfermedicaTriageSymptomChecker({
     }
   };
 
-  // Get care recommendations based on triage level
   const getCareRecommendations = (triageLevel) => {
     const recommendations = {
       'emergency': [
@@ -846,7 +811,20 @@ export default function InfermedicaTriageSymptomChecker({
     return colors[level] || '#f3f4f6';
   };
 
-  // Save assessment to Firebase
+  // Get probability level styling
+  const getProbabilityLevel = (probability) => {
+    const percent = probability * 100;
+    if (percent >= 70) {
+      return { text: 'High', color: '#ef4444', bg: '#fee2e2' };
+    } else if (percent >= 40) {
+      return { text: 'Medium', color: '#f59e0b', bg: '#fef3c7' };
+    } else if (percent >= 20) {
+      return { text: 'Low', color: '#3b82f6', bg: '#dbeafe' };
+    } else {
+      return { text: 'Minimal', color: '#10b981', bg: '#d1fae5' };
+    }
+  };
+
   const handleSaveAssessment = async () => {
     if (!isAuthenticated) {
       showToast('Please log in to save your assessment', 'error');
@@ -888,7 +866,6 @@ export default function InfermedicaTriageSymptomChecker({
     }
   };
 
-  // Reset everything
   const reset = () => {
     setStep(0);
     setSymptoms([]);
@@ -903,12 +880,10 @@ export default function InfermedicaTriageSymptomChecker({
     setAssessmentSaved(false);
   };
 
-  // Helper function to get themed styles
   const getThemedStyle = (baseStyle, darkStyle = {}) => {
     return isDarkTheme ? { ...baseStyle, ...darkStyle } : baseStyle;
   };
 
-  // Render patient info form
   const renderPatientForm = () => (
     <div>
       <div style={styles.header}>
@@ -956,7 +931,6 @@ export default function InfermedicaTriageSymptomChecker({
     </div>
   );
 
-  // Render symptom selection with improved UI
   const renderSymptomSelection = () => (
     <div>
       <div style={styles.header}>
@@ -997,8 +971,8 @@ export default function InfermedicaTriageSymptomChecker({
       )}
 
       {symptoms.length > 0 && (
-        <div style={{ marginBottom: 16 }}>
-          <h4 style={getThemedStyle({ color: "var(--color-text-primary, #1a1a1a)" }, styles.darkText)}>Selected Symptoms:</h4>
+        <div style={{ marginBottom: 14 }}>
+          <h4 style={getThemedStyle({ color: "var(--color-text-primary, #1a1a1a)", fontSize: "0.95rem" }, styles.darkText)}>Selected Symptoms:</h4>
           <div>
             {symptoms.map((symptom) => (
               <span key={symptom.id} style={styles.symptomChip}>
@@ -1042,7 +1016,6 @@ export default function InfermedicaTriageSymptomChecker({
     </div>
   );
 
-  // Render question
   const renderQuestion = () => (
     <div>
       <div style={styles.header}>
@@ -1056,11 +1029,11 @@ export default function InfermedicaTriageSymptomChecker({
 
       {currentQuestion && (
         <div style={getThemedStyle(styles.questionCard, styles.darkQuestionCard)}>
-          <h3 style={{ marginBottom: 12, color: isDarkTheme ? "#e5e7eb" : "#1a1a1a" }}>{currentQuestion.text}</h3>
+          <h3 style={{ marginBottom: 10, color: isDarkTheme ? "#e5e7eb" : "#1a1a1a", fontSize: "1rem" }}>{currentQuestion.text}</h3>
 
           {currentQuestion.type === "single" && currentQuestion.items && currentQuestion.items.length > 0 && (
-            <div style={{ marginTop: 12 }}>
-              <div style={{ marginBottom: 12, fontWeight: 500, color: isDarkTheme ? "#e5e7eb" : "#1a1a1a" }}>
+            <div style={{ marginTop: 10 }}>
+              <div style={{ marginBottom: 10, fontWeight: 500, color: isDarkTheme ? "#e5e7eb" : "#1a1a1a", fontSize: "0.9rem" }}>
                 {currentQuestion.items[0].name}
               </div>
               <button
@@ -1088,7 +1061,7 @@ export default function InfermedicaTriageSymptomChecker({
           )}
 
           {currentQuestion.type === "group_single" && currentQuestion.items && (
-            <div style={{ marginTop: 12 }}>
+            <div style={{ marginTop: 10 }}>
               {currentQuestion.items.map((item) => (
                 <button
                   key={item.id}
@@ -1110,8 +1083,8 @@ export default function InfermedicaTriageSymptomChecker({
           )}
 
           {currentQuestion.type === "group_multiple" && currentQuestion.items && (
-            <div style={{ marginTop: 12 }}>
-              <div style={{ marginBottom: 8, fontSize: 14, color: isDarkTheme ? "#9ca3af" : "#666" }}>
+            <div style={{ marginTop: 10 }}>
+              <div style={{ marginBottom: 8, fontSize: 13, color: isDarkTheme ? "#9ca3af" : "#666" }}>
                 Select all that apply:
               </div>
               {currentQuestion.items.map((item) => (
@@ -1124,7 +1097,7 @@ export default function InfermedicaTriageSymptomChecker({
                   {item.name}
                 </button>
               ))}
-              <div style={{ marginTop: 12 }}>
+              <div style={{ marginTop: 10 }}>
                 <button
                   onClick={() => continueDialogue()}
                   disabled={isLoading}
@@ -1136,15 +1109,14 @@ export default function InfermedicaTriageSymptomChecker({
             </div>
           )}
 
-          {/* Add skip to results button */}
-          <div style={{ marginTop: 16, paddingTop: 16, borderTop: isDarkTheme ? "1px solid #374151" : "1px solid #eee" }}>
+          <div style={{ marginTop: 14, paddingTop: 14, borderTop: isDarkTheme ? "1px solid #374151" : "1px solid #eee" }}>
             <button
               onClick={() => {
                 setCurrentQuestion(null);
                 setStep(3);
               }}
               disabled={isLoading}
-              style={{ ...getThemedStyle(styles.btnGhost, styles.btnGhostDark), fontSize: "0.9rem" }}
+              style={{ ...getThemedStyle(styles.btnGhost, styles.btnGhostDark), fontSize: "0.8rem" }}
             >
               Skip remaining questions and see results
             </button>
@@ -1153,18 +1125,18 @@ export default function InfermedicaTriageSymptomChecker({
       )}
 
       {conditions.length > 0 && (
-        <div style={{ marginTop: 16 }}>
-          <h4 style={getThemedStyle({ color: "var(--color-text-primary, #1a1a1a)" }, styles.darkText)}>Current Possible Conditions:</h4>
+        <div style={{ marginTop: 14 }}>
+          <h4 style={getThemedStyle({ color: "var(--color-text-primary, #1a1a1a)", fontSize: "0.95rem" }, styles.darkText)}>Current Possible Conditions:</h4>
           {conditions.slice(0, 3).map((condition) => (
             <div key={condition.id} style={getThemedStyle(styles.conditionItem, styles.darkConditionItem)}>
-              <strong style={{ color: isDarkTheme ? "#e5e7eb" : "#1a1a1a" }}>{condition.name}</strong>
-              <span style={{ marginLeft: 8, color: isDarkTheme ? "#9ca3af" : "#666" }}>
+              <strong style={{ color: isDarkTheme ? "#e5e7eb" : "#1a1a1a", fontSize: "0.85rem" }}>{condition.name}</strong>
+              <span style={{ marginLeft: 6, color: isDarkTheme ? "#9ca3af" : "#666", fontSize: "0.75rem" }}>
                 ({Math.round(condition.probability * 100)}% probability)
               </span>
             </div>
           ))}
           {conditions.length > 3 && (
-            <div style={{ fontSize: "0.9rem", color: isDarkTheme ? "#9ca3af" : "#666", marginTop: 8 }}>
+            <div style={{ fontSize: "0.8rem", color: isDarkTheme ? "#9ca3af" : "#666", marginTop: 6 }}>
               ...and {conditions.length - 3} more conditions
             </div>
           )}
@@ -1186,47 +1158,58 @@ export default function InfermedicaTriageSymptomChecker({
 
       {error && <div style={getThemedStyle(styles.errorBox, styles.errorBoxDark)}>{error}</div>}
 
-      {/* Personalized greeting */}
       {patientInfo.name && (
         <div style={getThemedStyle(styles.infoBox, styles.infoBoxDark)}>
-          <h4 style={{ margin: 0, color: "var(--color-secondary, #0d9db8)" }}>
+          <h4 style={{ margin: 0, color: "var(--color-secondary, #0d9db8)", fontSize: "0.95rem" }}>
             Hello {patientInfo.name},
           </h4>
-          <p style={{ margin: "8px 0 0 0", fontSize: "0.95rem", color: isDarkTheme ? "#e5e7eb" : "#1a1a1a" }}>
+          <p style={{ margin: "6px 0 0 0", fontSize: "0.8rem", color: isDarkTheme ? "#e5e7eb" : "#1a1a1a" }}>
             Based on your symptoms and responses, here's what our AI assessment found:
           </p>
         </div>
       )}
 
       {conditions.length > 0 && (
-        <div style={{ marginBottom: 20 }}>
-          <h3 style={getThemedStyle({ color: "var(--color-text-primary, #1a1a1a)" }, styles.darkText)}>Possible Conditions:</h3>
-          <div style={{ marginBottom: 12, fontSize: "0.9rem", color: isDarkTheme ? "#9ca3af" : "#666" }}>
+        <div style={{ marginBottom: 16 }}>
+          <h3 style={getThemedStyle({ color: "var(--color-text-primary, #1a1a1a)", fontSize: "1.1rem" }, styles.darkText)}>Possible Conditions:</h3>
+          <div style={{ marginBottom: 10, fontSize: "0.8rem", color: isDarkTheme ? "#9ca3af" : "#666" }}>
             These are potential conditions based on your symptoms. A healthcare provider can provide proper diagnosis.
           </div>
-          {conditions.map((condition, index) => (
-            <div key={condition.id} style={{
-              ...getThemedStyle(styles.conditionItem, styles.darkConditionItem),
-              background: index === 0 ? "rgba(13,157,184,0.1)" : getThemedStyle(styles.conditionItem, styles.darkConditionItem).background
-            }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <strong style={{ color: isDarkTheme ? "#e5e7eb" : "#1a1a1a" }}>{condition.name}</strong>
-                <span style={{ color: "#0d9db8", fontWeight: "bold" }}>
-                  {Math.round(condition.probability * 100)}%
-                </span>
+          {conditions.map((condition, index) => {
+            const probLevel = getProbabilityLevel(condition.probability);
+            return (
+              <div key={condition.id} style={{
+                ...getThemedStyle(styles.conditionItem, styles.darkConditionItem),
+                background: index === 0 ? "rgba(13,157,184,0.1)" : getThemedStyle(styles.conditionItem, styles.darkConditionItem).background
+              }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "8px" }}>
+                  <strong style={{ color: isDarkTheme ? "#e5e7eb" : "#1a1a1a", fontSize: "0.9rem" }}>{condition.name}</strong>
+                  <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <span style={{
+                      ...styles.probabilityBadge,
+                      background: probLevel.bg,
+                      color: probLevel.color
+                    }}>
+                      {probLevel.text}
+                    </span>
+                    <span style={{ color: "#0d9db8", fontWeight: "bold", fontSize: "0.85rem" }}>
+                      {Math.round(condition.probability * 100)}%
+                    </span>
+                  </div>
+                </div>
+                {condition.common_name && condition.common_name !== condition.name && (
+                  <div style={{ fontSize: 11, color: isDarkTheme ? "#9ca3af" : "#666", marginTop: 3 }}>
+                    Also known as: {condition.common_name}
+                  </div>
+                )}
+                {index === 0 && (
+                  <div style={{ fontSize: "0.75rem", color: "#0d9db8", marginTop: 4, fontStyle: "italic" }}>
+                    Most likely condition based on your symptoms
+                  </div>
+                )}
               </div>
-              {condition.common_name && condition.common_name !== condition.name && (
-                <div style={{ fontSize: 12, color: isDarkTheme ? "#9ca3af" : "#666", marginTop: 4 }}>
-                  Also known as: {condition.common_name}
-                </div>
-              )}
-              {index === 0 && (
-                <div style={{ fontSize: "0.85rem", color: "#0d9db8", marginTop: 6, fontStyle: "italic" }}>
-                  Most likely condition based on your symptoms
-                </div>
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -1237,22 +1220,23 @@ export default function InfermedicaTriageSymptomChecker({
       )}
 
       {finalResult?.triage && (
-        <div style={{ background: "rgba(13,157,184,0.1)", padding: 16, borderRadius: 8, marginBottom: 16 }}>
-          <h3 style={getThemedStyle({ color: "var(--color-text-primary, #1a1a1a)" }, styles.darkText)}>Recommended Care Level:</h3>
-          <div style={{ fontSize: 18, fontWeight: "bold", color: "#0d9db8" }}>
+        <div style={{ background: "rgba(13,157,184,0.1)", padding: 12, borderRadius: 6, marginBottom: 14 }}>
+          <h3 style={getThemedStyle({ color: "var(--color-text-primary, #1a1a1a)", fontSize: "1rem" }, styles.darkText)}>Recommended Care Level:</h3>
+          <div style={{ fontSize: 16, fontWeight: "bold", color: "#0d9db8" }}>
             {getTriageDisplayText(finalResult.triage.triage_level)}
           </div>
           {finalResult.triage.description && (
-            <p style={{ marginTop: 8, color: isDarkTheme ? "#e5e7eb" : "#1a1a1a" }}>{finalResult.triage.description}</p>
+            <p style={{ marginTop: 6, color: isDarkTheme ? "#e5e7eb" : "#1a1a1a", fontSize: "0.8rem" }}>{finalResult.triage.description}</p>
           )}
           {getTriageUrgency(finalResult.triage.triage_level) && (
             <div style={{
-              marginTop: 12,
-              padding: 12,
+              marginTop: 10,
+              padding: 10,
               background: getTriageColor(finalResult.triage.triage_level),
-              borderRadius: 8,
+              borderRadius: 6,
               fontWeight: "bold",
-              color: "#1a1a1a"
+              color: "#1a1a1a",
+              fontSize: "0.85rem"
             }}>
               {getTriageUrgency(finalResult.triage.triage_level)}
             </div>
@@ -1260,27 +1244,26 @@ export default function InfermedicaTriageSymptomChecker({
         </div>
       )}
 
-      {/* Care recommendations */}
       {finalResult?.triage && (
-        <div style={{ marginBottom: 20 }}>
-          <h3 style={getThemedStyle({ color: "var(--color-text-primary, #1a1a1a)" }, styles.darkText)}>What You Need to Do:</h3>
+        <div style={{ marginBottom: 16 }}>
+          <h3 style={getThemedStyle({ color: "var(--color-text-primary, #1a1a1a)", fontSize: "1rem" }, styles.darkText)}>What You Need to Do:</h3>
           <div style={getThemedStyle(styles.careRecommendations, styles.careRecommendationsDark)}>
             {getCareRecommendations(finalResult.triage.triage_level, conditions).map((recommendation, index) => (
               <div key={index} style={{
                 display: "flex",
                 alignItems: "flex-start",
-                marginBottom: index < getCareRecommendations(finalResult.triage.triage_level, conditions).length - 1 ? 12 : 0
+                marginBottom: index < getCareRecommendations(finalResult.triage.triage_level, conditions).length - 1 ? 10 : 0
               }}>
                 <span style={{
                   color: "#0d9db8",
                   fontWeight: "bold",
-                  marginRight: 8,
-                  marginTop: 2,
-                  fontSize: "1.2rem"
+                  marginRight: 6,
+                  marginTop: 1,
+                  fontSize: "1rem"
                 }}>
                   {index + 1}.
                 </span>
-                <span style={{ fontSize: "0.95rem", lineHeight: "1.5", color: isDarkTheme ? "#e5e7eb" : "#1a1a1a" }}>
+                <span style={{ fontSize: "0.8rem", lineHeight: "1.4", color: isDarkTheme ? "#e5e7eb" : "#1a1a1a" }}>
                   {recommendation}
                 </span>
               </div>
@@ -1289,12 +1272,11 @@ export default function InfermedicaTriageSymptomChecker({
         </div>
       )}
 
-      {/* Take care message */}
       <div style={getThemedStyle(styles.takeCareMessage, styles.takeCareMessageDark)}>
-        <h4 style={{ color: "var(--color-secondary, #0d9db8)", margin: "0 0 12px 0" }}>
+        <h4 style={{ color: "var(--color-secondary, #0d9db8)", margin: "0 0 8px 0", fontSize: "0.95rem" }}>
           Take Care Message:
         </h4>
-        <p style={{ margin: 0, fontSize: "0.95rem", lineHeight: "1.6", color: isDarkTheme ? "#e5e7eb" : "#1a1a1a" }}>
+        <p style={{ margin: 0, fontSize: "0.8rem", lineHeight: "1.5", color: isDarkTheme ? "#e5e7eb" : "#1a1a1a" }}>
           {patientInfo.name ? `${patientInfo.name}, ` : ''}
           remember that this assessment is a helpful tool, but it cannot replace professional medical judgment.
           Your health is important - please follow the care recommendations above and don't hesitate to seek
@@ -1302,12 +1284,11 @@ export default function InfermedicaTriageSymptomChecker({
         </p>
       </div>
 
-      <div style={{ display: "flex", gap: 12, flexWrap: "wrap", justifyContent: "center" }}>
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "center" }}>
         <button onClick={reset} style={getThemedStyle(styles.btnGhost, styles.btnGhostDark)}>
           Start New Assessment
         </button>
 
-        {/* Save Assessment Button */}
         {isAuthenticated && !assessmentSaved && (
           <button
             onClick={handleSaveAssessment}
@@ -1324,11 +1305,11 @@ export default function InfermedicaTriageSymptomChecker({
 
         {assessmentSaved && (
           <div style={{
-            padding: "10px 20px",
+            padding: "8px 16px",
             background: "rgba(16, 185, 129, 0.1)",
             color: "#10b981",
-            borderRadius: 12,
-            fontSize: "14px",
+            borderRadius: 10,
+            fontSize: "13px",
             fontWeight: 600,
             border: "1px solid rgba(16, 185, 129, 0.3)"
           }}>
@@ -1358,19 +1339,15 @@ export default function InfermedicaTriageSymptomChecker({
     </div>
   );
 
-  // Custom Loader Component
   const LoaderComponent = () => (
     <div style={styles.loaderContainer}>
-      <div style={styles.loader}>
-        <div style={styles.loaderAfter}></div>
-      </div>
-      <div style={{ color: "var(--color-secondary)", fontSize: "1.1rem", fontWeight: 500 }}>
+      <div style={styles.loader}></div>
+      <div style={{ color: "var(--color-secondary)", fontSize: "1rem", fontWeight: 500, marginTop: 10 }}>
         Loading...
       </div>
     </div>
   );
 
-  // Toast Notification Component
   const ToastNotification = () => (
     <div style={{
       position: 'fixed',
@@ -1380,21 +1357,22 @@ export default function InfermedicaTriageSymptomChecker({
         ? 'linear-gradient(135deg, #10b981, #059669)'
         : 'linear-gradient(135deg, #ef4444, #dc2626)',
       color: 'white',
-      padding: '16px 24px',
-      borderRadius: '12px',
-      boxShadow: '0 8px 24px rgba(0, 0, 0, 0.2)',
+      padding: '12px 18px',
+      borderRadius: '10px',
+      boxShadow: '0 6px 20px rgba(0, 0, 0, 0.2)',
       zIndex: 10000,
       transition: 'right 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
-      minWidth: '300px',
-      maxWidth: '400px',
+      minWidth: '280px',
+      maxWidth: '380px',
       display: 'flex',
       alignItems: 'center',
-      gap: '12px'
+      gap: '10px',
+      fontSize: '14px'
     }}>
-      <div style={{ fontSize: '24px' }}>
+      <div style={{ fontSize: '20px' }}>
         {toastType === 'success' ? '✓' : '✕'}
       </div>
-      <div style={{ flex: 1, fontSize: '15px', fontWeight: 500 }}>
+      <div style={{ flex: 1, fontSize: '14px', fontWeight: 500 }}>
         {toastMessage}
       </div>
       <button
@@ -1403,11 +1381,11 @@ export default function InfermedicaTriageSymptomChecker({
           background: 'rgba(255, 255, 255, 0.2)',
           border: 'none',
           color: 'white',
-          width: '24px',
-          height: '24px',
+          width: '22px',
+          height: '22px',
           borderRadius: '50%',
           cursor: 'pointer',
-          fontSize: '16px',
+          fontSize: '14px',
           fontWeight: 'bold',
           display: 'flex',
           alignItems: 'center',
@@ -1422,7 +1400,6 @@ export default function InfermedicaTriageSymptomChecker({
     </div>
   );
 
-  // Main render with loading screen
   if (isPageLoading) {
     return (
       <>
@@ -1488,30 +1465,15 @@ export default function InfermedicaTriageSymptomChecker({
               }
             }
             
-            .loader {
-              width: 48px;
-              height: 48px;
-              border-radius: 50%;
-              display: inline-block;
-              border-top: 4px solid var(--color-secondary);
-              border-right: 4px solid transparent;
-              box-sizing: border-box;
-              animation: rotation 1s linear infinite;
-              position: relative;
-            }
-            
-            .loader::after {
-              content: '';
-              box-sizing: border-box;
-              position: absolute;
-              left: 0;
-              top: 0;
-              width: 48px;
-              height: 48px;
-              border-radius: 50%;
-              border-left: 4px solid var(--color-third);
-              border-bottom: 4px solid transparent;
-              animation: rotation 0.5s linear infinite reverse;
+            @keyframes slideInQuestion {
+              from {
+                opacity: 0;
+                transform: translateX(-20px);
+              }
+              to {
+                opacity: 1;
+                transform: translateX(0);
+              }
             }
           `}
         </style>
@@ -1529,7 +1491,6 @@ export default function InfermedicaTriageSymptomChecker({
     );
   }
 
-  // Main render
   return (
     <>
       <style>
@@ -1594,39 +1555,22 @@ export default function InfermedicaTriageSymptomChecker({
             }
           }
           
-          .loader {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: inline-block;
-            border-top: 4px solid var(--color-secondary);
-            border-right: 4px solid transparent;
-            box-sizing: border-box;
-            animation: rotation 1s linear infinite;
-            position: relative;
-          }
-          
-          .loader::after {
-            content: '';
-            box-sizing: border-box;
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border-left: 4px solid var(--color-third);
-            border-bottom: 4px solid transparent;
-            animation: rotation 0.5s linear infinite reverse;
+          @keyframes slideInQuestion {
+            from {
+              opacity: 0;
+              transform: translateX(-20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateX(0);
+            }
           }
         `}
       </style>
 
-      {/* Toast Notification */}
       <ToastNotification />
 
       <div style={getThemedStyle(styles.root, styles.rootDark)}>
-        {/* Main Title */}
         <div style={styles.mainTitle}>DoctorXCare</div>
 
         <div style={getThemedStyle(styles.card, styles.darkCard)}>
