@@ -507,7 +507,7 @@ function Footer() {
           fontSize: '0.9rem',
           opacity: 0.8
         }}>
-          © 2025 DoctorXCare™ All Rights Reserved
+          © 2026 DoctorXCare™ All Rights Reserved
         </div>
 
       </footer>
