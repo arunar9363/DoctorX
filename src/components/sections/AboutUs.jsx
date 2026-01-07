@@ -81,49 +81,63 @@ function About() {
       border: 1px solid rgba(13, 157, 184, 0.2);
     }
 
-    .profile-image-wrapper {
-      position: relative;
-      width: 220px;
-      height: 220px;
-      margin: 0 auto;
-    }
+  /* The main container - No overflow here so badge can stick out */
+.profile-image-wrapper {
+  position: relative;
+  width: 220px;
+  height: 220px;
+  margin: 0 auto;
+}
 
-    .profile-image-wrapper img:hover {
-      transform: scale(1.05);
-    }
+/* This is the NEW "Window" that stays still */
+.image-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden; /* Clips the image when it moves */
+  border: 8px solid var(--color-primary);
+  box-shadow: 0 15px 30px rgba(13, 157, 184, 0.25),
+    inset 0 0 15px rgba(255, 255, 255, 0.1);
+  position: relative;
+  z-index: 2; /* Below the badge, above the background */
+  transition: border-color 0.4s ease;
+}
 
-    .profile-image-circle {
-      width: 100%;
-      height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 8px solid var(--color-primary);
-      box-shadow: 0 15px 30px rgba(13, 157, 184, 0.25),
-        inset 0 0 15px rgba(255, 255, 255, 0.1);
-      transition: all 0.4s ease;
-      position: relative;
-      z-index: 2;
-    }
+[data-theme="dark"] .image-container {
+  border-color: var(--color-fourth);
+}
 
-    [data-theme="dark"] .profile-image-circle {
-      border-color: var(--color-fourth);
-    }
+/* The actual Image inside */
+.profile-image-circle {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+  display: block;
+}
 
-    .profile-badge {
-      position: absolute;
-      bottom: -15px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-third) 100%);
-      color: var(--color-primary);
-      padding: 12px 30px;
-      border-radius: 50px;
-      font-weight: 700;
-      font-size: 14px;
-      letter-spacing: 0.5px;
-      white-space: nowrap;
-      z-index: 3;
-    }
+/* HOVER EFFECT: Moves only the image UP */
+.profile-image-wrapper:hover .profile-image-circle {
+  transform: translateY(-10px) scale(1.1);
+}
+
+/* The Badge - Positioned to stay visible on top */
+.profile-badge {
+  position: absolute;
+  bottom: -15px; /* Adjust this to move it up or down */
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-third) 100%);
+  color: var(--color-primary);
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  z-index: 10; /* High z-index keeps it "upper" the box */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
 
     .profile-info-box {
       text-align: center;
@@ -162,8 +176,8 @@ function About() {
     .social-links-row {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      width: 100%;
+      gap: 15px;
+      width:70%;
     }
 
     .social-link {
@@ -171,7 +185,7 @@ function About() {
       align-items: center;
       justify-content: center;
       gap: 10px;
-      padding: 14px 20px;
+      padding: 12px 20px;
       border-radius: 12px;
       text-decoration: none;
       font-weight: 600;
@@ -510,11 +524,13 @@ function About() {
             <div id="founder-card" className="team-member-card">
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
                 <div className="profile-image-wrapper">
-                  <img
-                    src="/assets/arun.jpg"
-                    alt="Arun Pratap Singh - Founder & Developer"
-                    className="profile-image-circle"
-                  />
+                  <div className="image-container">
+                    <img
+                      src="/assets/arun.jpg"
+                      alt="Arun Pratap Singh - Founder & Developer"
+                      className="profile-image-circle"
+                    />
+                  </div>
                   <div className="profile-badge">Founder</div>
                 </div>
 
@@ -555,11 +571,13 @@ function About() {
             <div id="medical-advisor-card" className="team-member-card">
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
                 <div className="profile-image-wrapper">
-                  <img
-                    src="/assets/jayshree.jpg"
-                    alt="Jayshree - Medical Advisor"
-                    className="profile-image-circle"
-                  />
+                  <div className="image-container">
+                    <img
+                      src="/assets/jayshree.jpg"
+                      alt="Jayshree - Medical Advisor"
+                      className="profile-image-circle"
+                    />
+                  </div>
                   <div className="profile-badge">Medical Advisor</div>
                 </div>
 
