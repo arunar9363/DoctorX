@@ -556,7 +556,7 @@ function About() {
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
                 <div className="profile-image-wrapper">
                   <img
-                    src="/assets/jayshree.png"
+                    src="/assets/jayshree.jpg"
                     alt="Jayshree - Medical Advisor"
                     className="profile-image-circle"
                   />
