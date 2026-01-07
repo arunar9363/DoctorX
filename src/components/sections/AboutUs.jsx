@@ -540,7 +540,8 @@ function About() {
                 </div>
 
                 <p className="profile-bio">
-                  <strong>Arun</strong> is the Founder and Lead Developer of <strong>DoctorXCare</strong>, dedicated to democratizing healthcare through ethical AI and healthcare services. By architecting a secure, patient-centered ecosystem, he bridges the gap between complex medical data and public accessibility. Committed to empowering users and inspiring a future of trusted digital health, he ensures that reliable, stress-free medical guidance is accessible to everyone, everywhere.
+                  <strong> Arun</strong> is the Founder and Lead Developer of <strong>DoctorXcare</strong>, operating at the intersection of full-stack engineering, ethical AI, and healthcare innovation. He is dedicated to democratizing healthcare by architecting a secure, patient-centered ecosystem that bridges the gap between complex medical data and public accessibility.
+                  By prioritizing reliability and transparency, Arun ensures that stress-free medical guidance is accessible to everyone, everywhere. Committed to empowering users and fighting "Cyberchondria," he is building a future of trusted digital health where technology serves as a foundation for patient confidence.
                 </p>
 
                 <div className="social-links-row">
@@ -587,7 +588,7 @@ function About() {
                 </div>
 
                 <p className="profile-bio">
-                  <strong>Jayshree</strong> is the Medical Advisor at <strong>DoctorXCare</strong>, dedicated to ensuring clinical excellence at the intersection of medicine, technology, and innovation. By providing rigorous clinical validation and medical precision, she bridges the gap between complex healthcare standards and scalable digital solutions. Committed to accuracy and patient safety, she ensures that every AI-driven insight is built on a foundation of medical integrity and trust.
+                  <strong>Jayshree</strong> is the Medical Advisor at <strong>DoctorXcare</strong>, operating at the intersection of medicine, technology, and startups. She is dedicated to ensuring clinical excellence by contributing to rigorous clinical validation, medical accuracy, and scalable digital healthcare solutions. By bridging the gap between medical standards and AI innovation, she ensures that every insight provided by DoctorXcare is built on a foundation of medical integrity and trust.
                 </p>
 
                 <div className="social-links-row">
