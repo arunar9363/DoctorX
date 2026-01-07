@@ -147,7 +147,7 @@ function About() {
     }
 
     .profile-bio {
-      font-size: 1rem;
+      font-size: 16px;
       line-height: 1.7;
       color: var(--color-dark);
       text-align: justify;
@@ -408,7 +408,7 @@ function About() {
       }
 
       .profile-bio {
-        font-size: 0.95rem;
+        font-size: 14px;
         line-height: 1.6;
         text-align: left;
       }
