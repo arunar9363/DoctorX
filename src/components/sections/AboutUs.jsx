@@ -151,6 +151,13 @@ function About() {
       font-family: "Merriweather", serif;
       margin-bottom: 8px;
     }
+      .profile-name-bio {
+      font-size: 1rem;
+      color: var(--color-dark);
+      font-weight: 400;
+      font-family: "'Merriweather', serif";
+      margin-bottom: 12px;
+      }
 
     .profile-title {
       font-size: 1.1rem;
@@ -536,6 +543,7 @@ function About() {
 
                 <div className="profile-info-box">
                   <h3 className="profile-name">Arun Pratap Singh</h3>
+                  <p className="profile-name-bio">B.Tech(Information technology)</p>
                   <p className="profile-title">Founder & Lead Developer</p>
                 </div>
 
@@ -584,6 +592,7 @@ function About() {
 
                 <div className="profile-info-box">
                   <h3 className="profile-name">Jayshree Gondane</h3>
+                  <p className="profile-name-bio">BHMS</p>
                   <p className="profile-title">Medical Advisor</p>
                 </div>
 
