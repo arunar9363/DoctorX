@@ -2,6 +2,7 @@ fastapi
 uvicorn
 phidata
 google-generativeai
+google-genai
 python-multipart
 duckduckgo-search
 python-dotenv
