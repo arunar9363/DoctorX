@@ -66,7 +66,8 @@ const LabUpload = () => {
     <div style={{
       paddingTop: '100px',
       minHeight: '100vh',
-      backgroundColor: '#f8fafc',
+      // We use 'background' instead of 'backgroundColor' to support gradients
+      background: 'var(--bg-gradient, linear-gradient(180deg, #ffffff 0%, #d1f4f9 100%))',
       paddingBottom: '60px'
     }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 24px' }}>
@@ -83,7 +84,7 @@ const LabUpload = () => {
             </div>
           </div>
           <h2 style={{
-            fontSize: '2.5rem',
+            fontSize: '2.2rem',
             fontWeight: 'bold',
             color: '#1e293b',
             marginBottom: '16px',
@@ -93,8 +94,8 @@ const LabUpload = () => {
           </h2>
           <p style={{
             color: '#475569',
-            fontSize: '1.125rem',
-            maxWidth: '700px',
+            fontSize: '1rem',
+            maxWidth: '600px',
             margin: '0 auto',
             lineHeight: '1.6'
           }}>
@@ -104,11 +105,9 @@ const LabUpload = () => {
 
         {/* Upload Box */}
         <div style={{
-          backgroundColor: 'white',
+         
           borderRadius: '24px',
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
           padding: '40px',
-          border: '1px solid #e2e8f0',
           marginBottom: '40px'
         }}>
           <div style={{
@@ -127,7 +126,7 @@ const LabUpload = () => {
               style={{ display: 'none' }}
               accept=".pdf,.jpg,.jpeg,.png"
             />
-            <label htmlFor="lab-file" style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <label htmlFor="lab-file" style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
               {file ? (
                 <>
                   <FileText style={{ width: '64px', height: '64px', color: '#16a34a', marginBottom: '16px' }} />
@@ -154,9 +153,8 @@ const LabUpload = () => {
               marginTop: '24px',
               padding: '16px 20px',
               backgroundColor: '#fef2f2',
-              borderLeft: '4px solid #ef4444',
               color: '#991b1b',
-              borderRadius: '8px',
+              borderRadius: '20px',
               display: 'flex',
               alignItems: 'flex-start',
               gap: '12px'
@@ -203,7 +201,7 @@ const LabUpload = () => {
           >
             {loading ? (
               <>
-                <span style={{ animation: 'spin 1s linear infinite' }}>⏳</span>
+                <Activity size={20} className="animate-spin" />
                 Processing Analysis...
               </>
             ) : (
