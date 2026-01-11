@@ -355,6 +355,32 @@ function Dashboard() {
             />
           </div>
 
+          {/* Lab Analysis - NEW SERVICE */}
+          <div
+            style={styles.serviceCard}
+            onClick={() => navigate('/lab-analysis')}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = 'translateY(-5px)';
+              e.currentTarget.querySelector('.card-image').style.transform = 'scale(1.05)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.querySelector('.card-image').style.transform = 'scale(1)';
+            }}
+          >
+            <div style={styles.textContainer}>
+              <h3 style={styles.cardTitle}>Lab Report Analysis</h3>
+              <p style={styles.cardDesc}>Upload lab reports or medical imaging for AI-powered analysis and insights.</p>
+              <div style={styles.arrowLink}>Upload Now →</div>
+            </div>
+            <img
+              src="/assets/lab-analysis.svg"
+              alt="Lab Analysis"
+              className="card-image"
+              style={styles.cardLargeImage}
+            />
+          </div>
+
           {/* AI Assistance */}
           <div
             style={styles.serviceCard}

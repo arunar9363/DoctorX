@@ -17,6 +17,7 @@ import DiseaseFront from "./components/features/DiseasesFront";
 import DiseaseSearch from "./components/features/DiseaseSearch";
 import IndividualDiseasesInfo from "./components/features/IndividualDiseaseInfo";
 import InfermedicaTriageSymptomChecker from "./components/features/InfermedicaTriageSymptomChecker";
+import LabUpload from "./components/features/ai-agents/LabAnalysis/LabUpload"; // Lab Analysis Component
 
 // Pages
 import Home from "./pages/Home";
@@ -27,7 +28,7 @@ import TermsOfService from "./pages/TermsOfService";
 import DoctorXAIPage from "./pages/DoctorXAIPage";
 import HistoryPage from "./pages/HistoryPage";
 import ForgotPassword from './pages/ForgotPassword';
-import Dashboard from "./pages/Dashboard"; // --- ADDED: Dashboard Import ---
+import Dashboard from "./pages/Dashboard";
 
 
 // Wrapper for login modal page
@@ -88,7 +89,10 @@ function App() {
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
 
-          {/* --- ADDED: Protected Routes for Dashboard --- */}
+          {/* Lab Analysis Route - Can be public or protected based on your needs */}
+          <Route path="/lab-analysis" element={<LabUpload />} />
+
+          {/* Protected Routes */}
           <Route element={<ProtectedRouter />}>
             <Route path="/dashboard" element={<Dashboard />} />
           </Route>
