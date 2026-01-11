@@ -5,9 +5,14 @@ import shutil
 import os
 import uvicorn
 import time
+import sys  # <-- NEW: Added sys library
+
+# === VERCEL IMPORT FIX (CRITICAL) ===
+# Ye line Python ko batati hai ki current folder me hi baaki files dhoondo.
+# Iske bina Vercel par "ModuleNotFoundError: No module named 'lab_agent'" aata hai.
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # Import Agent Logic
-# Note: Kyunki main.py aur lab_agent.py same folder me hain, ye import sahi hai
 from lab_agent import get_medical_agent
 
 app = FastAPI()
@@ -66,6 +71,8 @@ async def analyze_medical_image(file: UploadFile = File(...)):
         return {"analysis": response.content}
 
     except Exception as e:
+        # Error log karke return karein
+        print(f"Error processing request: {str(e)}")
         return {"error": str(e)}
     
     finally:
