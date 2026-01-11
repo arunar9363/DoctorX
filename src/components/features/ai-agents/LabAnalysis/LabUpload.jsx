@@ -36,7 +36,8 @@ const LabUpload = () => {
 
     try {
       // Backend API Call
-      const response = await fetch("http://localhost:8000/api/medical-analysis", {
+      // Remove the domain. Vercel will automatically route this to your backend.
+      const response = await fetch("/api/medical-analysis", {
         method: "POST",
         body: formData,
       });
