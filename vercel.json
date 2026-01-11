@@ -2,19 +2,19 @@
   "rewrites": [
     {
       "source": "/api/medical-analysis",
-      "destination": "/python-ai-agents/main.py"
+      "destination": "/api/python-ai-agents/main"
     },
     {
       "source": "/api/chronic-care",
-      "destination": "/python-ai-agents/main.py"
+      "destination": "/api/python-ai-agents/main"
     },
     {
       "source": "/api/recovery-plan",
-      "destination": "/python-ai-agents/main.py"
+      "destination": "/api/python-ai-agents/main"
     },
     {
       "source": "/api/find-specialist",
-      "destination": "/python-ai-agents/main.py"
+      "destination": "/api/python-ai-agents/main"
     },
     {
       "source": "/((?!api).*)",

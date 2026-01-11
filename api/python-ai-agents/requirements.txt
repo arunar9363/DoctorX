@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+phidata
+google-generativeai
+python-multipart
+duckduckgo-search
+python-dotenv
+pydantic
+pillow
