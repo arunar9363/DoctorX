@@ -1,21 +1,17 @@
 import React from 'react';
-import { AlertTriangle, CheckCircle, AlertCircle, Info, FileText, Download } from 'lucide-react';
+import { AlertTriangle, CheckCircle, AlertCircle, FileText, Download } from 'lucide-react';
 
 const LabResult = ({ analysis }) => {
-  // Analyze the text to determine severity
   const analyzeSeverity = (text) => {
     if (!text) return 'unknown';
-
     const lowerText = text.toLowerCase();
 
-    // Critical keywords - RED
     const criticalKeywords = [
       'critical', 'severe', 'emergency', 'urgent', 'high risk', 'danger',
       'significantly elevated', 'significantly high', 'significantly low',
       'very high', 'very low', 'extremely', 'acute'
     ];
 
-    // Warning keywords - YELLOW
     const warningKeywords = [
       'elevated', 'mildly elevated', 'moderate', 'concern', 'attention',
       'monitor', 'slightly abnormal', 'borderline', 'mild', 'mildly',
@@ -23,14 +19,12 @@ const LabResult = ({ analysis }) => {
       'lower limit', 'upper limit', 'needs attention'
     ];
 
-    // Normal keywords - GREEN
     const normalKeywords = [
       'normal', 'healthy', 'good', 'stable', 'no issues', 'within range',
       'satisfactory', 'adequate', 'within normal', 'no abnormal',
       'not detected', 'negative'
     ];
 
-    // Count occurrences
     let criticalCount = 0;
     let warningCount = 0;
     let normalCount = 0;
@@ -47,233 +41,271 @@ const LabResult = ({ analysis }) => {
       if (lowerText.includes(keyword)) normalCount++;
     });
 
-    // Decision logic
-    if (criticalCount > 0) {
-      return 'critical';
-    }
-
-    if (warningCount > 0) {
-      return 'warning';
-    }
-
-    if (normalCount > warningCount) {
-      return 'normal';
-    }
-
+    if (criticalCount > 0) return 'critical';
+    if (warningCount > 0) return 'warning';
+    if (normalCount > warningCount) return 'normal';
     return 'info';
   };
 
   const severity = analyzeSeverity(analysis);
 
-  // Debug logging
-  console.log("=== Lab Result Analysis ===");
-  console.log("Detected Severity:", severity);
-  console.log("Analysis preview:", analysis?.substring(0, 200));
-
-  // Get badge configuration based on severity
   const getBadgeConfig = () => {
     switch (severity) {
       case 'critical':
         return {
-          icon: <AlertCircle size={20} />,
-          text: 'Critical - Immediate Attention Required',
-          bgColor: '#fee2e2',
-          textColor: '#991b1b',
-          borderColor: '#ef4444',
-          gradient: 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)'
+          icon: <AlertCircle size={22} />,
+          text: 'Needs Immediate Attention',
+          textColor: '#dc2626',
+          iconColor: '#dc2626'
         };
       case 'warning':
         return {
-          icon: <AlertTriangle size={20} />,
-          text: 'Warning - Needs Attention',
-          bgColor: '#fef3c7',
-          textColor: '#92400e',
-          borderColor: '#f59e0b',
-          gradient: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)'
+          icon: <AlertTriangle size={22} />,
+          text: 'Requires Monitoring',
+          textColor: '#ea580c',
+          iconColor: '#ea580c'
         };
       case 'normal':
         return {
-          icon: <CheckCircle size={20} />,
-          text: 'Normal - Results Look Good',
-          bgColor: '#d1fae5',
-          textColor: '#065f46',
-          borderColor: '#10b981',
-          gradient: 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)'
+          icon: <CheckCircle size={22} />,
+          text: 'Results Look Good',
+          textColor: '#0d9db8',
+          iconColor: '#0d9db8'
         };
       default:
         return {
-          icon: <FileText size={20} />,
+          icon: <FileText size={22} />,
           text: 'Analysis Complete',
-          bgColor: '#dbeafe',
-          textColor: '#1e40af',
-          borderColor: '#3b82f6',
-          gradient: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)'
+          textColor: '#3b82f6',
+          iconColor: '#3b82f6'
         };
     }
   };
 
   const badgeConfig = getBadgeConfig();
 
-  // Function to download as PDF using jsPDF
   const downloadPDF = async () => {
-    // Dynamically import jsPDF
-    const { jsPDF } = await import('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+    try {
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+      document.head.appendChild(script);
 
-    const doc = new jsPDF();
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const margin = 20;
-    const maxWidth = pageWidth - (margin * 2);
-    let yPosition = margin;
-
-    // Helper function to add text with word wrap
-    const addText = (text, size, style = 'normal', color = [0, 0, 0]) => {
-      doc.setFontSize(size);
-      doc.setFont('helvetica', style);
-      doc.setTextColor(color[0], color[1], color[2]);
-
-      const lines = doc.splitTextToSize(text, maxWidth);
-      lines.forEach(line => {
-        if (yPosition > pageHeight - margin) {
-          doc.addPage();
-          yPosition = margin;
-        }
-        doc.text(line, margin, yPosition);
-        yPosition += size * 0.5;
+      await new Promise((resolve, reject) => {
+        script.onload = resolve;
+        script.onerror = reject;
       });
-      yPosition += 3;
-    };
 
-    // Header
-    doc.setFillColor(59, 130, 246);
-    doc.rect(0, 0, pageWidth, 30, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(20);
-    doc.setFont('helvetica', 'bold');
-    doc.text('LAB RESULT ANALYSIS REPORT', pageWidth / 2, 20, { align: 'center' });
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const margin = 20;
+      const maxWidth = pageWidth - (margin * 2);
+      let yPosition = margin;
 
-    yPosition = 40;
+      const addText = (text, size, style = 'normal', color = [0, 0, 0], align = 'left') => {
+        doc.setFontSize(size);
+        doc.setFont('helvetica', style);
+        doc.setTextColor(color[0], color[1], color[2]);
 
-    // Status Badge
-    const statusColors = {
-      'critical': [239, 68, 68],
-      'warning': [245, 158, 11],
-      'normal': [16, 185, 129],
-      'info': [59, 130, 246]
-    };
-    const statusColor = statusColors[severity] || statusColors['info'];
+        const lines = doc.splitTextToSize(text, maxWidth);
+        lines.forEach((line, index) => {
+          if (yPosition > pageHeight - margin - 35) {
+            doc.addPage();
+            yPosition = margin;
+          }
 
-    doc.setFillColor(statusColor[0], statusColor[1], statusColor[2]);
-    doc.roundedRect(margin, yPosition, maxWidth, 12, 2, 2, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(12);
-    doc.setFont('helvetica', 'bold');
-    doc.text(badgeConfig.text.toUpperCase(), pageWidth / 2, yPosition + 8, { align: 'center' });
+          if (align === 'justify' && index < lines.length - 1 && lines.length > 1) {
+            const words = line.split(' ');
+            if (words.length > 1) {
+              const lineWidth = doc.getTextWidth(line);
+              const spaceWidth = (maxWidth - lineWidth) / (words.length - 1);
+              let xPos = margin;
 
-    yPosition += 20;
+              words.forEach((word, wordIndex) => {
+                doc.text(word, xPos, yPosition);
+                xPos += doc.getTextWidth(word) + doc.getTextWidth(' ') + (wordIndex < words.length - 1 ? spaceWidth : 0);
+              });
+            } else {
+              doc.text(line, margin, yPosition);
+            }
+          } else {
+            doc.text(line, margin, yPosition);
+          }
 
-    // Date
-    addText(`Generated: ${new Date().toLocaleString()}`, 10, 'normal', [100, 100, 100]);
-    yPosition += 5;
-
-    // Disclaimer Box
-    doc.setFillColor(255, 251, 235);
-    doc.setDrawColor(253, 230, 138);
-    doc.roundedRect(margin, yPosition, maxWidth, 20, 2, 2, 'FD');
-    yPosition += 6;
-    addText('⚠ DISCLAIMER: This is an AI-generated analysis. It is NOT a medical diagnosis. Please consult a certified healthcare provider.', 9, 'bold', [120, 53, 15]);
-    yPosition += 8;
-
-    // Main Content
-    doc.setDrawColor(229, 231, 235);
-    doc.line(margin, yPosition, pageWidth - margin, yPosition);
-    yPosition += 10;
-
-    // Parse and add analysis content
-    const lines = analysis.split('\n');
-    lines.forEach(line => {
-      const trimmedLine = line.trim();
-
-      if (!trimmedLine) {
+          yPosition += size * 0.5;
+        });
         yPosition += 3;
-        return;
+      };
+
+      try {
+        const logoImg = await new Promise((resolve, reject) => {
+          const img = new Image();
+          img.crossOrigin = 'anonymous';
+          img.onload = () => resolve(img);
+          img.onerror = reject;
+          img.src = '/assets/MAINLOGO1.png';
+        });
+
+        const logoMaxWidth = 30;
+        const logoMaxHeight = 15;
+        const aspectRatio = logoImg.width / logoImg.height;
+
+        let logoWidth, logoHeight;
+        if (aspectRatio > logoMaxWidth / logoMaxHeight) {
+          logoWidth = logoMaxWidth;
+          logoHeight = logoMaxWidth / aspectRatio;
+        } else {
+          logoHeight = logoMaxHeight;
+          logoWidth = logoMaxHeight * aspectRatio;
+        }
+
+        const logoY = yPosition + (15 - logoHeight) / 2;
+        doc.addImage(logoImg, 'PNG', margin, logoY, logoWidth, logoHeight);
+      // eslint-disable-next-line no-unused-vars
+      } catch (e) {
+        console.log('Logo not loaded, continuing without it');
       }
 
-      // Headers
-      if (trimmedLine.startsWith('##') || trimmedLine.startsWith('###')) {
-        yPosition += 3;
-        const cleanText = trimmedLine.replace(/#{2,3}/g, '').trim();
-        addText(cleanText, 14, 'bold', [15, 23, 42]);
-      }
-      // Bold text
-      else if (trimmedLine.startsWith('**') && trimmedLine.endsWith('**')) {
-        const cleanText = trimmedLine.replace(/\*\*/g, '');
-        addText(cleanText, 12, 'bold', [30, 41, 59]);
-      }
-      // Bullet points
-      else if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
-        const cleanText = '• ' + trimmedLine.replace(/^[-*]\s/, '');
-        addText(cleanText, 10, 'normal', [71, 85, 105]);
-      }
-      // Regular text
-      else {
-        // Handle inline bold
-        if (trimmedLine.includes('**')) {
-          const parts = trimmedLine.split('**');
-          let currentX = margin;
+      doc.setTextColor(13, 157, 184);
+      doc.setFontSize(18);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Lab Result Analysis Report', margin + 48, yPosition + 10, { align: 'left' });
+
+      yPosition += 22;
+      doc.setDrawColor(13, 157, 184);
+      doc.setLineWidth(1);
+      doc.line(margin, yPosition, pageWidth - margin, yPosition);
+
+      yPosition += 8;
+
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(100, 100, 100);
+      doc.text(`Report Generated: ${new Date().toLocaleString()}`, margin, yPosition);
+
+      yPosition += 10;
+
+      const statusColors = {
+        'critical': [220, 38, 38],
+        'warning': [234, 88, 12],
+        'normal': [13, 157, 184],
+        'info': [59, 130, 246]
+      };
+      const statusColor = statusColors[severity] || statusColors['info'];
+
+      doc.setFillColor(statusColor[0], statusColor[1], statusColor[2]);
+      doc.roundedRect(margin, yPosition, maxWidth, 12, 2, 2, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(11);
+      doc.setFont('helvetica', 'bold');
+      doc.text(badgeConfig.text.toUpperCase(), pageWidth / 2, yPosition + 8, { align: 'center' });
+
+      yPosition += 20;
+
+      doc.setDrawColor(220, 220, 220);
+      doc.setLineWidth(0.5);
+      doc.line(margin, yPosition, pageWidth - margin, yPosition);
+      yPosition += 12;
+
+      const lines = analysis.split('\n');
+      lines.forEach(line => {
+        const trimmedLine = line.trim();
+
+        if (!trimmedLine) {
+          yPosition += 3;
+          return;
+        }
+
+        if (trimmedLine.startsWith('##') || trimmedLine.startsWith('###')) {
+          yPosition += 4;
+          const cleanText = trimmedLine.replace(/#{2,3}/g, '').trim();
+          addText(cleanText, 13, 'bold', [13, 157, 184], 'left');
+        } else if (trimmedLine.startsWith('**') && trimmedLine.endsWith('**')) {
+          const cleanText = trimmedLine.replace(/\*\*/g, '').trim();
+          addText(cleanText, 11, 'bold', [40, 40, 40], 'left');
+        } else if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
+          let cleanText = trimmedLine.replace(/^[-*]\s/, '').replace(/\*\*/g, '');
+
           doc.setFontSize(10);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(60, 60, 60);
 
-          parts.forEach((part, i) => {
-            if (yPosition > pageHeight - margin) {
+          const bulletLines = doc.splitTextToSize('• ' + cleanText, maxWidth - 5);
+          bulletLines.forEach((lineText, index) => {
+            if (yPosition > pageHeight - margin - 35) {
               doc.addPage();
               yPosition = margin;
-              currentX = margin;
             }
 
-            if (i % 2 === 1) {
-              doc.setFont('helvetica', 'bold');
-              doc.setTextColor(30, 41, 59);
+            if (index < bulletLines.length - 1 && bulletLines.length > 1) {
+              const words = lineText.split(' ');
+              if (words.length > 1) {
+                const lineWidth = doc.getTextWidth(lineText);
+                const spaceWidth = (maxWidth - 5 - lineWidth) / (words.length - 1);
+                let xPos = margin + 5;
+
+                words.forEach((word, wordIndex) => {
+                  doc.text(word, xPos, yPosition);
+                  xPos += doc.getTextWidth(word) + doc.getTextWidth(' ') + (wordIndex < words.length - 1 ? spaceWidth : 0);
+                });
+              } else {
+                doc.text(lineText, margin + 5, yPosition);
+              }
             } else {
-              doc.setFont('helvetica', 'normal');
-              doc.setTextColor(71, 85, 105);
+              doc.text(lineText, margin + 5, yPosition);
             }
 
-            const textWidth = doc.getTextWidth(part);
-            if (currentX + textWidth > pageWidth - margin) {
-              yPosition += 5;
-              currentX = margin;
-            }
-
-            doc.text(part, currentX, yPosition);
-            currentX += textWidth;
+            yPosition += 5;
           });
-          yPosition += 5;
+          yPosition += 2;
         } else {
-          addText(trimmedLine, 10, 'normal', [71, 85, 105]);
+          const cleanText = trimmedLine.replace(/\*\*/g, '');
+          addText(cleanText, 10, 'normal', [60, 60, 60], 'justify');
         }
-      }
-    });
+      });
 
-    // Footer
-    yPosition = pageHeight - 25;
-    doc.setDrawColor(226, 232, 240);
-    doc.line(margin, yPosition, pageWidth - margin, yPosition);
-    yPosition += 5;
-    addText('Powered by Gemini 1.5 Flash', 8, 'normal', [100, 116, 139]);
-    addText('🔒 Your data is processed securely and not stored permanently', 8, 'normal', [100, 116, 139]);
+      const footerY = pageHeight - 28;
 
-    // Save PDF
-    doc.save(`Lab_Analysis_${new Date().toISOString().split('T')[0]}.pdf`);
+      doc.setDrawColor(13, 157, 184);
+      doc.setLineWidth(0.8);
+      doc.line(margin, footerY - 2, pageWidth - margin, footerY - 2);
+
+      doc.setFillColor(255, 251, 235);
+      doc.setDrawColor(234, 179, 8);
+      doc.setLineWidth(0.5);
+      doc.roundedRect(margin, footerY + 2, maxWidth, 18, 2, 2, 'FD');
+
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(120, 53, 15);
+      const disclaimerLines = doc.splitTextToSize('DISCLAIMER: This is an AI-generated analysis and NOT a medical diagnosis. Please consult a qualified healthcare provider for medical advice.', maxWidth - 8);
+      let disclaimerY = footerY + 7;
+      disclaimerLines.forEach(line => {
+        doc.text(line, margin + 4, disclaimerY);
+        disclaimerY += 4;
+      });
+
+      doc.setFontSize(8);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(13, 157, 184);
+      doc.text('Powered by AI Analysis Engine', pageWidth / 2, footerY + 24, { align: 'center' });
+
+      doc.save(`Lab_Analysis_${new Date().toISOString().split('T')[0]}.pdf`);
+
+      document.head.removeChild(script);
+    } catch (error) {
+      console.error('PDF download error:', error);
+      alert('PDF download failed. Please try again.');
+    }
   };
 
-  // Helper to add colored badges to status words
   const addColoredBadges = (text) => {
-    // Define patterns and their colors
     const patterns = [
-      { regex: /\b(Normal)\b/gi, color: '#10b981', bg: '#d1fae5' },
-      { regex: /\b(Elevated|Mildly Elevated|Slightly Elevated)\b/gi, color: '#f59e0b', bg: '#fef3c7' },
-      { regex: /\b(Low|Slightly Low|Mildly Low)\b/gi, color: '#f59e0b', bg: '#fef3c7' },
-      { regex: /\b(Critical|Severe|High Risk)\b/gi, color: '#ef4444', bg: '#fee2e2' }
+      { regex: /\b(Normal)\b/gi, color: '#0d9db8', bg: '#d1f4f9' },
+      { regex: /\b(Elevated|Mildly Elevated|Slightly Elevated)\b/gi, color: '#ea580c', bg: '#fed7aa' },
+      { regex: /\b(Low|Slightly Low|Mildly Low)\b/gi, color: '#ea580c', bg: '#fed7aa' },
+      { regex: /\b(Critical|Severe|High Risk)\b/gi, color: '#dc2626', bg: '#fecaca' }
     ];
 
     let parts = [text];
@@ -285,21 +317,19 @@ const LabResult = ({ analysis }) => {
           const segments = part.split(regex);
           segments.forEach((segment, i) => {
             if (i > 0 && i % 2 === 1) {
-              // This is a matched keyword
               newParts.push(
                 <span
                   key={`badge-${i}-${segment}`}
                   style={{
                     backgroundColor: bg,
                     color: color,
-                    padding: '2px 8px',
-                    borderRadius: '6px',
+                    padding: '2px 6px',
+                    borderRadius: '4px',
                     fontWeight: '600',
                     fontSize: '0.875rem',
-                    marginLeft: '4px',
-                    marginRight: '4px',
-                    display: 'inline-block',
-                    border: `1px solid ${color}40`
+                    marginLeft: '3px',
+                    marginRight: '3px',
+                    display: 'inline-block'
                   }}
                 >
                   {segment}
@@ -319,7 +349,6 @@ const LabResult = ({ analysis }) => {
     return parts;
   };
 
-  // Helper to format Markdown-style text to simple paragraphs
   const formatText = (text) => {
     if (!text) {
       return <p style={{ color: '#64748b' }}>No analysis data available</p>;
@@ -330,68 +359,66 @@ const LabResult = ({ analysis }) => {
     return lines.map((line, index) => {
       const trimmedLine = line.trim();
 
-      // Skip empty lines
       if (trimmedLine === '') {
         return <div key={index} style={{ height: '8px' }} />;
       }
 
-      // Headers (##, ###, or lines with **)
       if (trimmedLine.startsWith('##') || trimmedLine.startsWith('###') || (trimmedLine.startsWith('**') && trimmedLine.endsWith('**'))) {
         const cleanText = trimmedLine.replace(/#{2,3}/g, '').replace(/\*\*/g, '').trim();
         return (
           <h3 key={index} style={{
-            marginTop: '20px',
-            marginBottom: '12px',
-            fontWeight: '700',
-            color: '#0f172a',
-            fontSize: '1.125rem',
-            lineHeight: '1.4'
+            marginTop: window.innerWidth <= 768 ? '16px' : '24px',
+            marginBottom: window.innerWidth <= 768 ? '8px' : '12px',
+            fontWeight: '600',
+            color: '#1e293b',
+            fontSize: window.innerWidth <= 768 ? '0.95rem' : '1.125rem',
+            lineHeight: '1.5'
           }}>
             {cleanText}
           </h3>
         );
       }
 
-      // Bold text in middle of line
       if (trimmedLine.includes('**')) {
         const parts = trimmedLine.split('**');
         return (
           <p key={index} style={{
-            marginBottom: '10px',
+            marginBottom: window.innerWidth <= 768 ? '8px' : '12px',
             color: '#475569',
             lineHeight: '1.6',
-            fontSize: '0.9375rem'
+            fontSize: window.innerWidth <= 768 ? '0.8125rem' : '0.9375rem',
+            textAlign: 'justify'
           }}>
             {parts.map((part, i) =>
-              i % 2 === 1 ? <strong key={i} style={{ fontWeight: '600', color: '#1e293b' }}>{part}</strong> : part
+              i % 2 === 1 ? <strong key={i} style={{ fontWeight: '600', color: '#334155' }}>{part}</strong> : part
             )}
           </p>
         );
       }
 
-      // Bullet points
       if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
         const cleanText = trimmedLine.replace(/^[-*]\s/, '');
         return (
           <li key={index} style={{
-            marginBottom: '8px',
-            marginLeft: '20px',
+            marginBottom: window.innerWidth <= 768 ? '6px' : '10px',
+            marginLeft: window.innerWidth <= 768 ? '16px' : '24px',
             color: '#475569',
             lineHeight: '1.6',
-            fontSize: '0.9375rem'
+            fontSize: window.innerWidth <= 768 ? '0.8125rem' : '0.9375rem',
+            textAlign: 'justify'
           }}>
             {cleanText}
           </li>
         );
       }
 
-      // Regular paragraph
       return (
         <p key={index} style={{
-          marginBottom: '10px',
+          marginBottom: window.innerWidth <= 768 ? '8px' : '12px',
           color: '#475569',
           lineHeight: '1.6',
-          fontSize: '0.9375rem'
+          fontSize: window.innerWidth <= 768 ? '0.8125rem' : '0.9375rem',
+          textAlign: 'justify'
         }}>
           {addColoredBadges(trimmedLine)}
         </p>
@@ -399,185 +426,129 @@ const LabResult = ({ analysis }) => {
     });
   };
 
+  const isMobile = window.innerWidth <= 768;
+
   return (
     <div style={{
-      backgroundColor: 'white',
-      borderRadius: '20px',
-      boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-      overflow: 'hidden',
-      border: `2px solid ${badgeConfig.borderColor}`
+      maxWidth: '900px',
+      margin: '0 auto',
+      padding: isMobile ? '12px' : '24px',
+      backgroundColor: 'transparent'
     }}>
-      {/* Status Badge - Top */}
+      <h1 style={{
+        fontSize: isMobile ? '1.25rem' : '2rem',
+        fontWeight: '700',
+        color: '#0d9db8',
+        textAlign: 'center',
+        marginBottom: isMobile ? '16px' : '32px',
+        letterSpacing: '-0.025em'
+      }}>
+        Lab Result Analysis Report
+      </h1>
+
       <div style={{
-        background: badgeConfig.gradient,
-        padding: '24px 32px',
-        borderBottom: `4px solid ${badgeConfig.borderColor}`,
-        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+        display: 'flex',
+        alignItems: 'center',
+        gap: isMobile ? '8px' : '12px',
+        marginBottom: isMobile ? '12px' : '24px',
+        padding: isMobile ? '10px 12px' : '16px 24px',
+      }}>
+        <span style={{ color: badgeConfig.iconColor, display: 'flex' }}>
+          {React.cloneElement(badgeConfig.icon, { size: isMobile ? 18 : 22 })}
+        </span>
+        <span style={{
+          fontSize: isMobile ? '0.875rem' : '1.125rem',
+          fontWeight: '600',
+          color: badgeConfig.textColor
+        }}>
+          {badgeConfig.text}
+        </span>
+      </div>
+
+      <div style={{
+        marginBottom: isMobile ? '12px' : '24px',
+        padding: isMobile ? '10px 12px' : '14px 20px',
+        backgroundColor: 'rgba(254, 252, 232, 0.95)',
+        backdropFilter: 'blur(10px)'
       }}>
         <div style={{
           display: 'flex',
-          alignItems: 'center',
-          gap: '16px',
-          justifyContent: 'center'
-        }}>
-          <div style={{
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            padding: '12px',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
-          }}>
-            <span style={{ color: badgeConfig.borderColor, display: 'flex' }}>
-              {badgeConfig.icon}
-            </span>
-          </div>
-          <span style={{
-            fontSize: '1.25rem',
-            fontWeight: '700',
-            color: badgeConfig.textColor,
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px'
-          }}>
-            {badgeConfig.text}
-          </span>
-        </div>
-      </div>
-
-      {/* Result Header */}
-      <div style={{
-        background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
-        padding: '24px 32px',
-        borderBottom: '1px solid #e2e8f0'
-      }}>
-        <h3 style={{
-          fontWeight: '700',
-          fontSize: '1.5rem',
-          color: '#0f172a',
-          margin: 0,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px'
-        }}>
-          <FileText size={24} style={{ color: '#3b82f6' }} />
-          AI Analysis Report
-        </h3>
-        <p style={{
-          margin: '8px 0 0 34px',
-          fontSize: '0.875rem',
-          color: '#64748b'
-        }}>
-          Powered by Gemini 1.5 Flash
-        </p>
-      </div>
-
-      {/* Disclaimer Alert */}
-      <div style={{
-        backgroundColor: '#fffbeb',
-        borderBottom: '1px solid #fde68a',
-        padding: '16px 32px'
-      }}>
-        <div style={{
-          display: 'flex',
-          gap: '12px',
+          gap: isMobile ? '6px' : '10px',
           alignItems: 'flex-start'
         }}>
           <AlertTriangle style={{
             color: '#d97706',
             flexShrink: 0,
             marginTop: '2px'
-          }} size={20} />
+          }} size={isMobile ? 14 : 18} />
           <p style={{
-            fontSize: '0.875rem',
-            color: '#78350f',
-            lineHeight: '1.5',
+            fontSize: isMobile ? '0.75rem' : '0.875rem',
+            color: '#92400e',
+            lineHeight: '1.4',
             margin: 0
           }}>
-            <strong style={{ fontWeight: '600' }}>Disclaimer:</strong> This is an AI-generated analysis.
-            It is <strong>not a medical diagnosis</strong>. Please consult a certified healthcare provider.
+            <strong>Disclaimer:</strong> This is an AI-generated analysis, not a medical diagnosis. Please consult a healthcare provider.
           </p>
         </div>
       </div>
 
-      {/* Main Content */}
       <div style={{
-        padding: '32px'
+        border: '1px solid #e2e8f0',
+        padding: isMobile ? '16px' : '32px',
+        marginBottom: isMobile ? '12px' : '20px',
+        backdropFilter: 'blur(10px)'
       }}>
-        <div style={{
-          backgroundColor: '#fafafa',
-          padding: '28px',
-          borderRadius: '12px',
-          border: '1px solid #e5e7eb'
-        }}>
-          <div style={{ color: '#1e293b' }}>
-            {formatText(analysis)}
-          </div>
+        <div style={{ color: '#1e293b' }}>
+          {formatText(analysis)}
         </div>
       </div>
 
-      {/* Footer Info */}
       <div style={{
-        padding: '16px 32px',
-        backgroundColor: '#f8fafc',
-        borderTop: '1px solid #e2e8f0'
+        display: 'flex',
+        justifyContent: 'center',
+        marginTop: isMobile ? '12px' : '24px'
       }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          gap: '16px',
-          flexWrap: 'wrap'
-        }}>
-          <div style={{
+        <button
+          onClick={downloadPDF}
+          style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
-            color: '#64748b'
-          }}>
-            <Info size={16} />
-            <p style={{
-              fontSize: '0.8125rem',
-              fontWeight: '500',
-              margin: 0
-            }}>
-              🔒 Your data is processed securely and not stored permanently
-            </p>
-          </div>
-
-          <button
-            onClick={downloadPDF}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '10px 20px',
-              backgroundColor: '#3b82f6',
-              color: 'white',
-              border: 'none',
-              borderRadius: '8px',
-              fontSize: '0.875rem',
-              fontWeight: '600',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              boxShadow: '0 2px 4px rgba(59, 130, 246, 0.3)'
-            }}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#2563eb';
-              e.target.style.transform = 'translateY(-1px)';
-              e.target.style.boxShadow = '0 4px 6px rgba(59, 130, 246, 0.4)';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = '#3b82f6';
-              e.target.style.transform = 'translateY(0)';
-              e.target.style.boxShadow = '0 2px 4px rgba(59, 130, 246, 0.3)';
-            }}
-          >
-            <Download size={16} />
-            Download Report
-          </button>
-        </div>
+            gap: isMobile ? '6px' : '10px',
+            padding: isMobile ? '10px 20px' : '12px 28px',
+            backgroundColor: '#0d9db8',
+            color: 'white',
+            border: 'none',
+            borderRadius: '10px',
+            fontSize: isMobile ? '0.8125rem' : '0.9375rem',
+            fontWeight: '600',
+            cursor: 'pointer',
+            transition: 'all 0.2s',
+            boxShadow: '0 4px 12px rgba(13, 157, 184, 0.3)'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = '#0a7a8f';
+            e.currentTarget.style.transform = 'translateY(-2px)';
+            e.currentTarget.style.boxShadow = '0 6px 16px rgba(13, 157, 184, 0.4)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = '#0d9db8';
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 4px 12px rgba(13, 157, 184, 0.3)';
+          }}
+        >
+          <Download size={isMobile ? 16 : 18} />
+          Download Report as PDF
+        </button>
       </div>
+
+      <p style={{
+        textAlign: 'center',
+        fontSize: isMobile ? '0.6875rem' : '0.8125rem',
+        color: '#94a3b8',
+        marginTop: isMobile ? '12px' : '20px'
+      }}>
+        🔒 Your data is processed securely and not stored permanently
+      </p>
     </div>
   );
 };
