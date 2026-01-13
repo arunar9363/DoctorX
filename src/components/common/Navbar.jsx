@@ -5,26 +5,40 @@ import ProfilePage from "../../pages/ProfilePage";
 import { auth, signOut } from "../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
-// --- ADDED: SVG Profile Icon Component ---
+// --- SVG Icons ---
 const ProfileIcon = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
+  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
     <circle cx="12" cy="7" r="4"></circle>
   </svg>
 );
 
+const LoginIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+    <polyline points="10 17 15 12 10 7"></polyline>
+    <line x1="15" y1="12" x2="3" y2="12"></line>
+  </svg>
+);
 
-// Simple Toast Component (Your existing code)
+const RegisterIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+    <circle cx="8.5" cy="7" r="4"></circle>
+    <line x1="20" y1="8" x2="20" y2="14"></line>
+    <line x1="23" y1="11" x2="17" y2="11"></line>
+  </svg>
+);
+
+const LogoutIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+    <polyline points="16 17 21 12 16 7"></polyline>
+    <line x1="21" y1="12" x2="9" y2="12"></line>
+  </svg>
+);
+
+// Simple Toast Component
 const SimpleToast = ({ message, type, show, onClose }) => {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -102,7 +116,7 @@ const SimpleToast = ({ message, type, show, onClose }) => {
   );
 };
 
-// Emergency Modal Component (Your existing code)
+// Emergency Modal Component
 const EmergencyModal = ({ show, onClose, isDark }) => {
   if (!show) return null;
 
@@ -149,7 +163,8 @@ const EmergencyModal = ({ show, onClose, isDark }) => {
       alignItems: 'center',
       justifyContent: 'center',
       zIndex: 2000,
-      padding: '20px'
+      padding: '20px',
+      animation: 'fadeIn 0.3s ease'
     },
     modal: {
       background: isDark
@@ -160,7 +175,8 @@ const EmergencyModal = ({ show, onClose, isDark }) => {
       width: '100%',
       maxHeight: '85vh',
       overflow: 'hidden',
-      boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)'
+      boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+      animation: 'slideUp 0.4s ease'
     },
     header: {
       background: 'linear-gradient(135deg, #dc2626, #ef4444)',
@@ -195,8 +211,11 @@ const EmergencyModal = ({ show, onClose, isDark }) => {
               cursor: 'pointer',
               borderRadius: '50%',
               width: '40px',
-              height: '40px'
+              height: '40px',
+              transition: 'all 0.3s ease'
             }}
+            onMouseEnter={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.3)'}
+            onMouseLeave={(e) => e.target.style.background = 'rgba(255, 255, 255, 0.2)'}
           >
             ×
           </button>
@@ -228,6 +247,14 @@ const EmergencyModal = ({ show, onClose, isDark }) => {
                       cursor: 'pointer',
                       transition: 'all 0.3s ease'
                     }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-3px)';
+                      e.currentTarget.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.15)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }}
                   >
                     <div style={{
                       fontSize: '14px',
@@ -258,6 +285,46 @@ const EmergencyModal = ({ show, onClose, isDark }) => {
           ))}
         </div>
       </div>
+    </div>
+  );
+};
+
+// Animated Hamburger Menu Icon
+const HamburgerIcon = ({ isOpen, isDark }) => {
+  const lineStyle = {
+    width: '24px',
+    height: '2.5px',
+    backgroundColor: isDark ? 'white' : '#333',
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    borderRadius: '3px',
+    display: 'block'
+  };
+
+  return (
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '5px',
+      cursor: 'pointer',
+      width: '24px',
+      height: '20px',
+      position: 'relative'
+    }}>
+      <span style={{
+        ...lineStyle,
+        transform: isOpen ? 'rotate(45deg) translate(6px, 6px)' : 'rotate(0) translate(0, 0)',
+        transformOrigin: 'center'
+      }}></span>
+      <span style={{
+        ...lineStyle,
+        opacity: isOpen ? 0 : 1,
+        transform: isOpen ? 'translateX(20px)' : 'translateX(0)'
+      }}></span>
+      <span style={{
+        ...lineStyle,
+        transform: isOpen ? 'rotate(-45deg) translate(6px, -6px)' : 'rotate(0) translate(0, 0)',
+        transformOrigin: 'center'
+      }}></span>
     </div>
   );
 };
@@ -483,26 +550,41 @@ function Navbar() {
       background: 'transparent',
       border: 'none',
       padding: '0.5rem',
-      cursor: 'pointer',
-      fontSize: '24px',
-      color: isDark ? 'white' : 'black'
+      cursor: 'pointer'
     },
     mobileMenu: {
       position: 'fixed',
       top: '62px',
-      left: 0,
       right: 0,
-      width: '100vw',
-      height: 'auto',
-      maxHeight: 'calc(100vh - 62px)',
+      width: isMenuOpen ? '280px' : '0',
+      maxWidth: '85vw',
+      height: 'calc(100vh - 62px)',
       background: isDark ? 'rgba(18, 18, 18, 0.98)' : 'rgba(255, 255, 255, 0.98)',
       backdropFilter: 'blur(15px)',
-      border: 'none',
+      borderLeft: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.1)',
+      boxShadow: isMenuOpen ? '-4px 0 20px rgba(0, 0, 0, 0.2)' : 'none',
       zIndex: 1000,
-      display: isMenuOpen ? 'flex' : 'none',
+      display: 'flex',
       flexDirection: 'column',
       overflowY: 'auto',
-      padding: 0
+      overflowX: 'hidden',
+      padding: 0,
+      transition: 'width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease',
+      opacity: isMenuOpen ? 1 : 0,
+      pointerEvents: isMenuOpen ? 'all' : 'none'
+    },
+    mobileOverlay: {
+      position: 'fixed',
+      top: '62px',
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: 'rgba(0, 0, 0, 0.5)',
+      backdropFilter: 'blur(2px)',
+      zIndex: 999,
+      opacity: isMenuOpen ? 1 : 0,
+      pointerEvents: isMenuOpen ? 'all' : 'none',
+      transition: 'opacity 0.3s ease'
     },
     mobileNavLinks: {
       display: 'flex',
@@ -523,7 +605,9 @@ function Navbar() {
       borderBottom: isDark ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.08)',
       display: 'flex',
       alignItems: 'center',
-      gap: '10px'
+      gap: '10px',
+      transform: isMenuOpen ? 'translateX(0)' : 'translateX(-20px)',
+      opacity: isMenuOpen ? 1 : 0,
     },
     mobileActions: {
       display: 'flex',
@@ -547,7 +631,9 @@ function Navbar() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      gap: '8px'
+      gap: '8px',
+      transform: isMenuOpen ? 'translateY(0)' : 'translateY(-10px)',
+      opacity: isMenuOpen ? 1 : 0
     },
     mobileLoginButton: {
       background: 'linear-gradient(135deg, #007bff, #0056b3)',
@@ -581,7 +667,6 @@ function Navbar() {
     <>
       <nav style={styles.navbar}>
         <div style={styles.container}>
-          {/* LOGO LINK: Redirects based on auth status */}
           <Link style={styles.brand} to={user ? "/dashboard" : "/"} onClick={closeMenu}>
             <img style={styles.logo} src="/assets/MAINLOGO1.png" alt="DoctorX Logo" />
           </Link>
@@ -589,7 +674,6 @@ function Navbar() {
           {/* Desktop Navigation */}
           <div style={styles.desktopNav}>
             <ul style={styles.navLinks}>
-              {/* HOME/DASHBOARD TOGGLE */}
               {!user ? (
                 <li><Link style={{ ...styles.navLink, ...(isActiveLink('/') ? styles.activeNavLink : {}) }} to="/">Home</Link></li>
               ) : (
@@ -598,9 +682,7 @@ function Navbar() {
 
               {user && (
                 <>
-                  <li><Link style={{ ...styles.navLink, ...(isActiveLink('/symptoms') ? styles.activeNavLink : {}) }} to="/symptoms">Analyze Symptoms</Link></li>
-                  <li><Link style={{ ...styles.navLink, ...(isActiveLink('/diseases-front') ? styles.activeNavLink : {}) }} to="/diseases-front">Disease Details</Link></li>
-                  <li><Link style={{ ...styles.navLink, ...(isActiveLink('/doctorx-ai') ? styles.activeNavLink : {}) }} to="/doctorx-ai">AI Assistance</Link></li>
+                  <li><Link style={{ ...styles.navLink, ...(isActiveLink('/services') ? styles.activeNavLink : {}) }} to="/services">Services</Link></li>
                 </>
               )}
               <li><Link style={{ ...styles.navLink, ...(isActiveLink('/audience') ? styles.activeNavLink : {}) }} to="/audience">Audience</Link></li>
@@ -615,19 +697,52 @@ function Navbar() {
             {!isLoading && (
               !user ? (
                 <>
-                  <button style={{ ...styles.unifiedButton, ...styles.loginButton }} onClick={() => setShowLogin(true)}>Login</button>
-                  <Link style={{ ...styles.unifiedButton, ...styles.registerButton }} to="/register">Register</Link>
+                  <button
+                    style={{ ...styles.unifiedButton, ...styles.loginButton }}
+                    onClick={() => setShowLogin(true)}
+                    onMouseEnter={(e) => e.target.style.transform = 'translateY(-2px)'}
+                    onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
+                  >
+                    <LoginIcon /> Login
+                  </button>
+                  <Link
+                    style={{ ...styles.unifiedButton, ...styles.registerButton }}
+                    to="/register"
+                    onMouseEnter={(e) => e.target.style.transform = 'translateY(-2px)'}
+                    onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
+                  >
+                    <RegisterIcon /> Register
+                  </Link>
                 </>
               ) : (
                 <>
-                  <button onClick={handleProfileClick} style={{ ...styles.unifiedButton, ...styles.profileButton }}>
+                  <button
+                    onClick={handleProfileClick}
+                    style={{ ...styles.unifiedButton, ...styles.profileButton }}
+                    onMouseEnter={(e) => e.target.style.transform = 'translateY(-2px)'}
+                    onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
+                  >
                     <ProfileIcon /> My Profile
                   </button>
-                  <button style={{ ...styles.unifiedButton, ...styles.logoutButton }} onClick={handleLogout}>Logout</button>
+                  <button
+                    style={{ ...styles.unifiedButton, ...styles.logoutButton }}
+                    onClick={handleLogout}
+                    onMouseEnter={(e) => e.target.style.transform = 'translateY(-2px)'}
+                    onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
+                  >
+                    <LogoutIcon /> Logout
+                  </button>
                 </>
               )
             )}
-            <button style={{ ...styles.unifiedButton, ...styles.emergencyBtn }} onClick={() => setShowEmergency(true)}>SOS</button>
+            <button
+              style={{ ...styles.unifiedButton, ...styles.emergencyBtn }}
+              onClick={() => setShowEmergency(true)}
+              onMouseEnter={(e) => e.target.style.transform = 'translateY(-2px)'}
+              onMouseLeave={(e) => e.target.style.transform = 'translateY(0)'}
+            >
+              SOS
+            </button>
             <button style={styles.themeToggle} onClick={toggleTheme}>
               <span style={styles.toggleTrack}>
                 <span style={styles.toggleThumb}></span>
@@ -639,53 +754,189 @@ function Navbar() {
             </button>
           </div>
 
-          {/* Mobile Toggler */}
+          {/* Mobile Toggler with Animated Hamburger */}
           <button onClick={toggleMenu} style={styles.mobileToggler}>
-            {isMenuOpen ? '✕' : '☰'}
+            <HamburgerIcon isOpen={isMenuOpen} isDark={isDark} />
           </button>
         </div>
+
+        {/* Mobile Menu Overlay */}
+        {isMobile && <div style={styles.mobileOverlay} onClick={closeMenu}></div>}
 
         {/* Mobile Menu */}
         <div style={styles.mobileMenu}>
           <ul style={styles.mobileNavLinks}>
-            {/* MOBILE HOME/DASHBOARD TOGGLE */}
             {!user ? (
-              <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/') ? styles.activeNavLink : {}) }} to="/" onClick={closeMenu}>Home</Link></li>
+              <li>
+                <Link
+                  style={{
+                    ...styles.mobileNavLink,
+                    ...(isActiveLink('/') ? styles.activeNavLink : {}),
+                    transitionDelay: '0.05s'
+                  }}
+                  to="/"
+                  onClick={closeMenu}
+                >
+                  Home
+                </Link>
+              </li>
             ) : (
-              <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/dashboard') ? styles.activeNavLink : {}) }} to="/dashboard" onClick={closeMenu}>Dashboard</Link></li>
+              <li>
+                <Link
+                  style={{
+                    ...styles.mobileNavLink,
+                    ...(isActiveLink('/dashboard') ? styles.activeNavLink : {}),
+                    transitionDelay: '0.05s'
+                  }}
+                  to="/dashboard"
+                  onClick={closeMenu}
+                >
+                  Dashboard
+                </Link>
+              </li>
             )}
 
             {user && (
               <>
-                <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/symptoms') ? styles.activeNavLink : {}) }} to="/symptoms" onClick={closeMenu}>Analyze Symptoms</Link></li>
-                <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/diseases-front') ? styles.activeNavLink : {}) }} to="/diseases-front" onClick={closeMenu}>Disease Details</Link></li>
-                <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/doctorx-ai') ? styles.activeNavLink : {}) }} to="/doctorx-ai" onClick={closeMenu}>Free AI Assistance</Link></li>
+                <li>
+                  <Link
+                    style={{
+                      ...styles.mobileNavLink,
+                      ...(isActiveLink('/services') ? styles.activeNavLink : {}),
+                      transitionDelay: '0.1s'
+                    }}
+                    to="/services"
+                    onClick={closeMenu}
+                  >
+                    Services
+                  </Link>
+                </li>
               </>
             )}
-            <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/audience') ? styles.activeNavLink : {}) }} to="/audience" onClick={closeMenu}>Audience</Link></li>
-            <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/aboutus') ? styles.activeNavLink : {}) }} to="/aboutus" onClick={closeMenu}>About Us</Link></li>
-            <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/terms') ? styles.activeNavLink : {}) }} to="/terms" onClick={closeMenu}>Terms & Conditions</Link></li>
-            <li><Link style={{ ...styles.mobileNavLink, ...(isActiveLink('/contact') ? styles.activeNavLink : {}) }} to="/contact" onClick={closeMenu}>Feedback</Link></li>
+            <li>
+              <Link
+                style={{
+                  ...styles.mobileNavLink,
+                  ...(isActiveLink('/audience') ? styles.activeNavLink : {}),
+                  transitionDelay: user ? '0.25s' : '0.1s'
+                }}
+                to="/audience"
+                onClick={closeMenu}
+              >
+                Audience
+              </Link>
+            </li>
+            <li>
+              <Link
+                style={{
+                  ...styles.mobileNavLink,
+                  ...(isActiveLink('/aboutus') ? styles.activeNavLink : {}),
+                  transitionDelay: user ? '0.3s' : '0.15s'
+                }}
+                to="/aboutus"
+                onClick={closeMenu}
+              >
+                About Us
+              </Link>
+            </li>
+            <li>
+              <Link
+                style={{
+                  ...styles.mobileNavLink,
+                  ...(isActiveLink('/terms') ? styles.activeNavLink : {}),
+                  transitionDelay: user ? '0.35s' : '0.2s'
+                }}
+                to="/terms"
+                onClick={closeMenu}
+              >
+                Terms & Conditions
+              </Link>
+            </li>
+            <li>
+              <Link
+                style={{
+                  ...styles.mobileNavLink,
+                  ...(isActiveLink('/contact') ? styles.activeNavLink : {}),
+                  transitionDelay: user ? '0.4s' : '0.25s'
+                }}
+                to="/contact"
+                onClick={closeMenu}
+              >
+                Feedback
+              </Link>
+            </li>
           </ul>
 
           <div style={styles.mobileActions}>
             {!isLoading && (
               !user ? (
                 <>
-                  <button style={{ ...styles.mobileButton, ...styles.mobileLoginButton }} onClick={() => { setShowLogin(true); closeMenu(); }}>Login</button>
-                  <Link style={{ ...styles.mobileButton, ...styles.mobileRegisterButton }} to="/register" onClick={closeMenu}>Register</Link>
+                  <button
+                    style={{
+                      ...styles.mobileButton,
+                      ...styles.mobileLoginButton,
+                      transitionDelay: '0.3s'
+                    }}
+                    onClick={() => { setShowLogin(true); closeMenu(); }}
+                  >
+                    <LoginIcon /> Login
+                  </button>
+                  <Link
+                    style={{
+                      ...styles.mobileButton,
+                      ...styles.mobileRegisterButton,
+                      transitionDelay: '0.35s'
+                    }}
+                    to="/register"
+                    onClick={closeMenu}
+                  >
+                    <RegisterIcon /> Register
+                  </Link>
                 </>
               ) : (
                 <>
-                  <button style={{ ...styles.mobileButton, ...styles.mobileProfileButton }} onClick={handleProfileClick}>
+                  <button
+                    style={{
+                      ...styles.mobileButton,
+                      ...styles.mobileProfileButton,
+                      transitionDelay: '0.45s'
+                    }}
+                    onClick={handleProfileClick}
+                  >
                     <ProfileIcon /> My Profile
                   </button>
-                  <button style={{ ...styles.mobileButton, ...styles.mobileLogoutButton }} onClick={handleLogout}>Logout</button>
+                  <button
+                    style={{
+                      ...styles.mobileButton,
+                      ...styles.mobileLogoutButton,
+                      transitionDelay: '0.5s'
+                    }}
+                    onClick={handleLogout}
+                  >
+                    <LogoutIcon /> Logout
+                  </button>
                 </>
               )
             )}
-            <button style={{ ...styles.mobileButton, ...styles.mobileEmergencyBtn }} onClick={() => { setShowEmergency(true); closeMenu(); }}>🆘 Emergency Help</button>
-            <div style={styles.mobileThemeContainer}>
+            <button
+              style={{
+                ...styles.mobileButton,
+                ...styles.mobileEmergencyBtn,
+                transitionDelay: user ? '0.55s' : '0.4s'
+              }}
+              onClick={() => { setShowEmergency(true); closeMenu(); }}
+            >
+              🆘 Emergency Help
+            </button>
+            <div
+              style={{
+                ...styles.mobileThemeContainer,
+                transition: 'all 0.3s ease',
+                transitionDelay: user ? '0.6s' : '0.45s',
+                transform: isMenuOpen ? 'translateY(0)' : 'translateY(-10px)',
+                opacity: isMenuOpen ? 1 : 0
+              }}
+            >
               <button style={styles.themeToggle} onClick={toggleTheme}>
                 <span style={styles.toggleTrack}>
                   <span style={styles.toggleThumb}></span>
@@ -706,9 +957,18 @@ function Navbar() {
         <EmergencyModal show={showEmergency} onClose={() => setShowEmergency(false)} isDark={isDark} />
         <SimpleToast message={toast.message} type={toast.type} show={toast.show} onClose={hideToast} />
         <style>{`
-          @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-          @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-          @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+          @keyframes fadeIn { 
+            from { opacity: 0; } 
+            to { opacity: 1; } 
+          }
+          @keyframes slideUp { 
+            from { transform: translateY(50px); opacity: 0; } 
+            to { transform: translateY(0); opacity: 1; } 
+          }
+          @keyframes pulse { 
+            0%, 100% { transform: scale(1); } 
+            50% { transform: scale(1.1); } 
+          }
         `}</style>
       </>
     </>

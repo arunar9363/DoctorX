@@ -192,14 +192,23 @@ const DiseaseSearchPage = () => {
       setKeywordInput('');
     }
   };
-  const handleViewDetails = (disease) => navigate(`/diseases/${createSlug(disease.name)}`);
+
+  // Updated handleViewDetails to pass disease ID properly
+  const handleViewDetails = (disease) => {
+    // Option 1: Navigate with route parameter (recommended for React Router)
+    navigate(`/diseases/${createSlug(disease.name)}?id=${disease.id}`);
+
+    // Option 2: If you're using query params only (uncomment if needed)
+    // navigate(`/disease-detail?id=${disease.id}`);
+  };
+
   const handleUpdateClick = (update) => { if (update?.url) window.open(update.url, '_blank', 'noopener,noreferrer'); };
   const handleViewAllUpdates = () => window.open('https://www.who.int/news', '_blank', 'noopener,noreferrer');
- const getIconComponent = (iconName, size = 20) => {
-  const components = { AlertCircle, TrendingUp, Globe, Calendar, Shield, Activity };
-  const IconComponent = components[iconName] || Activity;
-  return <IconComponent size={size} />;
-};
+  const getIconComponent = (iconName, size = 20) => {
+    const components = { AlertCircle, TrendingUp, Globe, Calendar, Shield, Activity };
+    const IconComponent = components[iconName] || Activity;
+    return <IconComponent size={size} />;
+  };
   const getCategoryIcon = (category) => getIconComponent({ 'emergency alert': 'AlertCircle', 'health data': 'TrendingUp', 'guidelines': 'Shield' }[category?.toLowerCase()]);
 
   // --- INLINE STYLES START ---
@@ -340,9 +349,9 @@ const DiseaseSearchPage = () => {
       border: `1px solid ${currentTheme.borderColor}`,
       backgroundColor: currentTheme.colorPrimary,
       boxShadow: isDarkMode ? '0 4px 20px rgba(0, 0, 0, 0.3)' : '0 4px 20px rgba(0, 0, 0, 0.08)'
-    }, isSmallScreen && { padding: '30px 20px' }, isMobile && { padding: '20px 16px' }),
-    searchForm: { display: 'flex', flexDirection: 'column', gap: '20px' },
-    searchContainer: mergeStyles({ display: 'flex', gap: '12px', alignItems: 'center' }, isSmallScreen && { flexDirection: 'column', gap: '16px' }),
+    }, isSmallScreen && { padding: '24px 20px', borderRadius: '12px' }, isMobile && { padding: '20px 16px', borderRadius: '12px', marginBottom: '16px' }),
+    searchForm: { display: 'flex', flexDirection: 'column', gap: isMobile ? '16px' : '20px' },
+    searchContainer: mergeStyles({ display: 'flex', gap: '12px', alignItems: 'stretch' }, isSmallScreen && { flexDirection: 'column', gap: '12px' }),
     searchInputWrapper: { flex: 1, position: 'relative', display: 'flex', alignItems: 'center' },
     searchIcon: { position: 'absolute', left: '16px', color: currentTheme.colorSecondary, zIndex: 1 },
     searchInput: (isFocused) => mergeStyles({
@@ -355,7 +364,7 @@ const DiseaseSearchPage = () => {
       color: currentTheme.colorDark,
       transition: 'all 0.3s ease',
       outline: 'none'
-    }, isFocused && { borderColor: currentTheme.colorSecondary, boxShadow: '0 0 0 3px rgba(13, 157, 184, 0.1)' }, isMobile && { padding: '14px 14px 14px 44px' }),
+    }, isFocused && { borderColor: currentTheme.colorSecondary, boxShadow: '0 0 0 3px rgba(13, 157, 184, 0.1)' }, isMobile && { padding: '14px 14px 14px 44px', fontSize: '0.95rem', borderRadius: '10px' }),
     searchButton: (state) => mergeStyles({
       padding: '16px 32px',
       background: `linear-gradient(135deg, ${currentTheme.colorSecondary} 0%, ${currentTheme.colorThird} 100%)`,
@@ -368,7 +377,7 @@ const DiseaseSearchPage = () => {
       transition: 'all 0.3s ease',
       whiteSpace: 'nowrap',
       outlineOffset: '2px'
-    }, state.isHovered && { transform: 'translateY(-2px)', boxShadow: '0 6px 20px rgba(13, 157, 184, 0.3)' }, state.isActive && { transform: 'translateY(0)' }, isSmallScreen && { width: '100%', padding: '14px' }),
+    }, state.isHovered && { transform: 'translateY(-2px)', boxShadow: '0 6px 20px rgba(13, 157, 184, 0.3)' }, state.isActive && { transform: 'translateY(0)' }, isSmallScreen && { width: '100%', padding: '14px 24px', fontSize: '0.95rem', borderRadius: '10px' }),
     keywordsSection: { display: 'flex', flexDirection: 'column', gap: '12px' },
     keywordInput: (isFocused) => mergeStyles({
       padding: '12px 16px',
@@ -379,7 +388,7 @@ const DiseaseSearchPage = () => {
       color: currentTheme.colorDark,
       transition: 'border-color 0.3s ease',
       outline: 'none'
-    }, isFocused && { borderColor: currentTheme.colorSecondary }),
+    }, isFocused && { borderColor: currentTheme.colorSecondary }, isMobile && { fontSize: '0.85rem', borderRadius: '8px' }),
     keywordsList: { display: 'flex', flexWrap: 'wrap', gap: '8px' },
     keywordTag: {
       display: 'inline-flex',
@@ -499,22 +508,80 @@ const DiseaseSearchPage = () => {
       border: `1px solid ${isDarkMode ? currentTheme.borderColor : 'rgba(13,157,184,0.1)'}`,
       marginTop: '40px',
       marginBottom: '40px'
-    }, isSmallScreen && { padding: '20px' }),
-    updatesList: mergeStyles({ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '20px', marginBottom: '20px' }, isSmallScreen && { gridTemplateColumns: '1fr' }),
+    }, isSmallScreen && { padding: '24px 20px', borderRadius: '12px', marginTop: '30px', marginBottom: '30px' }, isMobile && { padding: '20px 16px' }),
+    updatesList: mergeStyles({ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '20px', marginBottom: '20px' }, isSmallScreen && { gridTemplateColumns: '1fr', gap: '16px' }),
     updateItem: (isHovered) => mergeStyles({
       display: 'flex',
+      flexDirection: 'column',
       gap: '12px',
-      padding: '16px',
+      padding: '20px',
       borderRadius: '12px',
       background: isDarkMode ? 'rgba(13,157,184,0.05)' : currentTheme.colorFourth,
       border: `1px solid ${isDarkMode ? currentTheme.borderColor : 'rgba(13,157,184,0.1)'}`,
-      transition: 'all 0.3s ease'
-    }, isHovered && { background: isDarkMode ? 'rgba(13,157,184,0.1)' : 'rgba(13,157,184,0.05)', borderColor: currentTheme.colorSecondary, transform: 'translateY(-2px)' }, isMobile && { padding: '12px' }),
-    updateIcon: { color: currentTheme.colorSecondary, flexShrink: 0, marginTop: '2px' },
+      transition: 'all 0.3s ease',
+      cursor: 'pointer'
+    }, isHovered && {
+      background: isDarkMode ? 'rgba(13,157,184,0.1)' : 'rgba(13,157,184,0.08)',
+      borderColor: currentTheme.colorSecondary,
+      transform: 'translateY(-2px)',
+      boxShadow: isDarkMode ? '0 6px 20px rgba(0, 0, 0, 0.3)' : '0 6px 20px rgba(0, 0, 0, 0.1)'
+    }, isMobile && { padding: '16px', borderRadius: '10px' }),
+    updateHeader: {
+      display: 'flex',
+      alignItems: 'flex-start',
+      gap: '12px'
+    },
+    updateIcon: {
+      color: currentTheme.colorSecondary,
+      flexShrink: 0,
+      marginTop: '2px',
+      padding: '8px',
+      background: isDarkMode ? 'rgba(13, 157, 184, 0.1)' : 'rgba(13, 157, 184, 0.1)',
+      borderRadius: '8px'
+    },
     updateContent: { flex: 1, minWidth: 0 },
-    updateTitle: { margin: '0 0 6px 0', fontSize: '0.9rem', lineHeight: 1.4 },
+    updateTitle: {
+      margin: '0 0 8px 0',
+      fontSize: isMobile ? '0.95rem' : '1rem',
+      lineHeight: 1.4,
+      fontWeight: 600
+    },
+    updateDescription: {
+      fontSize: isMobile ? '0.85rem' : '0.9rem',
+      color: currentTheme.cardDescColor,
+      lineHeight: 1.5,
+      marginBottom: '8px',
+      display: '-webkit-box',
+      WebkitLineClamp: 3,
+      WebkitBoxOrient: 'vertical',
+      overflow: 'hidden'
+    },
+    updateMeta: {
+      display: 'flex',
+      gap: '12px',
+      alignItems: 'center',
+      flexWrap: 'wrap',
+      marginTop: '8px'
+    },
+    updateCategory: {
+      fontSize: '0.7rem',
+      padding: '4px 8px',
+      background: isDarkMode ? 'rgba(13, 157, 184, 0.2)' : 'rgba(13, 157, 184, 0.15)',
+      color: currentTheme.colorSecondary,
+      borderRadius: '4px',
+      fontWeight: 600,
+      textTransform: 'uppercase',
+      letterSpacing: '0.5px'
+    },
     updateLink: (isHovered) => mergeStyles({ background: 'none', border: 'none', color: currentTheme.colorDark, textAlign: 'left', cursor: 'pointer', textDecoration: 'none', fontWeight: 600, transition: 'color 0.3s ease' }, isHovered && { color: currentTheme.colorSecondary, textDecoration: 'underline' }),
-    updateDate: { fontSize: '0.75rem', color: currentTheme.dateColor, fontWeight: 500 },
+    updateDate: {
+      fontSize: isMobile ? '0.75rem' : '0.8rem',
+      color: currentTheme.dateColor,
+      fontWeight: 500,
+      display: 'flex',
+      alignItems: 'center',
+      gap: '4px'
+    },
     viewAllLink: (isHovered) => mergeStyles({ background: 'none', border: 'none', color: currentTheme.colorSecondary, cursor: 'pointer', textDecoration: 'none', fontWeight: 600, fontSize: '0.9rem', transition: 'all 0.3s ease' }, isHovered && { color: currentTheme.colorThird, textDecoration: 'underline', transform: 'translateX(4px)' }),
     outbreakAlert: { background: 'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)', color: 'white', padding: '12px 20px', borderRadius: '8px', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' },
     whoResourcesSection: mergeStyles({
@@ -695,11 +762,32 @@ const DiseaseSearchPage = () => {
                 <>
                   <div style={styles.updatesList}>
                     {whoUpdates.map((update, index) => (
-                      <article key={update.id} style={styles.updateItem(getInteractionStyles(`update${index}`).isHovered)} {...interactiveProps(`update${index}`)}>
-                        <div style={styles.updateIcon}>{getCategoryIcon(update.category)}</div>
-                        <div style={styles.updateContent}>
-                          <h3 style={styles.updateTitle}><button type="button" onClick={() => handleUpdateClick(update)} style={styles.updateLink(getInteractionStyles(`updateLink${index}`).isHovered)} {...interactiveProps(`updateLink${index}`)}>{update.title}{update.url && <ExternalLink size={14} style={{ marginLeft: '4px' }} />}</button></h3>
-                          <time style={styles.updateDate}>{update.date}</time>
+                      <article
+                        key={update.id}
+                        style={styles.updateItem(getInteractionStyles(`update${index}`).isHovered)}
+                        onClick={() => handleUpdateClick(update)}
+                        {...interactiveProps(`update${index}`)}
+                      >
+                        <div style={styles.updateHeader}>
+                          <div style={styles.updateIcon}>{getCategoryIcon(update.category)}</div>
+                          <div style={styles.updateContent}>
+                            <h3 style={styles.updateTitle}>
+                              {update.title}
+                              {update.url && <ExternalLink size={14} style={{ marginLeft: '6px', verticalAlign: 'middle' }} />}
+                            </h3>
+                            {update.description && (
+                              <p style={styles.updateDescription}>{update.description}</p>
+                            )}
+                          </div>
+                        </div>
+                        <div style={styles.updateMeta}>
+                          {update.category && (
+                            <span style={styles.updateCategory}>{update.category}</span>
+                          )}
+                          <time style={styles.updateDate}>
+                            <Calendar size={12} />
+                            {update.date}
+                          </time>
                         </div>
                       </article>
                     ))}

@@ -13,7 +13,7 @@ import LoginModal from "./components/common/LoginModal";
 import ScrollToTop from "./components/common/ScrollToTop";
 import Audience from "./components/sections/Audience";
 import About from "./components/sections/AboutUs";
-import DiseaseFront from "./components/features/DiseasesFront";
+import Services from "./components/features/services";
 import DiseaseSearch from "./components/features/DiseaseSearch";
 import IndividualDiseasesInfo from "./components/features/IndividualDiseaseInfo";
 import InfermedicaTriageSymptomChecker from "./components/features/InfermedicaTriageSymptomChecker";
@@ -66,20 +66,11 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
+          
           <Route path="/symptoms" element={<SymptomPage />} />
-          <Route path="/diseases-front" element={<DiseaseFront />} />
-          <Route path="/diseases" element={<DiseaseSearch />} />
-          <Route path="/diseases/:diseaseName" element={<IndividualDiseasesInfo />} />
-          <Route
-            path="/symptom-checker"
-            element={
-              <InfermedicaTriageSymptomChecker
-                apiBaseUrl="/api"
-                authHeaders={{}}
-                language="en" />
-            }
-          />
-          <Route path="/doctorx-ai" element={<DoctorXAIPage />} />
+          
+         
+          {/* Other Public Routes */}
           <Route path="/audience" element={<Audience />} />
           <Route path="/aboutus" element={<About />} />
           <Route path="/contact" element={<ContactPage />} />
@@ -89,11 +80,22 @@ function App() {
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
 
-          {/* Lab Analysis Route - Can be public or protected based on your needs */}
-          <Route path="/lab-analysis" element={<LabUpload />} />
-
           {/* Protected Routes */}
           <Route element={<ProtectedRouter />}>
+            <Route path="/services" element={<Services />} />
+            <Route path="/diseases" element={<DiseaseSearch />} />
+            <Route path="/diseases/:diseaseName" element={<IndividualDiseasesInfo />} />
+            <Route
+              path="/symptom-checker"
+              element={
+                <InfermedicaTriageSymptomChecker
+                  apiBaseUrl="/api"
+                  authHeaders={{}}
+                  language="en" />
+              }
+            />
+            <Route path="/lab-analysis" element={<LabUpload />} />
+            <Route path="/doctorx-ai" element={<DoctorXAIPage />} />
             <Route path="/dashboard" element={<Dashboard />} />
           </Route>
 

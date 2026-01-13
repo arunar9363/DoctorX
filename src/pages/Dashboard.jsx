@@ -332,7 +332,7 @@ function Dashboard() {
           {/* Explore Diseases */}
           <div
             style={styles.serviceCard}
-            onClick={() => navigate('/diseases-front')}
+            onClick={() => navigate('/diseases')}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = 'translateY(-5px)';
               e.currentTarget.querySelector('.card-image').style.transform = 'scale(1.05)';
