@@ -138,6 +138,58 @@ const LabResult = ({ analysis }) => {
         yPosition += 3;
       };
 
+      const addTextWithHighlights = (text, size) => {
+        doc.setFontSize(size);
+        doc.setFont('helvetica', 'normal');
+
+        const highlightPatterns = [
+          { keywords: ['ABNORMAL', 'abnormal', 'Abnormal'], color: [220, 38, 38], bg: [254, 226, 226] },
+          { keywords: ['NORMAL', 'normal', 'Normal'], color: [5, 150, 105], bg: [209, 250, 229] },
+          { keywords: ['elevated', 'Elevated', 'high', 'High'], color: [234, 88, 12], bg: [254, 215, 170] },
+          { keywords: ['low', 'Low'], color: [234, 88, 12], bg: [254, 215, 170] },
+          { keywords: ['Critical', 'critical', 'Severe', 'severe'], color: [220, 38, 38], bg: [254, 202, 202] }
+        ];
+
+        const lines = doc.splitTextToSize(text, maxWidth);
+        lines.forEach(line => {
+          if (yPosition > pageHeight - margin - 35) {
+            doc.addPage();
+            yPosition = margin;
+          }
+
+          let xPos = margin;
+          const words = line.split(' ');
+
+          words.forEach((word) => {
+            let highlighted = false;
+
+            for (const pattern of highlightPatterns) {
+              if (pattern.keywords.some(kw => word.includes(kw))) {
+                const wordWidth = doc.getTextWidth(word);
+                doc.setFillColor(pattern.bg[0], pattern.bg[1], pattern.bg[2]);
+                doc.roundedRect(xPos - 1, yPosition - size * 0.35, wordWidth + 2, size * 0.5, 1, 1, 'F');
+                doc.setTextColor(pattern.color[0], pattern.color[1], pattern.color[2]);
+                doc.setFont('helvetica', 'bold');
+                doc.text(word, xPos, yPosition);
+                doc.setFont('helvetica', 'normal');
+                highlighted = true;
+                break;
+              }
+            }
+
+            if (!highlighted) {
+              doc.setTextColor(60, 60, 60);
+              doc.text(word, xPos, yPosition);
+            }
+
+            xPos += doc.getTextWidth(word + ' ');
+          });
+
+          yPosition += size * 0.6;
+        });
+        yPosition += 3;
+      };
+
       try {
         const logoImg = await new Promise((resolve, reject) => {
           const img = new Image();
@@ -209,13 +261,178 @@ const LabResult = ({ analysis }) => {
       yPosition += 12;
 
       const lines = analysis.split('\n');
+      let inInvestigationsSection = false;
+      let tableData = [];
+
+      const addTableToPDF = () => {
+        if (tableData.length === 0) return;
+
+        yPosition += 5;
+
+        const tableHeight = (tableData.length + 1) * 8 + 15;
+        if (yPosition + tableHeight > pageHeight - margin - 35) {
+          doc.addPage();
+          yPosition = margin;
+        }
+
+        const colWidths = [55, 35, 40, 40];
+        const tableStartX = margin;
+        const rowHeight = 8;
+
+        doc.setFillColor(13, 157, 184);
+        doc.rect(tableStartX, yPosition, maxWidth, rowHeight, 'F');
+
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(255, 255, 255);
+
+        doc.text('Test Name', tableStartX + 2, yPosition + 5.5);
+        doc.text('Result', tableStartX + colWidths[0] + 2, yPosition + 5.5);
+        doc.text('Normal Range', tableStartX + colWidths[0] + colWidths[1] + 2, yPosition + 5.5);
+        doc.text('Status', tableStartX + colWidths[0] + colWidths[1] + colWidths[2] + 2, yPosition + 5.5);
+
+        yPosition += rowHeight;
+
+        tableData.forEach((row, idx) => {
+          if (idx % 2 === 0) {
+            doc.setFillColor(248, 250, 252);
+          } else {
+            doc.setFillColor(255, 255, 255);
+          }
+          doc.rect(tableStartX, yPosition, maxWidth, rowHeight, 'F');
+
+          doc.setDrawColor(226, 232, 240);
+          doc.setLineWidth(0.1);
+          doc.line(tableStartX, yPosition, tableStartX + maxWidth, yPosition);
+
+          doc.setFontSize(8);
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(30, 41, 59);
+
+          doc.setFont('helvetica', 'bold');
+          const testNameLines = doc.splitTextToSize(row.testName, colWidths[0] - 4);
+          doc.text(testNameLines[0], tableStartX + 2, yPosition + 5.5);
+
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(51, 65, 85);
+          doc.text(row.result, tableStartX + colWidths[0] + 2, yPosition + 5.5);
+
+          doc.setFont('helvetica', 'normal');
+          doc.setTextColor(100, 116, 139);
+          const rangeLines = doc.splitTextToSize(row.normalRange, colWidths[2] - 4);
+          doc.text(rangeLines[0], tableStartX + colWidths[0] + colWidths[1] + 2, yPosition + 5.5);
+
+          const statusLower = row.status.toLowerCase();
+          let statusBgColor, statusTextColor;
+
+          if (statusLower.includes('abnormal') || statusLower.includes('low') || statusLower.includes('high')) {
+            statusBgColor = [254, 226, 226];
+            statusTextColor = [220, 38, 38];
+          } else if (statusLower.includes('normal')) {
+            statusBgColor = [209, 250, 229];
+            statusTextColor = [5, 150, 105];
+          } else if (statusLower.includes('borderline')) {
+            statusBgColor = [254, 215, 170];
+            statusTextColor = [234, 88, 12];
+          } else {
+            statusBgColor = [248, 250, 252];
+            statusTextColor = [71, 85, 105];
+          }
+
+          const statusX = tableStartX + colWidths[0] + colWidths[1] + colWidths[2] + 2;
+          const statusBoxWidth = 35;
+          const statusBoxHeight = 5;
+          const statusBoxY = yPosition + 2;
+
+          doc.setFillColor(statusBgColor[0], statusBgColor[1], statusBgColor[2]);
+          doc.roundedRect(statusX, statusBoxY, statusBoxWidth, statusBoxHeight, 1, 1, 'F');
+
+          doc.setFontSize(7);
+          doc.setFont('helvetica', 'bold');
+          doc.setTextColor(statusTextColor[0], statusTextColor[1], statusTextColor[2]);
+          const statusLines = doc.splitTextToSize(row.status, statusBoxWidth - 2);
+          doc.text(statusLines[0], statusX + statusBoxWidth / 2, statusBoxY + 3.5, { align: 'center' });
+
+          yPosition += rowHeight;
+        });
+
+        doc.setDrawColor(226, 232, 240);
+        doc.line(tableStartX, yPosition, tableStartX + maxWidth, yPosition);
+
+        yPosition += 8;
+        tableData = [];
+      };
+
       lines.forEach(line => {
         const trimmedLine = line.trim();
 
         if (!trimmedLine) {
+          addTableToPDF();
           yPosition += 3;
           return;
         }
+
+        if (trimmedLine.toUpperCase().includes('INVESTIGATIONS') || trimmedLine.toUpperCase().includes('### 3.')) {
+          addTableToPDF();
+          inInvestigationsSection = true;
+        }
+
+        if ((trimmedLine.startsWith('##') || trimmedLine.startsWith('###')) &&
+          !trimmedLine.toUpperCase().includes('INVESTIGATIONS')) {
+          addTableToPDF();
+          inInvestigationsSection = false;
+        }
+
+        if (inInvestigationsSection) {
+          const pipePattern = /^\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|$/;
+          const match = trimmedLine.match(pipePattern);
+
+          if (match) {
+            const testName = match[1].trim();
+            const result = match[2].trim();
+            const normalRange = match[3].trim();
+            const status = match[4].trim();
+
+            // Skip header row and separator row
+            if (testName !== 'Test Name' && !testName.includes('---') && !testName.includes('|--') && testName !== '') {
+              tableData.push({ testName, result, normalRange, status });
+              return;
+            } else if (testName === 'Test Name' || testName.includes('---') || testName.includes('|--')) {
+              // Skip these lines completely
+              return;
+            }
+          }
+
+          const imagingPattern = /^[-*]\s*\*\*(.+?)\*\*:\s*(.+?)\s*->\s*(.+)$/i;
+          const imagingMatch = trimmedLine.match(imagingPattern);
+
+          if (imagingMatch) {
+            addTableToPDF();
+
+            yPosition += 5;
+            doc.setFillColor(248, 250, 252);
+            doc.roundedRect(margin, yPosition, maxWidth, 20, 2, 2, 'F');
+
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(30, 41, 59);
+            doc.text(imagingMatch[1].trim(), margin + 3, yPosition + 5);
+
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'normal');
+            doc.setTextColor(71, 85, 105);
+            doc.text(`Finding: ${imagingMatch[2].trim()}`, margin + 3, yPosition + 10);
+
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(13, 157, 184);
+            doc.text(`Impression: ${imagingMatch[3].trim()}`, margin + 3, yPosition + 15);
+
+            yPosition += 25;
+            return;
+          }
+        }
+
+        addTableToPDF();
 
         if (trimmedLine.startsWith('##') || trimmedLine.startsWith('###')) {
           yPosition += 4;
@@ -226,44 +443,14 @@ const LabResult = ({ analysis }) => {
           addText(cleanText, 11, 'bold', [40, 40, 40], 'left');
         } else if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
           let cleanText = trimmedLine.replace(/^[-*]\s/, '').replace(/\*\*/g, '');
-
-          doc.setFontSize(10);
-          doc.setFont('helvetica', 'normal');
-          doc.setTextColor(60, 60, 60);
-
-          const bulletLines = doc.splitTextToSize('• ' + cleanText, maxWidth - 5);
-          bulletLines.forEach((lineText, index) => {
-            if (yPosition > pageHeight - margin - 35) {
-              doc.addPage();
-              yPosition = margin;
-            }
-
-            if (index < bulletLines.length - 1 && bulletLines.length > 1) {
-              const words = lineText.split(' ');
-              if (words.length > 1) {
-                const lineWidth = doc.getTextWidth(lineText);
-                const spaceWidth = (maxWidth - 5 - lineWidth) / (words.length - 1);
-                let xPos = margin + 5;
-
-                words.forEach((word, wordIndex) => {
-                  doc.text(word, xPos, yPosition);
-                  xPos += doc.getTextWidth(word) + doc.getTextWidth(' ') + (wordIndex < words.length - 1 ? spaceWidth : 0);
-                });
-              } else {
-                doc.text(lineText, margin + 5, yPosition);
-              }
-            } else {
-              doc.text(lineText, margin + 5, yPosition);
-            }
-
-            yPosition += 5;
-          });
-          yPosition += 2;
+          addTextWithHighlights('• ' + cleanText, 10);
         } else {
           const cleanText = trimmedLine.replace(/\*\*/g, '');
-          addText(cleanText, 10, 'normal', [60, 60, 60], 'justify');
+          addTextWithHighlights(cleanText, 10);
         }
       });
+
+      addTableToPDF();
 
       const footerY = pageHeight - 28;
 
@@ -302,10 +489,11 @@ const LabResult = ({ analysis }) => {
 
   const addColoredBadges = (text) => {
     const patterns = [
-      { regex: /\b(Normal)\b/gi, color: '#0d9db8', bg: '#d1f4f9' },
-      { regex: /\b(Elevated|Mildly Elevated|Slightly Elevated)\b/gi, color: '#ea580c', bg: '#fed7aa' },
+      { regex: /\b(NORMAL|Normal)\b/gi, color: '#059669', bg: '#d1fae5' },
+      { regex: /\b(ABNORMAL|Abnormal|Elevated|Mildly Elevated|Slightly Elevated)\b/gi, color: '#dc2626', bg: '#fee2e2' },
       { regex: /\b(Low|Slightly Low|Mildly Low)\b/gi, color: '#ea580c', bg: '#fed7aa' },
-      { regex: /\b(Critical|Severe|High Risk)\b/gi, color: '#dc2626', bg: '#fecaca' }
+      { regex: /\b(Critical|Severe|High Risk|Borderline)\b/gi, color: '#dc2626', bg: '#fecaca' },
+      { regex: /\b(Not Specified|Not Applicable)\b/gi, color: '#64748b', bg: '#f1f5f9' }
     ];
 
     let parts = [text];
@@ -349,44 +537,267 @@ const LabResult = ({ analysis }) => {
     return parts;
   };
 
+  const parseTableRow = (line) => {
+    const pipePattern = /^\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|\s*(.+?)\s*\|$/;
+    const pipeMatch = line.match(pipePattern);
+
+    if (pipeMatch) {
+      const testName = pipeMatch[1].trim();
+      const result = pipeMatch[2].trim();
+      const normalRange = pipeMatch[3].trim();
+      const status = pipeMatch[4].trim();
+
+      // Skip header, separator rows, and empty rows
+      if (testName === 'Test Name' || testName.includes('---') || testName.includes('--') || testName === '' || line.match(/^\|[-:\s|]+\|$/)) {
+        return { isTableRow: false };
+      }
+
+      return {
+        isTableRow: true,
+        testName,
+        result,
+        normalRange,
+        status
+      };
+    }
+
+    const imagingPattern = /^[-*]\s*\*\*(.+?)\*\*:\s*(.+?)\s*->\s*(.+)$/i;
+    const imagingMatch = line.match(imagingPattern);
+
+    if (imagingMatch) {
+      return {
+        isImagingFinding: true,
+        region: imagingMatch[1].trim(),
+        finding: imagingMatch[2].trim(),
+        impression: imagingMatch[3].trim()
+      };
+    }
+
+    return { isTableRow: false };
+  };
+
   const formatText = (text) => {
     if (!text) {
       return <p style={{ color: '#64748b' }}>No analysis data available</p>;
     }
 
     const lines = text.split('\n');
+    const elements = [];
+    let tableRows = [];
+    let inInvestigationsSection = false;
+    const isMobile = window.innerWidth <= 768;
 
-    return lines.map((line, index) => {
+    const flushTable = () => {
+      if (tableRows.length > 0) {
+        elements.push(
+          <div key={`table-${elements.length}`} style={{
+            overflowX: 'auto',
+            marginBottom: isMobile ? '12px' : '16px',
+            marginTop: isMobile ? '8px' : '12px'
+          }}>
+            <table style={{
+              width: '100%',
+              borderCollapse: 'collapse',
+              fontSize: isMobile ? '0.75rem' : '0.875rem',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+              backgroundColor: '#ffffff'
+            }}>
+              <thead>
+                <tr style={{ backgroundColor: '#0d9db8' }}>
+                  <th style={{
+                    padding: isMobile ? '8px 6px' : '12px 16px',
+                    textAlign: 'left',
+                    color: '#ffffff',
+                    fontWeight: '600',
+                    borderBottom: '2px solid #0a7a8f'
+                  }}>Test Name</th>
+                  <th style={{
+                    padding: isMobile ? '8px 6px' : '12px 16px',
+                    textAlign: 'left',
+                    color: '#ffffff',
+                    fontWeight: '600',
+                    borderBottom: '2px solid #0a7a8f'
+                  }}>Result</th>
+                  <th style={{
+                    padding: isMobile ? '8px 6px' : '12px 16px',
+                    textAlign: 'left',
+                    color: '#ffffff',
+                    fontWeight: '600',
+                    borderBottom: '2px solid #0a7a8f'
+                  }}>Normal Range</th>
+                  <th style={{
+                    padding: isMobile ? '8px 6px' : '12px 16px',
+                    textAlign: 'left',
+                    color: '#ffffff',
+                    fontWeight: '600',
+                    borderBottom: '2px solid #0a7a8f'
+                  }}>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tableRows.map((row, idx) => {
+                  const statusLower = row.status.toLowerCase();
+                  let statusColor = '#475569';
+                  let statusBg = '#f8fafc';
+
+                  if (statusLower.includes('abnormal') || statusLower.includes('low') || statusLower.includes('high')) {
+                    statusColor = '#dc2626';
+                    statusBg = '#fee2e2';
+                  } else if (statusLower.includes('normal')) {
+                    statusColor = '#059669';
+                    statusBg = '#d1fae5';
+                  } else if (statusLower.includes('borderline')) {
+                    statusColor = '#ea580c';
+                    statusBg = '#fed7aa';
+                  }
+
+                  return (
+                    <tr key={idx} style={{
+                      backgroundColor: idx % 2 === 0 ? '#f8fafc' : '#ffffff',
+                      transition: 'background-color 0.2s'
+                    }}>
+                      <td style={{
+                        padding: isMobile ? '8px 6px' : '12px 16px',
+                        borderBottom: '1px solid #e2e8f0',
+                        color: '#1e293b',
+                        fontWeight: '500'
+                      }}>{row.testName}</td>
+                      <td style={{
+                        padding: isMobile ? '8px 6px' : '12px 16px',
+                        borderBottom: '1px solid #e2e8f0',
+                        color: '#334155',
+                        fontWeight: '600'
+                      }}>{row.result}</td>
+                      <td style={{
+                        padding: isMobile ? '8px 6px' : '12px 16px',
+                        borderBottom: '1px solid #e2e8f0',
+                        color: '#64748b'
+                      }}>{row.normalRange}</td>
+                      <td style={{
+                        padding: isMobile ? '8px 6px' : '12px 16px',
+                        borderBottom: '1px solid #e2e8f0'
+                      }}>
+                        <span style={{
+                          backgroundColor: statusBg,
+                          color: statusColor,
+                          padding: '4px 8px',
+                          borderRadius: '4px',
+                          fontWeight: '600',
+                          fontSize: isMobile ? '0.7rem' : '0.8125rem',
+                          display: 'inline-block'
+                        }}>
+                          {row.status}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        );
+        tableRows = [];
+      }
+    };
+
+    lines.forEach((line, index) => {
       const trimmedLine = line.trim();
 
       if (trimmedLine === '') {
-        return <div key={index} style={{ height: '8px' }} />;
+        flushTable();
+        elements.push(<div key={`space-${index}`} style={{ height: '8px' }} />);
+        return;
       }
 
-      if (trimmedLine.startsWith('##') || trimmedLine.startsWith('###') || (trimmedLine.startsWith('**') && trimmedLine.endsWith('**'))) {
+      if (trimmedLine.toUpperCase().includes('INVESTIGATIONS') || trimmedLine.toUpperCase().includes('### 3.')) {
+        flushTable();
+        inInvestigationsSection = true;
+      }
+
+      if ((trimmedLine.startsWith('###') || trimmedLine.startsWith('##')) &&
+        !trimmedLine.toUpperCase().includes('INVESTIGATIONS')) {
+        flushTable();
+        inInvestigationsSection = false;
+      }
+
+      if (inInvestigationsSection) {
+        // Skip the separator line
+        if (trimmedLine.match(/^\|[-:\s|]+\|$/)) {
+          return;
+        }
+
+        const tableData = parseTableRow(trimmedLine);
+
+        if (tableData.isTableRow) {
+          tableRows.push(tableData);
+          return;
+        }
+
+        if (tableData.isImagingFinding) {
+          flushTable();
+          elements.push(
+            <div key={`imaging-${index}`} style={{
+              marginBottom: isMobile ? '10px' : '14px',
+              padding: isMobile ? '10px' : '14px',
+              backgroundColor: '#f8fafc',
+              borderLeft: '4px solid #0d9db8',
+              borderRadius: '6px'
+            }}>
+              <div style={{
+                fontWeight: '600',
+                color: '#1e293b',
+                fontSize: isMobile ? '0.8125rem' : '0.9375rem',
+                marginBottom: '6px'
+              }}>
+                {tableData.region}
+              </div>
+              <div style={{
+                color: '#475569',
+                fontSize: isMobile ? '0.75rem' : '0.875rem',
+                marginBottom: '6px'
+              }}>
+                <strong>Finding:</strong> {tableData.finding}
+              </div>
+              <div style={{
+                color: '#0d9db8',
+                fontSize: isMobile ? '0.75rem' : '0.875rem',
+                fontWeight: '600'
+              }}>
+                <strong>Impression:</strong> {tableData.impression}
+              </div>
+            </div>
+          );
+          return;
+        }
+      }
+
+      flushTable();
+
+      if (trimmedLine.startsWith('###') || trimmedLine.startsWith('##') || (trimmedLine.startsWith('**') && trimmedLine.endsWith('**'))) {
         const cleanText = trimmedLine.replace(/#{2,3}/g, '').replace(/\*\*/g, '').trim();
-        return (
-          <h3 key={index} style={{
-            marginTop: window.innerWidth <= 768 ? '16px' : '24px',
-            marginBottom: window.innerWidth <= 768 ? '8px' : '12px',
+        elements.push(
+          <h3 key={`header-${index}`} style={{
+            marginTop: isMobile ? '16px' : '24px',
+            marginBottom: isMobile ? '8px' : '12px',
             fontWeight: '600',
             color: '#1e293b',
-            fontSize: window.innerWidth <= 768 ? '0.95rem' : '1.125rem',
+            fontSize: isMobile ? '0.95rem' : '1.125rem',
             lineHeight: '1.5'
           }}>
             {cleanText}
           </h3>
         );
+        return;
       }
 
       if (trimmedLine.includes('**')) {
         const parts = trimmedLine.split('**');
-        return (
-          <p key={index} style={{
-            marginBottom: window.innerWidth <= 768 ? '8px' : '12px',
+        elements.push(
+          <p key={`text-${index}`} style={{
+            marginBottom: isMobile ? '8px' : '12px',
             color: '#475569',
             lineHeight: '1.6',
-            fontSize: window.innerWidth <= 768 ? '0.8125rem' : '0.9375rem',
+            fontSize: isMobile ? '0.8125rem' : '0.9375rem',
             textAlign: 'justify'
           }}>
             {parts.map((part, i) =>
@@ -394,36 +805,42 @@ const LabResult = ({ analysis }) => {
             )}
           </p>
         );
+        return;
       }
 
       if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
         const cleanText = trimmedLine.replace(/^[-*]\s/, '');
-        return (
-          <li key={index} style={{
-            marginBottom: window.innerWidth <= 768 ? '6px' : '10px',
-            marginLeft: window.innerWidth <= 768 ? '16px' : '24px',
+        elements.push(
+          <li key={`bullet-${index}`} style={{
+            marginBottom: isMobile ? '6px' : '10px',
+            marginLeft: isMobile ? '16px' : '24px',
             color: '#475569',
             lineHeight: '1.6',
-            fontSize: window.innerWidth <= 768 ? '0.8125rem' : '0.9375rem',
+            fontSize: isMobile ? '0.8125rem' : '0.9375rem',
             textAlign: 'justify'
           }}>
             {cleanText}
           </li>
         );
+        return;
       }
 
-      return (
-        <p key={index} style={{
-          marginBottom: window.innerWidth <= 768 ? '8px' : '12px',
+      elements.push(
+        <p key={`para-${index}`} style={{
+          marginBottom: isMobile ? '8px' : '12px',
           color: '#475569',
           lineHeight: '1.6',
-          fontSize: window.innerWidth <= 768 ? '0.8125rem' : '0.9375rem',
+          fontSize: isMobile ? '0.8125rem' : '0.9375rem',
           textAlign: 'justify'
         }}>
           {addColoredBadges(trimmedLine)}
         </p>
       );
     });
+
+    flushTable();
+
+    return elements;
   };
 
   const isMobile = window.innerWidth <= 768;
