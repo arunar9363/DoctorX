@@ -287,7 +287,7 @@ function Services() {
         'Easy-to-understand explanations'
       ],
       image: '/assets/diseas.svg',
-      route: '/diseases-front'
+      route: '/diseases'
     },
     {
       id: 3,

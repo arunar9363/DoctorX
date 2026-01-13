@@ -13,7 +13,7 @@ import LoginModal from "./components/common/LoginModal";
 import ScrollToTop from "./components/common/ScrollToTop";
 import Audience from "./components/sections/Audience";
 import About from "./components/sections/AboutUs";
-import Services from "./components/features/services";
+import Services from "./components/features/ServiceList";  
 import DiseaseSearch from "./components/features/DiseaseSearch";
 import IndividualDiseasesInfo from "./components/features/IndividualDiseaseInfo";
 import InfermedicaTriageSymptomChecker from "./components/features/InfermedicaTriageSymptomChecker";
@@ -66,10 +66,10 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
-          
+
           <Route path="/symptoms" element={<SymptomPage />} />
-          
-         
+
+
           {/* Other Public Routes */}
           <Route path="/audience" element={<Audience />} />
           <Route path="/aboutus" element={<About />} />
