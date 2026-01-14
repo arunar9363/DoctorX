@@ -1,533 +1,656 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Add this import
-
-// Helper hook for responsive design using media queries in JS
-const useMediaQuery = (query) => {
-  const [matches, setMatches] = useState(false);
-  useEffect(() => {
-    const media = window.matchMedia(query);
-    if (media.matches !== matches) {
-      setMatches(media.matches);
-    }
-    const listener = () => setMatches(media.matches);
-    window.addEventListener("resize", listener);
-    return () => window.removeEventListener("resize", listener);
-  }, [matches, query]);
-  return matches;
-};
+import { useState, useEffect, useRef } from "react";
 
 function SymptomChecker() {
-  const navigate = useNavigate(); // Add this line
-  const [isPageLoaded, setIsPageLoaded] = useState(false);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [isDarkTheme, setIsDarkTheme] = useState(false);
+  const [hoveredCard, setHoveredCard] = useState(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isVisible, setIsVisible] = useState({});
   const [isButtonHovered, setIsButtonHovered] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const sectionRef = useRef(null);
+  const cardRefs = useRef([]);
+  const heroRef = useRef(null);
 
-  // Responsive breakpoints
-  const isMediumScreen = useMediaQuery('(max-width: 992px)');
-  const isSmallScreen = useMediaQuery('(max-width: 576px)');
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+  const isSmall = window.matchMedia('(max-width: 480px)').matches;
 
+  // Check theme
   useEffect(() => {
-    // Check for dark theme
     const checkTheme = () => {
       const theme = document.documentElement.getAttribute('data-theme');
-      setIsDarkTheme(theme === 'dark');
+      setIsDarkMode(theme === 'dark');
     };
-
     checkTheme();
-
-    // Listen for theme changes
     const observer = new MutationObserver(checkTheme);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['data-theme']
-    });
-
-    // Simulate page loading - copied timing from Hero.jsx
-    const loadingTimer = setTimeout(() => {
-      setIsPageLoaded(true);
-    }, 2500); // Updated to match Hero.jsx timing
-
-    return () => {
-      observer.disconnect();
-      clearTimeout(loadingTimer);
-    };
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => observer.disconnect();
   }, []);
 
-  // Inject keyframe animations into the document head - copied from Hero.jsx
+  // Intersection Observer for scroll animations
   useEffect(() => {
-    const styleTag = document.createElement('style');
-    styleTag.innerHTML = `
-      @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap');
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    const observerCallback = (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const index = cardRefs.current.indexOf(entry.target);
+          if (index !== -1) {
+            setIsVisible(prev => ({ ...prev, [index]: true }));
+          }
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    cardRefs.current.forEach(ref => {
+      if (ref) observer.observe(ref);
+    });
+
+    // Observe hero section
+    if (heroRef.current) {
+      observer.observe(heroRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Add animations CSS
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.innerHTML = `
+      @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;500;700;900&family=Inter:wght@300;400;500;600;700;800&display=swap');
       
-      @keyframes fadeInText {
-        from { opacity: 0; transform: translateX(-20px); }
-        to { opacity: 1; transform: translateX(0); }
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(60px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
-      @keyframes fadeInImage {
-        from { opacity: 0; transform: scale(0.95); }
-        to { opacity: 1; transform: scale(1); }
+
+      @keyframes slideInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-60px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
       }
-      @keyframes slideUp {
-        from { opacity: 0; transform: translateY(30px); }
-        to { opacity: 1; transform: translateY(0); }
+
+      @keyframes slideInRight {
+        from {
+          opacity: 0;
+          transform: translateX(60px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
       }
-      @keyframes wordSlideIn {
-        0% { opacity: 0; transform: translateY(20px); }
-        20% { opacity: 1; transform: translateY(0); }
-        80% { opacity: 1; transform: translateY(0); }
-        100% { opacity: 0; transform: translateY(-20px); }
+
+      @keyframes scaleIn {
+        from {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
       }
+
+      @keyframes shimmer {
+        0% {
+          background-position: -1000px 0;
+        }
+        100% {
+          background-position: 1000px 0;
+        }
+      }
+
+      @keyframes float {
+        0%, 100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      @keyframes pulse {
+        0%, 100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.7;
+        }
+      }
+
       @keyframes rotation {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
       }
-      
-      [data-theme="dark"] .symptoms {
-        background: linear-gradient(135deg, var(--color-fourth) 0%, #0f172a 50%, var(--color-primary) 100%) !important;
+
+      .gradient-text {
+        background: linear-gradient(135deg, #0d9db8, #3b82f6);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
-      
-      [data-theme="light"] .symptoms {
-        background: linear-gradient(135deg, var(--color-fourth) 0%, #f8fdfe 50%, var(--color-primary) 100%) !important;
+
+      .dark-mode .gradient-text {
+        background: linear-gradient(135deg, #0d9db8, #60a5fa);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
     `;
-    document.head.appendChild(styleTag);
+    document.head.appendChild(style);
     return () => {
-      if (document.head.contains(styleTag)) {
-        document.head.removeChild(styleTag);
+      if (document.head.contains(style)) {
+        document.head.removeChild(style);
       }
     };
   }, []);
 
-  // Define color palettes for themes
-  const themes = {
-    light: {
-      colorPrimary: '#ffffff',
-      colorSecondary: '#0d9db8',
-      colorThird: '#3b82f6',
-      colorFourth: '#d1f4f9',
-      colorDark: '#1a1a1a',
-      btnTextColor: '#ffffff',
-    },
-    dark: {
-      colorPrimary: '#121212',
-      colorSecondary: '#0d9db8',
-      colorThird: '#60a5fa',
-      colorFourth: '#1f2937',
-      colorDark: '#e5e7eb',
-      btnTextColor: '#fff',
-    }
+  const handleStartAnalysis = () => {
+    setIsAnalyzing(true);
+    setTimeout(() => {
+      alert('Starting Symptom Analysis... (In a real app, this would navigate to the symptom checker form)');
+      setIsAnalyzing(false);
+    }, 1500);
   };
-  const currentTheme = themes[isDarkTheme ? 'dark' : 'light'];
 
-  // Helper function to merge styles conditionally
-  const mergeStyles = (...styleObjects) => Object.assign({}, ...styleObjects.filter(Boolean));
-
-  // Define styles after state variables are declared
   const styles = {
-    symptomCheckerWrapper: {
+    pageWrapper: {
       width: '100%',
-      overflowX: 'hidden',
       minHeight: '100vh',
+      background: isDarkMode
+        ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #0f172a 50%, #1e1b4b 75%, #0f172a 100%)'
+        : 'linear-gradient(135deg, #ffffff 0%, #f0f9ff 25%, #e0f2fe 50%, #f0f9ff 75%, #ffffff 100%)',
+      position: 'relative',
+      overflow: 'hidden'
     },
-
-    fullPageLoader: {
-      position: 'fixed',
+    backgroundPattern: {
+      position: 'absolute',
       top: 0,
       left: 0,
-      width: '100%',
-      height: '100%',
-      background: isDarkTheme ? '#000' : '#fff',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      zIndex: 9999,
+      right: 0,
+      bottom: 0,
+      opacity: isDarkMode ? 0.03 : 0.05,
+      backgroundImage: `radial-gradient(circle at 25px 25px, ${isDarkMode ? '#60a5fa' : '#0d9db8'} 2%, transparent 0%), 
+                        radial-gradient(circle at 75px 75px, ${isDarkMode ? '#0d9db8' : '#60a5fa'} 2%, transparent 0%)`,
+      backgroundSize: '100px 100px',
+      pointerEvents: 'none'
     },
 
-    loaderContainer: {
-      textAlign: 'center',
-    },
-
-    loader: {
-      width: '48px',
-      height: '48px',
-      borderRadius: '50%',
-      display: 'inline-block',
-      borderTop: '4px solid var(--color-secondary)',
-      borderRight: '4px solid transparent',
-      borderBottom: '4px solid transparent',
-      borderLeft: '4px solid transparent',
-      boxSizing: 'border-box',
-      animation: 'rotation 1s linear infinite',
+    // Hero Section Styles
+    heroSection: {
+      padding: isSmall ? '100px 16px 60px' : isMobile ? '120px 20px 80px' : '140px 40px 100px',
+      maxWidth: '1400px',
+      margin: '0 auto',
       position: 'relative',
+      zIndex: 1
     },
-
-    loaderAfter: {
-      content: "''",
-      boxSizing: 'border-box',
-      position: 'absolute',
-      left: '0',
-      top: '0',
-      width: '48px',
-      height: '48px',
-      borderRadius: '50%',
-      borderLeft: '4px solid var(--color-third)',
-      borderBottom: '4px solid transparent',
-      borderTop: '4px solid transparent',
-      borderRight: '4px solid transparent',
-      animation: 'rotation 0.5s linear infinite reverse',
+    heroContainer: {
+      display: 'flex',
+      alignItems: 'center',
+      gap: isSmall ? '40px' : isMobile ? '50px' : '80px',
+      flexDirection: isMobile ? 'column' : 'row'
     },
-
-    loadingText: {
-      marginTop: '20px',
-      fontSize: '1.2rem',
-      color: 'var(--color-secondary)',
-      fontWeight: '600',
+    heroContent: {
+      flex: 1,
+      animation: 'slideInLeft 0.8s ease-out'
+    },
+    badge: {
+      display: 'inline-block',
+      padding: '8px 20px',
+      background: isDarkMode
+        ? 'linear-gradient(135deg, rgba(13, 157, 184, 0.15), rgba(96, 165, 250, 0.15))'
+        : 'linear-gradient(135deg, rgba(13, 157, 184, 0.1), rgba(59, 130, 246, 0.1))',
+      border: `1px solid ${isDarkMode ? 'rgba(13, 157, 184, 0.3)' : 'rgba(13, 157, 184, 0.2)'}`,
+      borderRadius: '50px',
+      fontSize: isSmall ? '0.7rem' : '0.8rem',
+      fontWeight: 600,
+      textTransform: 'uppercase',
+      letterSpacing: '1.5px',
+      marginBottom: '20px',
+      color: isDarkMode ? '#60a5fa' : '#0d9db8',
+      animation: 'scaleIn 0.6s ease-out'
+    },
+    heroTitle: {
+      fontSize: isSmall ? '2.2rem' : isMobile ? '2.8rem' : '4rem',
+      fontWeight: 900,
+      marginBottom: '24px',
+      lineHeight: 1.2,
       fontFamily: "'Merriweather', serif",
+      color: isDarkMode ? '#f9fafb' : '#0f172a',
+      animation: 'fadeInUp 0.8s ease-out 0.2s backwards'
     },
-
-    symptomsContainer: mergeStyles(
-      {
-        display: 'flex',
-        minHeight: '100vh',
-        width: '100%',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: '3rem',
-        padding: '4rem 5%',
-        background: isDarkTheme
-          ? 'linear-gradient(135deg, #1f2937 0%, #0f172a 50%, #121212 100%)'
-          : 'linear-gradient(120deg, #ffffff 0%, #d1f4f9 100%)',
-        transition: 'all 0.6s ease',
-        opacity: isPageLoaded ? 1 : 0,
-        transform: isPageLoaded ? 'translateY(0)' : 'translateY(20px)',
-      },
-      isMediumScreen && {
-        flexDirection: 'column',
-        textAlign: 'center',
-        padding: '3rem 5%',
-        minHeight: 'auto',
-        gap: '2rem',
-      },
-      isSmallScreen && {
-        padding: '2rem 3%',
-        gap: '1.5rem',
-        minHeight: '100vh',
-        paddingTop: '80px',
-        paddingBottom: '40px',
-      }
-    ),
-
-    symImage: mergeStyles(
-      {
-        flex: 1,
-        maxWidth: '45%',
-        minHeight: '300px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        animation: isPageLoaded ? 'fadeInImage 0.8s ease-in-out forwards' : 'none',
-        padding: '20px 0',
-      },
-      isMediumScreen && {
-        order: -1,
-        maxWidth: '100%',
-        minHeight: 'auto',
-        marginBottom: '1rem',
-        padding: '15px 0',
-      },
-      isSmallScreen && {
-        minHeight: 'auto',
-        maxWidth: '100%',
-        padding: '10px 0',
-        alignSelf: 'stretch',
-      }
-    ),
-
-    image: mergeStyles(
-      {
-        width: '100%',
-        height: 'auto',
-        maxHeight: '500px',
-        objectFit: 'contain',
-        objectPosition: 'center center',
-        filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.1))',
-      },
-      isMediumScreen && {
-        maxHeight: '400px',
-        width: 'auto',
-        maxWidth: '100%',
-        height: 'auto',
-      },
-      isSmallScreen && {
-        maxHeight: 'none',
-        height: 'auto',
-        width: '100%',
-        maxWidth: '300px',
-        margin: '0 auto',
-        display: 'block',
-      }
-    ),
-
-    symText: mergeStyles(
-      {
-        flex: 1,
-        maxWidth: '55%',
-        color: currentTheme.colorDark,
-        animation: isPageLoaded ? 'fadeInText 0.8s ease-in-out forwards' : 'none',
-      },
-      isMediumScreen && {
-        maxWidth: '100%',
-        order: 2,
-      }
-    ),
-
-    h2: mergeStyles(
-      {
-        fontFamily: "'Merriweather', serif",
-        fontSize: 'clamp(2rem, 5vw, 2.8rem)',
-        fontWeight: 700,
-        color: isDarkTheme ? '#0d9db8' : currentTheme.colorSecondary,
-        lineHeight: 1.3,
-        marginBottom: '1.5rem',
-        animation: isPageLoaded ? 'slideUp 0.6s ease 0.2s both' : 'none',
-      },
-      isSmallScreen && {
-        fontSize: '1.8rem',
-        marginBottom: '1rem',
-      }
-    ),
-
-    p: mergeStyles(
-      {
-        fontFamily: "'Inter', sans-serif",
-        fontSize: '1.1rem',
-        lineHeight: 1.7,
-        maxWidth: '600px',
-        opacity: 0.9,
-        marginBottom: '2rem',
-        color: isDarkTheme ? '#e5e7eb' : currentTheme.colorDark,
-        animation: isPageLoaded ? 'slideUp 0.6s ease 0.3s both' : 'none',
-      },
-      isMediumScreen && {
-        marginLeft: 'auto',
-        marginRight: 'auto',
-      },
-      isSmallScreen && {
-        fontSize: '1rem',
-        marginBottom: '1.5rem',
-      }
-    ),
-
-    h3: mergeStyles(
-      {
-        fontFamily: "'Merriweather', serif",
-        fontSize: 'clamp(1.2rem, 3vw, 1.6rem)',
-        color: isDarkTheme ? '#60a5fa' : currentTheme.colorThird,
-        marginTop: '2rem',
-        marginBottom: '1rem',
-        animation: isPageLoaded ? 'slideUp 0.6s ease 0.4s both' : 'none',
-      },
-      isSmallScreen && {
-        fontSize: '1.3rem',
-        marginTop: '1.5rem',
-      }
-    ),
-
-    ul: mergeStyles(
-      {
-        listStyle: 'none',
-        paddingLeft: 0,
-        marginTop: '1.5rem',
-        marginBottom: '2.5rem',
-      },
-      isMediumScreen && {
-        textAlign: 'left',
-        display: 'inline-block',
-      },
-      isSmallScreen && {
-        marginTop: '1rem',
-        marginBottom: '2rem',
-      }
-    ),
-
-    li: mergeStyles(
-      {
-        fontFamily: "'Inter', sans-serif",
-        fontSize: '1.05rem',
-        display: 'flex',
-        alignItems: 'flex-start',
-        marginBottom: '1rem',
-        lineHeight: 1.6,
-        color: isDarkTheme ? '#e5e7eb' : currentTheme.colorDark,
-      },
-      isSmallScreen && {
-        fontSize: '0.95rem',
-        marginBottom: '0.8rem',
-      }
-    ),
-
-    liCheckmark: {
-      flexShrink: 0,
+    heroSubtitle: {
+      fontSize: isSmall ? '1rem' : isMobile ? '1.1rem' : '1.3rem',
+      color: isDarkMode ? '#9ca3af' : '#64748b',
+      lineHeight: 1.7,
+      marginBottom: '32px',
+      animation: 'fadeInUp 0.8s ease-out 0.3s backwards'
+    },
+    statsContainer: {
+      display: 'flex',
+      gap: isSmall ? '20px' : '32px',
+      marginBottom: '40px',
+      flexWrap: 'wrap',
+      animation: 'fadeInUp 0.8s ease-out 0.4s backwards'
+    },
+    statItem: {
+      flex: isSmall ? '1 1 calc(50% - 10px)' : '0 0 auto'
+    },
+    statNumber: {
+      fontSize: isSmall ? '1.8rem' : isMobile ? '2rem' : '2.5rem',
+      fontWeight: 800,
+      background: 'linear-gradient(135deg, #0d9db8, #3b82f6)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text',
+      fontFamily: "'Inter', sans-serif",
+      lineHeight: 1
+    },
+    statLabel: {
+      fontSize: isSmall ? '0.8rem' : '0.9rem',
+      color: isDarkMode ? '#9ca3af' : '#64748b',
+      marginTop: '4px',
+      fontWeight: 500
+    },
+    ctaButton: {
       display: 'inline-flex',
       alignItems: 'center',
-      justifyContent: 'center',
-      width: '24px',
-      height: '24px',
-      marginRight: '1rem',
+      gap: '12px',
+      padding: isSmall ? '14px 32px' : '18px 40px',
+      background: isButtonHovered && !isAnalyzing
+        ? 'linear-gradient(135deg, #3b82f6, #0d9db8)'
+        : 'linear-gradient(135deg, #0d9db8, #3b82f6)',
+      color: '#ffffff',
+      border: 'none',
+      borderRadius: '50px',
+      fontSize: isSmall ? '1rem' : '1.1rem',
       fontWeight: 700,
-      borderRadius: '50%',
-      backgroundColor: isDarkTheme ? 'rgba(13, 157, 184, 0.2)' : currentTheme.colorFourth,
-      color: isDarkTheme ? '#0d9db8' : currentTheme.colorSecondary,
-      transition: 'transform 0.3s ease',
-      fontSize: '12px',
+      cursor: isAnalyzing ? 'not-allowed' : 'pointer',
+      transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+      boxShadow: isButtonHovered && !isAnalyzing
+        ? '0 12px 32px rgba(13, 157, 184, 0.4)'
+        : '0 8px 24px rgba(13, 157, 184, 0.25)',
+      transform: isButtonHovered && !isAnalyzing ? 'translateY(-4px) scale(1.05)' : 'translateY(0) scale(1)',
+      animation: 'fadeInUp 0.8s ease-out 0.5s backwards',
+      textTransform: 'uppercase',
+      letterSpacing: '0.5px',
+      fontFamily: "'Inter', sans-serif",
+      opacity: isAnalyzing ? 0.7 : 1
     },
-
-    btnHero: mergeStyles(
-      {
-        display: 'inline-block',
-        fontFamily: "'Inter', sans-serif",
-        fontSize: '1.1rem',
-        fontWeight: 600,
-        padding: '1rem 2.5rem',
-        borderRadius: '50px',
-        border: 'none',
-        cursor: 'pointer',
-        backgroundColor: isDarkTheme ? '#0d9db8' : currentTheme.colorSecondary,
-        color: currentTheme.btnTextColor,
-        textTransform: 'uppercase',
-        letterSpacing: '0.5px',
-        boxShadow: isDarkTheme
-          ? '0 4px 15px rgba(13, 157, 184, 0.3)'
-          : '0 4px 15px rgba(13, 157, 184, 0.2)',
-        transition: 'all 0.3s ease',
-        animation: isPageLoaded ? 'slideUp 0.6s ease 0.7s both' : 'none',
-      },
-      isButtonHovered && !isAnalyzing && {
-        backgroundColor: isDarkTheme ? '#60a5fa' : currentTheme.colorThird,
-        transform: 'translateY(-3px)',
-        boxShadow: isDarkTheme
-          ? '0 7px 20px rgba(96, 165, 250, 0.4)'
-          : '0 7px 20px rgba(59, 130, 246, 0.3)',
-      },
-      isAnalyzing && {
-        backgroundColor: isDarkTheme ? 'rgba(13, 157, 184, 0.7)' : 'rgba(13, 157, 184, 0.7)',
-        cursor: 'not-allowed',
-        transform: 'translateY(0)',
-      },
-      isSmallScreen && {
-        width: '100%',
-        padding: '1rem',
-        fontSize: '1rem',
-      }
-    ),
-
     buttonLoader: {
-      width: '16px',
-      height: '16px',
+      width: '18px',
+      height: '18px',
       borderRadius: '50%',
       display: 'inline-block',
       border: '2px solid transparent',
       borderTop: '2px solid currentColor',
-      animation: 'rotation 1s linear infinite',
-      marginRight: '10px',
-      verticalAlign: 'middle',
+      animation: 'rotation 1s linear infinite'
     },
+    heroImage: {
+      flex: 1,
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      animation: 'slideInRight 0.8s ease-out',
+      minHeight: isSmall ? '350px' : isMobile ? '400px' : '500px'
+    },
+    heroImg: {
+      width: '100%',
+      // Image size ko aur significantly badha diya hai
+      maxWidth: isSmall ? '600px' : isMobile ? '800px' : '1100px',
+      height: 'auto',
+      objectFit: 'contain',
+      filter: isDarkMode
+        ? 'drop-shadow(0 20px 40px rgba(13, 157, 184, 0.3))'
+        : 'drop-shadow(0 20px 40px rgba(13, 157, 184, 0.2))',
+      animation: 'float 6s ease-in-out infinite'
+    },
+
+    // Features Section
+    featuresSection: {
+      padding: isSmall ? '60px 16px' : isMobile ? '80px 20px' : '100px 40px',
+      maxWidth: '1400px',
+      margin: '0 auto',
+      position: 'relative',
+      zIndex: 1
+    },
+    sectionHeader: {
+      textAlign: 'center',
+      marginBottom: isSmall ? '50px' : isMobile ? '60px' : '80px'
+    },
+    sectionTitle: {
+      fontSize: isSmall ? '1.8rem' : isMobile ? '2.2rem' : '3rem',
+      fontWeight: 800,
+      marginBottom: '16px',
+      fontFamily: "'Merriweather', serif",
+      color: isDarkMode ? '#f9fafb' : '#0f172a'
+    },
+    sectionSubtitle: {
+      fontSize: isSmall ? '1rem' : isMobile ? '1.1rem' : '1.2rem',
+      color: isDarkMode ? '#9ca3af' : '#64748b',
+      maxWidth: '700px',
+      margin: '0 auto',
+      lineHeight: 1.6
+    },
+    featuresGrid: {
+      display: 'grid',
+      gridTemplateColumns: isSmall
+        ? '1fr'
+        : isMobile
+          ? 'repeat(auto-fit, minmax(280px, 1fr))'
+          : 'repeat(auto-fit, minmax(320px, 1fr))',
+      gap: isSmall ? '24px' : isMobile ? '30px' : '40px'
+    },
+    featureCard: (index, isHovered, isVisibleCard) => ({
+      position: 'relative',
+      background: isDarkMode
+        ? 'linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%)'
+        : '#ffffff',
+      backdropFilter: 'blur(20px)',
+      borderRadius: '24px',
+      padding: isSmall ? '28px' : isMobile ? '32px' : '40px',
+      boxShadow: isDarkMode
+        ? '0 10px 40px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2)'
+        : '0 10px 40px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04)',
+      transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+      cursor: 'default',
+      overflow: 'hidden',
+      opacity: isVisibleCard ? 1 : 0,
+      transform: isVisibleCard
+        ? isHovered ? 'translateY(-12px) scale(1.02)' : 'translateY(0) scale(1)'
+        : 'translateY(60px) scale(0.95)',
+      animation: isVisibleCard ? `fadeInUp 0.6s ease-out ${index * 0.15}s backwards` : 'none',
+      ...(isHovered && {
+        boxShadow: isDarkMode
+          ? '0 20px 60px rgba(13, 157, 184, 0.3), 0 4px 12px rgba(0, 0, 0, 0.3)'
+          : '0 20px 60px rgba(13, 157, 184, 0.25), 0 4px 12px rgba(0, 0, 0, 0.1)'
+      })
+    }),
+    cardGlow: (isHovered) => ({
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      height: '4px',
+      background: 'linear-gradient(90deg, #0d9db8, #3b82f6, #0d9db8)',
+      backgroundSize: '200% 100%',
+      opacity: isHovered ? 1 : 0,
+      animation: isHovered ? 'shimmer 2s infinite' : 'none',
+      borderRadius: '24px 24px 0 0',
+      transition: 'opacity 0.3s ease'
+    }),
+    iconContainer: (isHovered) => ({
+      width: isSmall ? '60px' : '70px',
+      height: isSmall ? '60px' : '70px',
+      borderRadius: '20px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginBottom: '24px',
+      fontSize: isSmall ? '1.8rem' : '2rem',
+      transition: 'all 0.4s ease',
+      transform: isHovered ? 'scale(1.1) rotate(5deg)' : 'scale(1) rotate(0deg)',
+    }),
+    featureTitle: {
+      fontSize: isSmall ? '1.3rem' : isMobile ? '1.4rem' : '1.5rem',
+      fontWeight: 700,
+      marginBottom: '12px',
+      fontFamily: "'Merriweather', serif",
+      color: isDarkMode ? '#f9fafb' : '#0f172a'
+    },
+    featureDesc: {
+      fontSize: isSmall ? '0.95rem' : '1rem',
+      color: isDarkMode ? '#9ca3af' : '#64748b',
+      lineHeight: 1.7
+    },
+
+    // How It Works Section
+    howItWorksSection: {
+      padding: isSmall ? '60px 16px' : isMobile ? '80px 20px' : '100px 40px',
+      maxWidth: '1200px',
+      margin: '0 auto',
+      position: 'relative',
+      zIndex: 1
+    },
+    stepsContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: isSmall ? '40px' : '60px',
+      marginTop: isSmall ? '40px' : '60px'
+    },
+    stepCard: (index, isVisibleCard) => ({
+      display: 'flex',
+      alignItems: 'center',
+      gap: isSmall ? '24px' : isMobile ? '32px' : '48px',
+      flexDirection: isMobile && index % 2 === 0 ? 'column' : isMobile ? 'column' : index % 2 === 0 ? 'row' : 'row-reverse',
+      opacity: isVisibleCard ? 1 : 0,
+      transform: isVisibleCard ? 'translateY(0)' : 'translateY(40px)',
+      animation: isVisibleCard ? `fadeInUp 0.8s ease-out ${index * 0.2}s backwards` : 'none'
+    }),
+    stepNumber: {
+      width: isSmall ? '60px' : isMobile ? '70px' : '80px',
+      height: isSmall ? '60px' : isMobile ? '70px' : '80px',
+      borderRadius: '50%',
+      background: 'linear-gradient(135deg, #0d9db8, #3b82f6)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontSize: isSmall ? '1.5rem' : isMobile ? '1.8rem' : '2rem',
+      fontWeight: 900,
+      color: '#ffffff',
+      flexShrink: 0,
+      boxShadow: '0 8px 24px rgba(13, 157, 184, 0.3)',
+      fontFamily: "'Inter', sans-serif"
+    },
+    stepContent: {
+      flex: 1
+    },
+    stepTitle: {
+      fontSize: isSmall ? '1.4rem' : isMobile ? '1.6rem' : '1.8rem',
+      fontWeight: 700,
+      marginBottom: '12px',
+      fontFamily: "'Merriweather', serif",
+      color: isDarkMode ? '#f9fafb' : '#0f172a'
+    },
+    stepDesc: {
+      fontSize: isSmall ? '0.95rem' : '1.05rem',
+      color: isDarkMode ? '#9ca3af' : '#64748b',
+      lineHeight: 1.7
+    }
   };
 
-  // FIXED: Updated handleStartAnalysis function to use correct navigation
-  const handleStartAnalysis = () => {
-    setIsAnalyzing(true);
+  const features = [
+    {
+      icon: '🔍',
+      title: 'Advanced AI Analysis',
+      description: 'Clinical Insights by Infermedica, DoctorXcare integrates the Infermedica API to analyze symptoms against millions of clinical cases, delivering research-backed, hospital-grade accuracy.'
+    },
+    {
+      icon: '⚡',
+      title: 'Instant Results',
+      description: 'Swift and Actionable Triage Receive immediate guidance categorizing symptoms into Home Care, Weekly Monitoring, or Emergency Room (ER) visits for rapid, decisive health actions.'
+    },
+    {
+      icon: '🎯',
+      title: 'Personalized Recommendations',
+      description: 'Integrated Clinical Guidance Get tailored advice that connects our Smart Lab Analysis, Chronic Disease Management, and Healthcare Network for a comprehensive care experience.'
+    },
+    {
+      icon: '🔒',
+      title: 'Complete Privacy',
+      description: 'Your lab reports, symptom assessments, and AI health conversations are secured with end-to-end encryption, ensuring a strict privacy-first experience.'
+    },
+    {
+      icon: '🏥',
+      title: 'Specialist Matching',
+      description: 'Get connected with the right healthcare specialists for your condition, with direct booking options and location-based recommendations.'
+    },
+    {
+      icon: '📊',
+      title: 'Severity Assessment',
+      description: 'Precision Urgency Detection Understand clinical urgency through priority-ranked results (Minimal to Severe) and proactive monitoring of critical danger signs to ensure patient safety.'
+    }
+  ];
 
-    // Simulate navigation loading time
-    setTimeout(() => {
-      // Navigate to the correct route defined in App.jsx
-      navigate('/symptom-checker');
-      setIsAnalyzing(false);
-    }, 1500); // Reduced timeout for better UX
-  };
-
-  // Show full page loader when page is initially loading - copied from Hero.jsx
-  if (!isPageLoaded) {
-    return (
-      <div style={styles.fullPageLoader}>
-        <div style={styles.loaderContainer}>
-          <div style={styles.loader}>
-            <div style={styles.loaderAfter}></div>
-          </div>
-          <p style={styles.loadingText}>Loading DoctorXCare...</p>
-        </div>
-      </div>
-    );
-  }
-
-  const listItems = [
-    "Top potential causes ranked by probability", // Better than "Possible causes"
-    "Urgency level: See a doctor vs. Self-care",  // Specific actionable advice
-    "Recommended specialists & home treatment options" // Complete care plan
+  const steps = [
+    {
+      title: 'Describe Your Symptoms',
+      description: 'Tell us what you\'re experiencing in your own words. Our AI understands natural language and medical terminology alike.'
+    },
+    {
+      title: 'Answer Smart Questions',
+      description: 'Our system asks targeted follow-up questions to narrow down possibilities and understand your situation better.'
+    },
+    {
+      title: 'Receive Your Analysis',
+      description: 'Get a comprehensive report with possible causes, urgency level, and recommended next steps tailored to you.'
+    },
+    {
+      title: 'Take Action',
+      description: 'Connect with specialists, access treatment information, or follow self-care guidance based on your results.'
+    }
   ];
 
   return (
-    <section style={styles.symptomCheckerWrapper} className="symptoms">
-      <div style={styles.symptomsContainer}>
-        <div style={styles.symImage}>
-          <img
-            src="/assets/Symptomspage.svg"
-            alt="Doctors Illustration"
-            style={styles.image}
-          />
-        </div>
-        <div style={styles.symText}>
-          <h2 style={styles.h2}>
-            Get Clear Answers About Your Health in Minutes
-          </h2>
-          <p style={styles.p}>
-            Experience a clinical-grade assessment designed to give you instant peace of mind.
-            Our AI compares your symptoms against thousands of medical cases.
-            <strong>100% Anonymous & Secure</strong>.
-          </p>
+    <div style={styles.pageWrapper} className={isDarkMode ? 'dark-mode' : ''}>
+      <div style={styles.backgroundPattern}></div>
 
-          <h3 style={styles.h3}>Your personal health report includes:</h3>
-          <ul style={styles.ul}>
-            {listItems.map((item, index) => (
-              <li
-                key={index}
-                style={{
-                  ...styles.li,
-                  animation: isPageLoaded ? `slideUp 0.6s ease ${0.5 + index * 0.1}s both` : 'none',
-                }}
-              >
-                <span
-                  style={{
-                    ...styles.liCheckmark,
-                    animation: isPageLoaded ? `slideUp 0.4s ease ${0.6 + index * 0.1}s both` : 'none',
-                  }}
-                >
-                  ✓
-                </span>
-                {item}
-              </li>
-            ))}
-          </ul>
-          <button
-            style={styles.btnHero}
-            onClick={handleStartAnalysis}
-            disabled={isAnalyzing}
-            onMouseEnter={() => setIsButtonHovered(true)}
-            onMouseLeave={() => setIsButtonHovered(false)}
-          >
-            {isAnalyzing ? (
-              <>
-                <span style={styles.buttonLoader}></span>
-                Initializing...
-              </>
-            ) : (
-              'Start Symptom Analysis'
-            )}
-          </button>
+      {/* Hero Section */}
+      <section style={styles.heroSection} ref={heroRef}>
+        <div style={styles.heroContainer}>
+          <div style={styles.heroContent}>
+            <span style={styles.badge}>AI-POWERED HEALTH ASSESSMENT</span>
+            <h1 style={styles.heroTitle}>
+              Your <span className="gradient-text">Personal Health</span> Intelligence Platform
+            </h1>
+            <p style={styles.heroSubtitle}>
+              Experience clinical-grade symptom analysis powered by Infermedica. Get instant insights, personalized recommendations, and peace of mind all from the comfort of your home.
+            </p>
+
+            <div style={styles.statsContainer}>
+              <div style={styles.statItem}>
+                <div style={styles.statNumber}>150+</div>
+                <div style={styles.statLabel}>Analyses Completed</div>
+              </div>
+              <div style={styles.statItem}>
+                <div style={styles.statNumber}>95%</div>
+                <div style={styles.statLabel}>Accuracy Rate</div>
+              </div>
+              <div style={styles.statItem}>
+                <div style={styles.statNumber}>2 Min</div>
+                <div style={styles.statLabel}>Average Time</div>
+              </div>
+            </div>
+
+            <button
+              style={styles.ctaButton}
+              onClick={handleStartAnalysis}
+              disabled={isAnalyzing}
+              onMouseEnter={() => setIsButtonHovered(true)}
+              onMouseLeave={() => setIsButtonHovered(false)}
+            >
+              {isAnalyzing ? (
+                <>
+                  <span style={styles.buttonLoader}></span>
+                  Initializing Analysis...
+                </>
+              ) : (
+                <>
+                  Start Free Assessment
+                  <span style={{ transition: 'transform 0.3s ease', transform: isButtonHovered ? 'translateX(4px)' : 'translateX(0)' }}>→</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          <div style={styles.heroImage}>
+            <img
+              src="public/assets/Symptomspage.svg"
+              alt="Medical Analysis Illustration"
+              style={styles.heroImg}
+              onError={(e) => {
+                e.target.src = 'https://via.placeholder.com/600x600/0d9db8/ffffff?text=Medical+Analysis';
+              }}
+            />
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* Features Section */}
+      <section style={styles.featuresSection} ref={sectionRef}>
+        <div style={styles.sectionHeader}>
+          <h2 style={styles.sectionTitle}>
+            Why Choose <span className="gradient-text">DoctorXCare</span>
+          </h2>
+          <p style={styles.sectionSubtitle}>
+            Advanced technology meets compassionate care to provide you with the most comprehensive health assessment experience available.
+          </p>
+        </div>
+
+        <div style={styles.featuresGrid}>
+          {features.map((feature, index) => (
+            <div
+              key={index}
+              ref={el => cardRefs.current[index] = el}
+              style={styles.featureCard(index, hoveredCard === index, isVisible[index])}
+              onMouseEnter={() => setHoveredCard(index)}
+              onMouseLeave={() => setHoveredCard(null)}
+            >
+              <div style={styles.cardGlow(hoveredCard === index)}></div>
+              <div style={styles.iconContainer(hoveredCard === index)}>
+                {feature.icon}
+              </div>
+              <h3 style={styles.featureTitle}>{feature.title}</h3>
+              <p style={styles.featureDesc}>{feature.description}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section style={styles.howItWorksSection}>
+        <div style={styles.sectionHeader}>
+          <h2 style={styles.sectionTitle}>
+            How It <span className="gradient-text">Works</span>
+          </h2>
+          <p style={styles.sectionSubtitle}>
+            Get your personalized health assessment in four simple steps. Our streamlined process makes getting answers fast and easy.
+          </p>
+        </div>
+
+        <div style={styles.stepsContainer}>
+          {steps.map((step, index) => (
+            <div
+              key={index}
+              ref={el => cardRefs.current[features.length + index] = el}
+              style={styles.stepCard(index, isVisible[features.length + index])}
+            >
+              <div style={styles.stepNumber}>{index + 1}</div>
+              <div style={styles.stepContent}>
+                <h3 style={styles.stepTitle}>{step.title}</h3>
+                <p style={styles.stepDesc}>{step.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
   );
 }
 

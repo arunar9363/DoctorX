@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function Services() {
   const navigate = useNavigate();
-  const [hoveredCard, setHoveredCard] = React.useState(null);
-  const [isDarkMode, setIsDarkMode] = React.useState(false);
+  const [hoveredCard, setHoveredCard] = useState(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isVisible, setIsVisible] = useState({});
+  const sectionRef = useRef(null);
+  const cardRefs = useRef([]);
 
   // Check theme
-  React.useEffect(() => {
+  useEffect(() => {
     const checkTheme = () => {
       const theme = document.documentElement.getAttribute('data-theme');
       setIsDarkMode(theme === 'dark');
@@ -18,333 +21,417 @@ function Services() {
     return () => observer.disconnect();
   }, []);
 
-  const mediaQueryMobile = window.matchMedia('(max-width: 768px)');
-  const mediaQuerySmall = window.matchMedia('(max-width: 480px)');
+  // Intersection Observer for scroll animations
+  useEffect(() => {
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    };
 
-  const getResponsiveStyles = () => {
-    if (mediaQuerySmall.matches) {
-      return {
-        section: {
-          padding: '30px 10px',
-          paddingTop: '70px'
-        },
-        h2: {
-          fontSize: '1.4rem',
-          marginBottom: '25px'
-        },
-        h2After: {
-          width: '60px',
-          height: '3px',
-          margin: '15px auto 0'
-        },
-        serviceCard: {
-          padding: '15px 12px',
-          gap: '12px',
-          borderRadius: '20px',
-          minHeight: '280px'
-        },
-        cardTitle: {
-          fontSize: '1.1rem',
-          marginBottom: '8px'
-        },
-        cardDesc: {
-          fontSize: '0.8rem',
-          marginBottom: '10px',
-          lineHeight: '1.4'
-        },
-        featureItem: {
-          fontSize: '0.75rem',
-          padding: '4px 0',
-          gap: '6px'
-        },
-        featureIcon: {
-          width: '16px',
-          height: '16px',
-          minWidth: '16px',
-          fontSize: '0.8rem'
-        },
-        img: {
-          maxWidth: '120px',
-          maxHeight: '110px'
-        },
-        servicesGrid: {
-          gap: '20px',
-          marginTop: '30px'
+    const observerCallback = (entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const index = cardRefs.current.indexOf(entry.target);
+          if (index !== -1) {
+            setIsVisible(prev => ({ ...prev, [index]: true }));
+          }
         }
-      };
-    } else if (mediaQueryMobile.matches) {
-      return {
-        section: {
-          padding: '40px 12px',
-          paddingTop: '80px'
-        },
-        h2: {
-          fontSize: '1.6rem',
-          marginBottom: '35px'
-        },
-        h2After: {
-          width: '70px',
-          margin: '18px auto 0'
-        },
-        serviceCard: {
-          padding: '20px 15px',
-          gap: '15px',
-          minHeight: '300px'
-        },
-        cardTitle: {
-          fontSize: '1.25rem',
-          marginBottom: '10px'
-        },
-        cardDesc: {
-          fontSize: '0.85rem',
-          marginBottom: '12px'
-        },
-        featureItem: {
-          fontSize: '0.8rem',
-          padding: '5px 0',
-          gap: '8px'
-        },
-        featureIcon: {
-          width: '18px',
-          height: '18px',
-          minWidth: '18px',
-          fontSize: '0.85rem'
-        },
-        img: {
-          maxWidth: '140px',
-          maxHeight: '130px'
-        },
-        servicesGrid: {
-          gap: '25px',
-          marginTop: '40px'
-        }
-      };
-    }
-    return {};
-  };
+      });
+    };
 
-  const responsiveStyles = getResponsiveStyles();
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    cardRefs.current.forEach(ref => {
+      if (ref) observer.observe(ref);
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  // Add animations CSS
+  useEffect(() => {
+    const style = document.createElement('style');
+    style.innerHTML = `
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(60px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes slideInLeft {
+        from {
+          opacity: 0;
+          transform: translateX(-60px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(0);
+        }
+      }
+
+      @keyframes scaleIn {
+        from {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      @keyframes shimmer {
+        0% {
+          background-position: -1000px 0;
+        }
+        100% {
+          background-position: 1000px 0;
+        }
+      }
+
+      @keyframes float {
+        0%, 100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      @keyframes pulse {
+        0%, 100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.7;
+        }
+      }
+
+      .gradient-text {
+        background: linear-gradient(135deg, var(--color-secondary), var(--color-third));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+    `;
+    document.head.appendChild(style);
+    return () => document.head.removeChild(style);
+  }, []);
+
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+  const isSmall = window.matchMedia('(max-width: 480px)').matches;
 
   const styles = {
     section: {
-      padding: '90px 20px',
-      paddingTop: '110px',
+      padding: isSmall ? '60px 16px' : isMobile ? '80px 20px' : '120px 40px',
+      paddingTop: isSmall ? '80px' : isMobile ? '100px' : '140px',
       background: isDarkMode
-        ? 'linear-gradient(135deg, #1f2937 0%, #0f172a 50%, #121212 100%)'
-        : 'linear-gradient(135deg, #f0f9ff 0%, #f8fdfe 50%, #ffffff 100%)',
-      textAlign: 'center',
+        ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #0f172a 50%, #1e1b4b 75%, #0f172a 100%)'
+        : 'linear-gradient(135deg, #ffffff 0%, #f0f9ff 25%, #e0f2fe 50%, #f0f9ff 75%, #ffffff 100%)',
       minHeight: '100vh',
       position: 'relative',
-      margin: 0
+      overflow: 'hidden'
+    },
+    backgroundPattern: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      opacity: isDarkMode ? 0.03 : 0.05,
+      backgroundImage: `radial-gradient(circle at 25px 25px, ${isDarkMode ? '#60a5fa' : '#0d9db8'} 2%, transparent 0%), 
+                        radial-gradient(circle at 75px 75px, ${isDarkMode ? '#0d9db8' : '#60a5fa'} 2%, transparent 0%)`,
+      backgroundSize: '100px 100px',
+      pointerEvents: 'none'
     },
     container: {
-      maxWidth: '1200px',
-      margin: '0 auto'
+      maxWidth: '1400px',
+      margin: '0 auto',
+      position: 'relative',
+      zIndex: 1
     },
-    h2: {
-      fontSize: 'clamp(2rem, 4vw, 3.5rem)',
-      marginBottom: '60px',
-      marginTop: 0,
-      background: 'linear-gradient(135deg, var(--color-secondary), var(--color-third))',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      backgroundClip: 'text',
-      fontFamily: "'Merriweather', serif",
+    header: {
+      textAlign: 'center',
+      marginBottom: isSmall ? '50px' : isMobile ? '60px' : '80px',
+      animation: 'fadeInUp 0.8s ease-out'
+    },
+    badge: {
+      display: 'inline-block',
+      padding: '8px 20px',
+      background: isDarkMode
+        ? 'linear-gradient(135deg, rgba(13, 157, 184, 0.15), rgba(96, 165, 250, 0.15))'
+        : 'linear-gradient(135deg, rgba(13, 157, 184, 0.1), rgba(59, 130, 246, 0.1))',
+      border: `1px solid ${isDarkMode ? 'rgba(13, 157, 184, 0.3)' : 'rgba(13, 157, 184, 0.2)'}`,
+      borderRadius: '50px',
+      fontSize: isSmall ? '0.75rem' : '0.85rem',
       fontWeight: 600,
-      position: 'relative'
+      textTransform: 'uppercase',
+      letterSpacing: '1.5px',
+      marginBottom: '20px',
+      color: isDarkMode ? '#60a5fa' : '#0d9db8',
+      animation: 'scaleIn 0.6s ease-out'
     },
-    h2After: {
-      content: "''",
-      width: '80px',
-      height: '4px',
-      background: 'linear-gradient(90deg, var(--color-secondary), var(--color-third))',
-      margin: '20px auto 0',
-      display: 'block',
-      borderRadius: '2px'
+    h1: {
+      fontSize: isSmall ? '2rem' : isMobile ? '2.5rem' : '3.5rem',
+      fontWeight: 800,
+      marginBottom: '20px',
+      lineHeight: 1.2,
+      fontFamily: "'Merriweather', serif",
+      color: isDarkMode ? '#f9fafb' : '#0f172a',
+      animation: 'slideInLeft 0.8s ease-out 0.2s backwards'
+    },
+    subtitle: {
+      fontSize: isSmall ? '1rem' : isMobile ? '1.1rem' : '1.25rem',
+      color: isDarkMode ? '#9ca3af' : '#64748b',
+      maxWidth: '700px',
+      margin: '0 auto',
+      lineHeight: 1.6,
+      animation: 'fadeInUp 0.8s ease-out 0.4s backwards'
     },
     servicesGrid: {
       display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-      gap: '30px',
-      marginTop: '60px'
+      gridTemplateColumns: isSmall
+        ? '1fr'
+        : isMobile
+          ? 'repeat(auto-fit, minmax(300px, 1fr))'
+          : 'repeat(auto-fit, minmax(380px, 1fr))',
+      gap: isSmall ? '24px' : isMobile ? '30px' : '40px',
+      marginTop: isSmall ? '40px' : '60px'
     },
-    serviceCard: {
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      gap: '20px',
-      background: isDarkMode ? 'rgba(31, 41, 55, 0.9)' : 'rgba(255, 255, 255, 0.9)',
-      backdropFilter: 'blur(10px)',
-      borderRadius: '30px',
-      padding: '30px 25px',
-      boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.05)',
-      border: isDarkMode ? '1px solid rgba(75, 85, 99, 0.2)' : '1px solid rgba(255, 255, 255, 0.2)',
-      transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+    serviceCard: (index, isHovered, isVisibleCard) => ({
       position: 'relative',
-      overflow: 'hidden',
+      background: isDarkMode
+        ? 'linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%)'
+        : '#ffffff',
+      backdropFilter: 'blur(20px)',
+      borderRadius: '24px',
+      padding: isSmall ? '24px' : isMobile ? '28px' : '36px',
+      boxShadow: isDarkMode
+        ? '0 10px 40px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2)'
+        : '0 10px 40px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04)',
+      transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
       cursor: 'pointer',
-      textAlign: 'center',
-      minHeight: '350px'
-    },
-    cardBefore: {
-      content: "''",
+      overflow: 'hidden',
+      opacity: isVisibleCard ? 1 : 0,
+      transform: isVisibleCard
+        ? isHovered ? 'translateY(-12px) scale(1.02)' : 'translateY(0) scale(1)'
+        : 'translateY(60px) scale(0.95)',
+      animation: isVisibleCard ? `fadeInUp 0.6s ease-out ${index * 0.1}s backwards` : 'none',
+      ...(isHovered && {
+        boxShadow: isDarkMode
+          ? '0 20px 60px rgba(13, 157, 184, 0.3), 0 4px 12px rgba(0, 0, 0, 0.3)'
+          : '0 20px 60px rgba(13, 157, 184, 0.25), 0 4px 12px rgba(0, 0, 0, 0.1)',
+        borderColor: isDarkMode ? 'rgba(13, 157, 184, 0.4)' : 'rgba(13, 157, 184, 0.3)'
+      })
+    }),
+    cardGlow: (isHovered) => ({
       position: 'absolute',
       top: 0,
       left: 0,
       right: 0,
       height: '4px',
-      background: 'linear-gradient(90deg, var(--color-secondary), var(--color-third))',
-      transform: 'scaleX(0)',
-      transformOrigin: 'left',
-      transition: 'transform 0.4s ease'
-    },
-    cardBeforeHover: {
-      transform: 'scaleX(1)'
-    },
-    cardHover: {
-      transform: 'translateY(-8px)',
-      boxShadow: '0 20px 40px rgba(0, 0, 0, 0.15), 0 8px 16px rgba(0, 0, 0, 0.1)'
-    },
-    cardTitle: {
-      fontSize: '1.5rem',
-      marginBottom: '12px',
-      color: isDarkMode ? '#e5e7eb' : 'var(--color-dark)',
-      fontFamily: "'Merriweather', serif",
-      fontWeight: 600
-    },
-    cardDesc: {
-      fontSize: '0.95rem',
-      marginBottom: '15px',
-      color: isDarkMode ? '#9ca3af' : '#555',
-      lineHeight: '1.6'
-    },
-    featuresContainer: {
+      background: 'linear-gradient(90deg, var(--color-secondary), var(--color-third), var(--color-secondary))',
+      backgroundSize: '200% 100%',
+      opacity: isHovered ? 1 : 0,
+      animation: isHovered ? 'shimmer 2s infinite' : 'none',
+      borderRadius: '24px 24px 0 0',
+      transition: 'opacity 0.3s ease'
+    }),
+    imageContainer: {
       width: '100%',
-      textAlign: 'left',
-      marginTop: '10px'
-    },
-    featureItem: {
-      fontSize: '0.9rem',
-      marginBottom: '8px',
-      color: isDarkMode ? '#d1d5db' : '#555',
-      display: 'flex',
-      alignItems: 'flex-start',
-      gap: '10px',
-      padding: '6px 0',
-      transition: 'all 0.3s ease'
-    },
-    featureIcon: {
-      color: 'var(--color-secondary)',
-      fontWeight: 'bold',
-      fontSize: '1rem',
-      width: '20px',
-      height: '20px',
-      minWidth: '20px',
+      height: isSmall ? '200px' : isMobile ? '220px' : '240px',
+      borderRadius: '16px',
+      overflow: 'hidden',
+      marginBottom: '24px',
+      position: 'relative',
+      background: '#ffffff',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: 'rgba(13, 157, 184, 0.1)',
+      border: isDarkMode ? '1px solid rgba(148, 163, 184, 0.1)' : '1px solid rgba(148, 163, 184, 0.08)'
+    },
+    img: (isHovered) => ({
+      width: '85%',
+      height: '85%',
+      objectFit: 'contain',
+      transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+      transform: isHovered ? 'scale(1.1) rotate(2deg)' : 'scale(1)',
+      filter: isDarkMode ? 'brightness(0.95) drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))' : 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.1))'
+    }),
+    contentArea: {
+      position: 'relative'
+    },
+    cardTitle: {
+      fontSize: isSmall ? '1.3rem' : isMobile ? '1.4rem' : '1.6rem',
+      fontWeight: 700,
+      marginBottom: '12px',
+      fontFamily: "'Merriweather', serif",
+      lineHeight: 1.3,
+      color: isDarkMode ? '#f9fafb' : '#0f172a'
+    },
+    cardDesc: {
+      fontSize: isSmall ? '0.9rem' : '1rem',
+      color: isDarkMode ? '#9ca3af' : '#64748b',
+      lineHeight: 1.7,
+      marginBottom: '20px'
+    },
+    featuresContainer: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '10px',
+      marginBottom: '24px'
+    },
+    featureItem: (index) => ({
+      display: 'flex',
+      alignItems: 'flex-start',
+      gap: '12px',
+      fontSize: isSmall ? '0.85rem' : '0.9rem',
+      color: isDarkMode ? '#d1d5db' : '#475569',
+      lineHeight: 1.6,
+      opacity: 0,
+      animation: `fadeInUp 0.4s ease-out ${0.6 + index * 0.1}s forwards`
+    }),
+    featureIcon: {
+      width: isSmall ? '20px' : '24px',
+      height: isSmall ? '20px' : '24px',
+      minWidth: isSmall ? '20px' : '24px',
       borderRadius: '50%',
+      background: 'linear-gradient(135deg, var(--color-secondary), var(--color-third))',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      color: '#ffffff',
+      fontSize: isSmall ? '0.7rem' : '0.75rem',
+      fontWeight: 'bold',
       flexShrink: 0,
-      transition: 'all 0.3s ease',
-      marginTop: '2px'
+      marginTop: '2px',
+      boxShadow: '0 4px 12px rgba(13, 157, 184, 0.3)'
     },
-    img: {
+    ctaButton: (isHovered) => ({
       width: '100%',
-      maxWidth: '160px',
-      height: 'auto',
-      maxHeight: '150px',
-      borderRadius: '15px',
-      transition: 'transform 0.3s ease',
-      filter: isDarkMode ? 'brightness(0.9) drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3))' : 'drop-shadow(0 4px 12px rgba(0, 0, 0, 0.1))',
+      padding: isSmall ? '12px 20px' : '14px 24px',
+      background: isHovered
+        ? 'linear-gradient(135deg, var(--color-third), var(--color-secondary))'
+        : 'linear-gradient(135deg, var(--color-secondary), var(--color-third))',
+      color: '#ffffff',
+      border: 'none',
+      borderRadius: '12px',
+      fontSize: isSmall ? '0.9rem' : '1rem',
+      fontWeight: 600,
+      cursor: 'pointer',
+      transition: 'all 0.3s ease',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: '8px',
+      boxShadow: isHovered
+        ? '0 8px 24px rgba(13, 157, 184, 0.4)'
+        : '0 4px 12px rgba(13, 157, 184, 0.2)',
+      transform: isHovered ? 'translateY(-2px)' : 'translateY(0)',
       marginTop: 'auto'
+    }),
+    arrow: {
+      transition: 'transform 0.3s ease',
+      transform: 'translateX(0)',
+      display: 'inline-block'
     },
-    imgHover: {
-      transform: 'scale(1.05)'
+    arrowHover: {
+      transform: 'translateX(4px)'
     }
   };
 
   const servicesData = [
     {
       id: 1,
-      title: 'Analyze Symptoms',
-      description: 'Check your symptoms using our advanced AI to get instant triage advice.',
+      title: 'AI Symptom Analysis',
+      description: 'Experience clinical-grade AI that analyzes your symptoms with precision, providing instant triage advice backed by medical research.',
       features: [
-        'Clinical-grade AI analysis',
-        'Instant triage recommendations',
-        'Symptom severity assessment'
+        'Advanced machine learning algorithms',
+        'Real-time symptom assessment',
+        'Personalized health recommendations',
+        'Severity level detection'
       ],
       image: '/assets/Symptomspage.svg',
       route: '/symptoms'
     },
     {
       id: 2,
-      title: 'Disease Library',
-      description: 'Search our verified medical library for detailed disease information.',
+      title: 'Disease Knowledge Hub',
+      description: 'Access our comprehensive medical library with verified information about thousands of conditions, symptoms, and treatments.',
       features: [
-        'Medically reviewed content',
-        'Comprehensive disease database',
-        'Easy-to-understand explanations'
+        'Medically reviewed database',
+        'Easy-to-understand explanations',
+        'Latest research updates',
+        'Interactive search functionality'
       ],
       image: '/assets/diseas.svg',
       route: '/diseases'
     },
     {
       id: 3,
-      title: 'Lab Report Analysis',
-      description: 'Upload lab reports or medical imaging for AI-powered analysis and insights.',
+      title: 'Smart Lab Analysis',
+      description: 'Upload your lab reports and medical imaging for AI-powered interpretation with detailed insights and recommendations.',
       features: [
-        'AI-powered report analysis',
-        'Quick results interpretation',
-        'Detailed health insights'
+        'AI-powered result interpretation',
+        'Instant analysis feedback',
+        'Historical trend tracking',
+        'Secure data encryption'
       ],
       image: '/assets/lab-analysis.svg',
       route: '/lab-analysis'
     },
     {
       id: 4,
-      title: 'Free AI Assistant',
-      description: 'Chat with DoctorXCare for personalized health guidance 24/7.',
+      title: '24/7 AI Health Assistant',
+      description: 'Connect with DoctorXCare AI for personalized health guidance anytime, anywhere. Your intelligent health companion.',
       features: [
-        '24/7 availability',
-        'Personalized health guidance',
-        'Instant medical advice'
+        'Round-the-clock availability',
+        'Contextual health conversations',
+        'Evidence-based responses',
+        'Privacy-first approach'
       ],
       image: '/assets/hi.svg',
       route: '/doctorx-ai'
     },
     {
       id: 5,
-      title: 'Chronic Care & Health Tracking',
-      description: 'Long-term health management for patients with ongoing conditions.',
+      title: 'Chronic Disease Management',
+      description: 'Comprehensive long-term care platform for managing chronic conditions with intelligent monitoring and insights.',
       features: [
-        'Disease-specific monitoring for Diabetes, Hypertension, Thyroid',
-        'Interactive trend visualization with Chart.js',
-        'Lifestyle & vitals log for daily readings',
-        'Preventive alerts for check-ups'
+        'Multi-condition monitoring',
+        'Visual health trend analytics',
+        'Lifestyle tracking integration',
+        'Proactive health alerts'
       ],
       image: '/assets/chronic-care.svg',
       route: '/chronic-care'
     },
     {
       id: 6,
-      title: 'Post-Discharge Recovery',
-      description: 'Support patients during the vulnerable period after leaving a hospital.',
+      title: 'Post-Discharge Care',
+      description: 'Structured recovery support to ensure smooth transitions from hospital to home with continuous monitoring.',
       features: [
-        'Condition-specific recovery checklists',
-        'Danger sign monitoring education',
-        'Mental wellbeing support integration'
+        'Personalized recovery plans',
+        'Critical warning indicators',
+        'Mental health support',
+        'Progress tracking dashboard'
       ],
       image: '/assets/recovery.svg',
       route: '/post-discharge'
     },
     {
       id: 7,
-      title: 'Specialist Finder & Hospital Directory',
-      description: 'Bridge the gap between digital guidance and physical care.',
+      title: 'Healthcare Network',
+      description: 'Discover nearby specialists and hospitals with smart filtering, ratings, and seamless appointment booking.',
       features: [
-        'Nearby hospital locator with geolocation',
-        'Smart specialist filters by expertise',
+        'GPS-based hospital finder',
+        'Specialty-wise filtering',
+        'Verified reviews & ratings',
         'Direct booking integration'
       ],
       image: '/assets/specialist.svg',
@@ -353,61 +440,69 @@ function Services() {
   ];
 
   return (
-    <section style={{ ...styles.section, ...responsiveStyles.section }}>
-      <div style={styles.container}>
-        <h2 style={{ ...styles.h2, ...responsiveStyles.h2 }}>
-          Our Healthcare Services
-          <span style={{ ...styles.h2After, ...responsiveStyles.h2After }}></span>
-        </h2>
+    <section style={styles.section} ref={sectionRef}>
+      <div style={styles.backgroundPattern}></div>
 
-        <div style={{ ...styles.servicesGrid, ...responsiveStyles.servicesGrid }}>
-          {servicesData.map((service) => (
+      <div style={styles.container}>
+        <div style={styles.header}>
+          <span style={styles.badge}>HEALTHCARE EXCELLENCE</span>
+          <h1 style={styles.h1}>
+            <span className="gradient-text">Revolutionary Healthcare</span>
+            <br />
+            Services at Your Fingertips
+          </h1>
+          <p style={styles.subtitle}>
+            Experience the future of healthcare with our AI-powered platform designed to make quality medical care accessible, intelligent, and personalized for everyone.
+          </p>
+        </div>
+
+        <div style={styles.servicesGrid}>
+          {servicesData.map((service, index) => (
             <div
               key={service.id}
-              style={{
-                ...(responsiveStyles.serviceCard || styles.serviceCard),
-                ...(hoveredCard === service.id ? styles.cardHover : {})
-              }}
+              ref={el => cardRefs.current[index] = el}
+              style={styles.serviceCard(index, hoveredCard === service.id, isVisible[index])}
               onClick={() => navigate(service.route)}
               onMouseEnter={() => setHoveredCard(service.id)}
               onMouseLeave={() => setHoveredCard(null)}
             >
-              <span style={{
-                ...styles.cardBefore,
-                ...(hoveredCard === service.id ? styles.cardBeforeHover : {})
-              }}></span>
+              <div style={styles.cardGlow(hoveredCard === service.id)}></div>
+              <div style={styles.cardNumber}>{service.id}</div>
 
-              <h3 style={{ ...styles.cardTitle, ...responsiveStyles.cardTitle }}>
-                {service.title}
-              </h3>
-
-              <p style={{ ...styles.cardDesc, ...responsiveStyles.cardDesc }}>
-                {service.description}
-              </p>
-
-              <div style={styles.featuresContainer}>
-                {service.features.map((feature, index) => (
-                  <div
-                    key={index}
-                    style={{ ...styles.featureItem, ...responsiveStyles.featureItem }}
-                  >
-                    <span style={{ ...styles.featureIcon, ...responsiveStyles.featureIcon }}>
-                      ✓
-                    </span>
-                    <span>{feature}</span>
-                  </div>
-                ))}
+              <div style={styles.imageContainer}>
+                <img
+                  src={service.image}
+                  alt={service.title}
+                  style={styles.img(hoveredCard === service.id)}
+                  onError={(e) => {
+                    e.target.src = 'https://via.placeholder.com/300x200?text=Healthcare+Service';
+                  }}
+                />
               </div>
 
-              <img
-                src={service.image}
-                alt={service.title}
-                style={{
-                  ...styles.img,
-                  ...responsiveStyles.img,
-                  ...(hoveredCard === service.id ? styles.imgHover : {})
-                }}
-              />
+              <div style={styles.contentArea}>
+                <h3 style={styles.cardTitle}>{service.title}</h3>
+                <p style={styles.cardDesc}>{service.description}</p>
+
+                <div style={styles.featuresContainer}>
+                  {service.features.map((feature, idx) => (
+                    <div key={idx} style={styles.featureItem(idx)}>
+                      <div style={styles.featureIcon}>✓</div>
+                      <span>{feature}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <button style={styles.ctaButton(hoveredCard === service.id)}>
+                  Explore Service
+                  <span style={{
+                    ...styles.arrow,
+                    ...(hoveredCard === service.id ? styles.arrowHover : {})
+                  }}>
+                    →
+                  </span>
+                </button>
+              </div>
             </div>
           ))}
         </div>
