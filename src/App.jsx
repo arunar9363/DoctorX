@@ -30,6 +30,9 @@ import HistoryPage from "./pages/HistoryPage";
 import ForgotPassword from './pages/ForgotPassword';
 import Dashboard from "./pages/Dashboard";
 
+// In-Development Component
+import DoctorList from "./components/features/ai-agents/SpecialistFinder/FinderMap";
+
 
 // Wrapper for login modal page
 function LoginPageWrapper() {
@@ -97,6 +100,9 @@ function App() {
             <Route path="/lab-analysis" element={<LabUpload />} />
             <Route path="/doctorx-ai" element={<DoctorXAIPage />} />
             <Route path="/dashboard" element={<Dashboard />} />
+
+            {/* Development Phase Pages - In sab par wahi popup dikhega */}
+            <Route path="/healthcare-network" element={<DoctorList />} />
           </Route>
 
         </Routes>

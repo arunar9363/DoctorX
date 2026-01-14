@@ -383,7 +383,7 @@ function Services() {
         'Historical trend tracking',
         'Secure data encryption'
       ],
-      image: '/assets/lab-analysis.svg',
+      image: '/assets/report_analysis.svg',
       route: '/lab-analysis'
     },
     {
@@ -409,8 +409,8 @@ function Services() {
         'Lifestyle tracking integration',
         'Proactive health alerts'
       ],
-      image: '/assets/chronic-care.svg',
-      route: '/chronic-care'
+      image: '/assets/chronic.svg',
+      route: '/healthcare-network'
     },
     {
       id: 6,
@@ -422,8 +422,8 @@ function Services() {
         'Mental health support',
         'Progress tracking dashboard'
       ],
-      image: '/assets/recovery.svg',
-      route: '/post-discharge'
+      image: '/assets/postdischarge.svg',
+      route: '/healthcare-network'
     },
     {
       id: 7,
@@ -435,8 +435,8 @@ function Services() {
         'Verified reviews & ratings',
         'Direct booking integration'
       ],
-      image: '/assets/specialist.svg',
-      route: '/specialist-finder'
+      image: '/assets/hospital.svg',
+      route: '/healthcare-network'
     }
   ];
 

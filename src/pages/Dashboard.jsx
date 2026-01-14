@@ -806,7 +806,7 @@ function Dashboard() {
               desc: 'Upload lab reports or medical imaging for AI-powered analysis and insights.',
               link: 'Upload Now',
               route: '/lab-analysis',
-              image: '/assets/lab-analysis.svg',
+              image: '/assets/report_analysis.svg',
               icon: '🧪'
             },
             {
