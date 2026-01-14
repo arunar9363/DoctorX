@@ -581,7 +581,7 @@ function SymptomChecker() {
 
           <div style={styles.heroImage}>
             <img
-              src="public/assets/Symptomspage.svg"
+              src="/assets/Symptomspage.svg"
               alt="Medical Analysis Illustration"
               style={styles.heroImg}
               onError={(e) => {
