@@ -70,7 +70,7 @@ function App() {
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
 
-          <Route path="/symptoms" element={<SymptomPage />} />
+          
 
 
           {/* Other Public Routes */}
@@ -88,6 +88,7 @@ function App() {
             <Route path="/services" element={<Services />} />
             <Route path="/diseases" element={<DiseaseSearch />} />
             <Route path="/diseases/:diseaseName" element={<IndividualDiseasesInfo />} />
+            <Route path="/symptoms" element={<SymptomPage />} />
             <Route
               path="/symptom-checker"
               element={

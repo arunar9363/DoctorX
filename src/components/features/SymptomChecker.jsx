@@ -6,12 +6,21 @@ function SymptomChecker() {
   const [isVisible, setIsVisible] = useState({});
   const [isButtonHovered, setIsButtonHovered] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isPageLoading, setIsPageLoading] = useState(true);
   const sectionRef = useRef(null);
   const cardRefs = useRef([]);
   const heroRef = useRef(null);
 
   const isMobile = window.matchMedia('(max-width: 768px)').matches;
   const isSmall = window.matchMedia('(max-width: 480px)').matches;
+
+  // Page loading effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsPageLoading(false);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Check theme
   useEffect(() => {
@@ -139,6 +148,15 @@ function SymptomChecker() {
         100% { transform: rotate(360deg); }
       }
 
+      @keyframes fadeOut {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0;
+        }
+      }
+
       .gradient-text {
         background: linear-gradient(135deg, #0d9db8, #3b82f6);
         -webkit-background-clip: text;
@@ -164,12 +182,56 @@ function SymptomChecker() {
   const handleStartAnalysis = () => {
     setIsAnalyzing(true);
     setTimeout(() => {
-      alert('Starting Symptom Analysis... (In a real app, this would navigate to the symptom checker form)');
+      window.location.href = '/symptom-checker';
       setIsAnalyzing(false);
     }, 1500);
   };
 
   const styles = {
+    pageLoader: {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      background: isDarkMode
+        ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)'
+        : 'linear-gradient(135deg, #ffffff 0%, #f0f9ff 50%, #ffffff 100%)',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 9999,
+      animation: isPageLoading ? 'none' : 'fadeOut 0.5s ease-out forwards'
+    },
+    loaderContent: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: '24px'
+    },
+    spinner: {
+      width: '60px',
+      height: '60px',
+      border: `4px solid ${isDarkMode ? 'rgba(96, 165, 250, 0.2)' : 'rgba(13, 157, 184, 0.2)'}`,
+      borderTop: '4px solid #0d9db8',
+      borderRadius: '50%',
+      animation: 'rotation 1s linear infinite'
+    },
+    loaderText: {
+      fontSize: '1.1rem',
+      fontWeight: 600,
+      background: 'linear-gradient(135deg, #0d9db8, #3b82f6)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text',
+      fontFamily: "'Inter', sans-serif"
+    },
+    loaderSubtext: {
+      fontSize: '0.9rem',
+      color: isDarkMode ? '#9ca3af' : '#64748b',
+      fontFamily: "'Inter', sans-serif"
+    },
     pageWrapper: {
       width: '100%',
       minHeight: '100vh',
@@ -312,7 +374,6 @@ function SymptomChecker() {
     },
     heroImg: {
       width: '100%',
-      // Image size ko aur significantly badha diya hai
       maxWidth: isSmall ? '600px' : isMobile ? '800px' : '1100px',
       height: 'auto',
       objectFit: 'contain',
@@ -529,6 +590,17 @@ function SymptomChecker() {
 
   return (
     <div style={styles.pageWrapper} className={isDarkMode ? 'dark-mode' : ''}>
+      {/* Page Loader */}
+      {isPageLoading && (
+        <div style={styles.pageLoader}>
+          <div style={styles.loaderContent}>
+            <div style={styles.spinner}></div>
+            <div style={styles.loaderText}>Loading DoctorXCare</div>
+            <div style={styles.loaderSubtext}>Please wait...</div>
+          </div>
+        </div>
+      )}
+
       <div style={styles.backgroundPattern}></div>
 
       {/* Hero Section */}
