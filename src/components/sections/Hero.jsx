@@ -18,10 +18,9 @@ function Hero() {
   const navigate = useNavigate();
 
   const words = [
-    "Health Hub",
-    "Wellness Zone",
-    "Digital Command",
-    "Personal Dashboard"
+    "Fingertips",
+    "Command",
+    "Dashboard"
   ];
 
   const isMobile = window.matchMedia('(max-width: 768px)').matches;
@@ -271,7 +270,7 @@ function Hero() {
       backgroundSize: '400% 400%',
       animation: 'gradientShift 15s ease infinite',
       paddingTop: isSmall ? '80px' : isMobile ? '90px' : '100px',
-      paddingBottom: isSmall ? '40px' : isMobile ? '50px' : '60px',
+      paddingBottom: isSmall ? '60px' : isMobile ? '70px' : '80px',
       position: 'relative',
       overflow: 'hidden'
     },
@@ -323,7 +322,7 @@ function Hero() {
       opacity: isVisible ? 1 : 0,
       animation: isVisible ? 'fadeInLeft 0.8s ease-out' : 'none',
       width: '100%',
-      maxWidth: '900px',
+      maxWidth: '1100px',
       textAlign: 'center',
       display: 'flex',
       flexDirection: 'column',
@@ -350,31 +349,32 @@ function Hero() {
     mainHeading: {
       fontSize: isSmall ? '2.2rem' : isMobile ? '2.8rem' : '4rem',
       fontWeight: 800,
-      lineHeight: 1.15,
+      lineHeight: 1.2,
       marginBottom: '24px',
       color: isDarkMode ? '#f9fafb' : '#0f172a',
       fontFamily: "'Merriweather', serif",
       animation: isVisible ? 'fadeInUp 0.8s ease-out 0.3s backwards' : 'none',
-      textAlign: 'center'
+      textAlign: 'center',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: '10px'
     },
     animatedWordContainer: {
-      display: 'inline-block',
+      display: 'block',
       position: 'relative',
-      height: isSmall ? '2.6rem' : isMobile ? '3.3rem' : '4.8rem',
-      minWidth: isSmall ? '200px' : isMobile ? '250px' : '400px',
-      overflow: 'hidden',
-      verticalAlign: 'bottom'
+      height: isSmall ? '2.8rem' : isMobile ? '3.5rem' : '5rem',
+      width: '100%',
+      overflow: 'hidden'
     },
     animatedWord: {
-      position: 'absolute',
-      top: 0,
-      left: 0,
+      display: 'block',
       width: '100%',
+      textAlign: 'center',
       fontSize: isSmall ? '2.2rem' : isMobile ? '2.8rem' : '4rem',
       fontWeight: 900,
-      lineHeight: isSmall ? '2.6rem' : isMobile ? '3.5rem' : '5rem',
-      animation: 'wordSlide 3s ease-in-out',
-      whiteSpace: 'nowrap'
+      lineHeight: isSmall ? '2.8rem' : isMobile ? '3.5rem' : '5rem',
+      animation: 'wordSlide 3s ease-in-out'
     },
     subtitle: {
       fontSize: isSmall ? '1rem' : isMobile ? '1.15rem' : '1.3rem',
@@ -389,16 +389,23 @@ function Hero() {
       listStyle: 'none',
       padding: 0,
       margin: '0 0 40px 0',
-      display: 'inline-flex',
-      flexDirection: 'column',
-      gap: '16px',
-      textAlign: 'left'
+      display: 'grid',
+      gridTemplateColumns: isSmall ? '1fr' : isMobile ? '1fr' : 'repeat(2, 1fr)',
+      gap: isSmall ? '14px' : '18px',
+      textAlign: 'left',
+      maxWidth: '1000px',
+      width: '100%'
     },
     featureItem: (index) => ({
       display: 'flex',
       alignItems: 'flex-start',
       gap: '14px',
-      animation: isVisible ? `fadeInUp 0.6s ease-out ${0.5 + index * 0.1}s backwards` : 'none'
+      animation: isVisible ? `fadeInUp 0.6s ease-out ${0.5 + index * 0.1}s backwards` : 'none',
+      padding: isSmall ? '10px' : '12px',
+      background: isDarkMode ? 'rgba(30, 41, 59, 0.3)' : 'rgba(255, 255, 255, 0.6)',
+      borderRadius: '12px',
+      border: `1px solid ${isDarkMode ? 'rgba(148, 163, 184, 0.1)' : 'rgba(13, 157, 184, 0.1)'}`,
+      transition: 'all 0.3s ease'
     }),
     checkIcon: {
       width: '24px',
@@ -419,16 +426,16 @@ function Hero() {
       flex: 1
     },
     featureTitle: {
-      fontSize: isSmall ? '0.95rem' : '1.05rem',
+      fontSize: isSmall ? '0.98rem' : '1.08rem',
       fontWeight: 700,
       color: isDarkMode ? '#f1f5f9' : '#1e293b',
-      marginBottom: '4px',
+      marginBottom: '6px',
       fontFamily: "'Inter', sans-serif"
     },
     featureDesc: {
-      fontSize: isSmall ? '0.8rem' : '0.9rem',
+      fontSize: isSmall ? '0.85rem' : '0.93rem',
       color: isDarkMode ? '#94a3b8' : '#64748b',
-      lineHeight: 1.5
+      lineHeight: 1.6
     },
     buttonGroup: {
       display: 'flex',
@@ -486,7 +493,7 @@ function Hero() {
       animation: isVisible ? 'scaleIn 0.8s ease-out 0.6s backwards' : 'none',
       position: 'relative',
       width: '100%',
-      maxWidth: '600px'
+      maxWidth: '800px'
     },
     imageContainer: {
       position: 'relative',
@@ -497,7 +504,7 @@ function Hero() {
     },
     heroImage: {
       width: '100%',
-      maxWidth: isSmall ? '320px' : isMobile ? '400px' : '600px',
+      maxWidth: isSmall ? '420px' : isMobile ? '540px' : '800px',
       height: 'auto',
       animation: 'float 6s ease-in-out infinite',
       filter: isDarkMode ? 'drop-shadow(0 20px 40px rgba(13, 157, 184, 0.3))' : 'drop-shadow(0 20px 40px rgba(13, 157, 184, 0.2))'
@@ -517,24 +524,26 @@ function Hero() {
     statsBar: {
       display: 'flex',
       flexDirection: isSmall ? 'column' : 'row',
-      gap: isSmall ? '16px' : '32px',
-      marginTop: '40px',
-      padding: isSmall ? '20px' : '24px',
+      gap: isSmall ? '15px' : '30px',
+      marginTop: '30px',
+      padding: isSmall ? '20px' : '30px',
       background: isDarkMode
         ? 'rgba(30, 41, 59, 0.5)'
         : 'rgba(255, 255, 255, 0.5)',
       backdropFilter: 'blur(10px)',
       borderRadius: '16px',
       border: `1px solid ${isDarkMode ? 'rgba(148, 163, 184, 0.1)' : 'rgba(226, 232, 240, 1)'}`,
-      animation: isVisible ? 'fadeInUp 0.8s ease-out 1.1s backwards' : 'none'
+      animation: isVisible ? 'fadeInUp 0.8s ease-out 1.1s backwards' : 'none',
+      maxWidth: '100%',
+      width: '100%'
     },
     statItem: {
       flex: 1,
       textAlign: isSmall ? 'center' : 'left'
     },
     statValue: {
-      fontSize: isSmall ? '1.5rem' : '2rem',
-      fontWeight: 800,
+      fontSize: isSmall ? '1.5rem' : '1.7rem',
+      fontWeight: 600,
       background: 'linear-gradient(135deg, var(--color-secondary), var(--color-third))',
       WebkitBackgroundClip: 'text',
       WebkitTextFillColor: 'transparent',
@@ -543,9 +552,9 @@ function Hero() {
       fontFamily: "'Merriweather', serif"
     },
     statLabel: {
-      fontSize: isSmall ? '0.8rem' : '0.9rem',
+      fontSize: isSmall ? '0.7rem' : '0.8rem',
       color: isDarkMode ? '#94a3b8' : '#64748b',
-      fontWeight: 500
+      fontWeight: 400
     }
   };
 
@@ -587,16 +596,36 @@ function Hero() {
 
   const features = [
     {
-      title: "Advanced Symptom Analysis",
-      desc: "Powered by Infermedica technology"
+      title: "AI Symptom Analysis",
+      desc: "Clinical-grade AI powered by Infermedica for instant triage"
     },
     {
-      title: "Verified Disease Library",
-      desc: "Curated & trusted medical data"
+      title: "Disease Knowledge Hub",
+      desc: "Access 1000+ verified medical conditions with treatments"
     },
     {
-      title: "Personal AI Health Assistant",
-      desc: "Free, instant, 24/7 access"
+      title: "Smart Lab Analysis",
+      desc: "Upload reports for AI-powered interpretation & insights"
+    },
+    {
+      title: "24/7 AI Health Assistant",
+      desc: "Get personalized medical guidance anytime, anywhere"
+    },
+    {
+      title: "Chronic Care Management",
+      desc: "Monitor diabetes, hypertension & thyroid with trend analytics"
+    },
+    {
+      title: "Post-Discharge Support",
+      desc: "Recovery plans, danger signs & mental health support"
+    },
+    {
+      title: "Healthcare Network",
+      desc: "Find specialists, hospitals & book appointments nearby"
+    },
+    {
+      title: "Medical Records Storage",
+      desc: "Securely store and access your health history"
     }
   ];
 
@@ -634,7 +663,7 @@ function Hero() {
             </div>
 
             <h1 style={styles.mainHeading}>
-              Smart Healthcare at Your{" "} <br />
+              <span>Smart Healthcare at Your</span>
               <div style={styles.animatedWordContainer}>
                 <span
                   className="gradient-text"
@@ -667,7 +696,7 @@ function Hero() {
             </ul>
           </div>
 
-          {/* Image Section - Now between features and buttons */}
+          {/* Image Section */}
           <div style={styles.rightContent}>
             <div style={styles.imageContainer}>
               <div style={styles.glowEffect}></div>
@@ -719,16 +748,24 @@ function Hero() {
             {/* Stats Bar */}
             <div style={styles.statsBar}>
               <div style={styles.statItem}>
-                <div style={styles.statValue}>100K+</div>
-                <div style={styles.statLabel}>Active Users</div>
+                <div style={styles.statValue}>500+</div>
+                <div style={styles.statLabel}>Medical Conditions Covered</div>
+              </div>
+              <div style={styles.statItem}>
+                <div style={styles.statValue}>AI-Powered</div>
+                <div style={styles.statLabel}>Symptoms & Triage Analysis</div>
               </div>
               <div style={styles.statItem}>
                 <div style={styles.statValue}>24/7</div>
-                <div style={styles.statLabel}>AI Support</div>
+                <div style={styles.statLabel}>AI Health Assistance</div>
               </div>
               <div style={styles.statItem}>
-                <div style={styles.statValue}>1000+</div>
-                <div style={styles.statLabel}>Health Articles</div>
+                <div style={styles.statValue}>Secure</div>
+                <div style={styles.statLabel}>Medical Records Storage</div>
+              </div>
+              <div style={styles.statItem}>
+                <div style={styles.statValue}>Clinically Guided</div>
+                <div style={styles.statLabel}>Medical Advisor Validation</div>
               </div>
             </div>
           </div>

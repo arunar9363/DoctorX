@@ -262,6 +262,7 @@ function Services() {
       transition: 'transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
       transform: isHovered ? 'scale(1.1) rotate(2deg)' : 'scale(1)',
       filter: isDarkMode ? 'brightness(0.95) drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))' : 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.1))'
+      
     }),
     contentArea: {
       position: 'relative'
