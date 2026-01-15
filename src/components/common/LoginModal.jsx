@@ -221,7 +221,7 @@ function LoginModal({ show, onClose, message, onShowToast, onLoginSuccess, redir
         borderRadius: '24px',
         width: '100%',
         maxWidth: '480px',
-        maxHeight: '96vh',
+        maxHeight: '90vh',
         overflowY: 'auto',
         boxShadow: '0 24px 48px rgba(0, 0, 0, 0.2), 0 0 1px rgba(0, 0, 0, 0.05)',
         position: 'relative',
@@ -229,6 +229,8 @@ function LoginModal({ show, onClose, message, onShowToast, onLoginSuccess, redir
         border: 'none',
         borderImage: 'linear-gradient(to bottom, #0d9db8, #60a5fa) 1'
       }}>
+
+
         <button
           style={{
             position: 'absolute',
