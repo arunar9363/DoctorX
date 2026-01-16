@@ -1,7 +1,20 @@
-import React from 'react';
-import { AlertTriangle, CheckCircle, AlertCircle, FileText, Download } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { AlertTriangle, CheckCircle, AlertCircle, FileText, Download, RefreshCw } from 'lucide-react';
 
-const LabResult = ({ analysis }) => {
+const LabResult = ({ analysis, onNewAnalysis }) => {
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Check theme
+  useEffect(() => {
+    const checkTheme = () => {
+      const theme = document.documentElement.getAttribute('data-theme');
+      setIsDarkMode(theme === 'dark');
+    };
+    checkTheme();
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => observer.disconnect();
+  }, []);
   const analyzeSeverity = (text) => {
     if (!text) return 'unknown';
     const lowerText = text.toLowerCase();
@@ -214,7 +227,7 @@ const LabResult = ({ analysis }) => {
 
         const logoY = yPosition + (15 - logoHeight) / 2;
         doc.addImage(logoImg, 'PNG', margin, logoY, logoWidth, logoHeight);
-      // eslint-disable-next-line no-unused-vars
+        // eslint-disable-next-line no-unused-vars
       } catch (e) {
         console.log('Logo not loaded, continuing without it');
       }
@@ -511,13 +524,14 @@ const LabResult = ({ analysis }) => {
                   style={{
                     backgroundColor: bg,
                     color: color,
-                    padding: '2px 6px',
-                    borderRadius: '4px',
+                    padding: '2px 8px',
+                    borderRadius: '3px',
                     fontWeight: '600',
                     fontSize: '0.875rem',
-                    marginLeft: '3px',
-                    marginRight: '3px',
-                    display: 'inline-block'
+                    marginLeft: '4px',
+                    marginRight: '4px',
+                    display: 'inline-block',
+                    fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
                   }}
                 >
                   {segment}
@@ -578,7 +592,7 @@ const LabResult = ({ analysis }) => {
 
   const formatText = (text) => {
     if (!text) {
-      return <p style={{ color: '#64748b' }}>No analysis data available</p>;
+      return <p style={{ color: isDarkMode ? '#9ca3af' : '#64748b', fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>No analysis data available</p>;
     }
 
     const lines = text.split('\n');
@@ -592,45 +606,59 @@ const LabResult = ({ analysis }) => {
         elements.push(
           <div key={`table-${elements.length}`} style={{
             overflowX: 'auto',
-            marginBottom: isMobile ? '12px' : '16px',
-            marginTop: isMobile ? '8px' : '12px'
+            marginBottom: isMobile ? '20px' : '28px',
+            marginTop: isMobile ? '12px' : '16px',
+            borderRadius: '8px',
+            border: isDarkMode ? '1px solid #334155' : '1px solid #e5e7eb',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)'
           }}>
             <table style={{
               width: '100%',
               borderCollapse: 'collapse',
-              fontSize: isMobile ? '0.75rem' : '0.875rem',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-              backgroundColor: '#ffffff'
+              fontSize: isMobile ? '0.8125rem' : '0.875rem',
+              backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
+              fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
             }}>
               <thead>
-                <tr style={{ backgroundColor: '#0d9db8' }}>
+                <tr style={{
+                  backgroundColor: isDarkMode ? '#0f172a' : '#f8fafc',
+                  borderBottom: isDarkMode ? '2px solid #334155' : '2px solid #e5e7eb'
+                }}>
                   <th style={{
-                    padding: isMobile ? '8px 6px' : '12px 16px',
+                    padding: isMobile ? '12px 10px' : '14px 16px',
                     textAlign: 'left',
-                    color: '#ffffff',
+                    color: isDarkMode ? '#e5e7eb' : '#374151',
                     fontWeight: '600',
-                    borderBottom: '2px solid #0a7a8f'
+                    fontSize: isMobile ? '0.8125rem' : '0.875rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px'
                   }}>Test Name</th>
                   <th style={{
-                    padding: isMobile ? '8px 6px' : '12px 16px',
+                    padding: isMobile ? '12px 10px' : '14px 16px',
                     textAlign: 'left',
-                    color: '#ffffff',
+                    color: isDarkMode ? '#e5e7eb' : '#374151',
                     fontWeight: '600',
-                    borderBottom: '2px solid #0a7a8f'
+                    fontSize: isMobile ? '0.8125rem' : '0.875rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px'
                   }}>Result</th>
                   <th style={{
-                    padding: isMobile ? '8px 6px' : '12px 16px',
+                    padding: isMobile ? '12px 10px' : '14px 16px',
                     textAlign: 'left',
-                    color: '#ffffff',
+                    color: isDarkMode ? '#e5e7eb' : '#374151',
                     fontWeight: '600',
-                    borderBottom: '2px solid #0a7a8f'
+                    fontSize: isMobile ? '0.8125rem' : '0.875rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px'
                   }}>Normal Range</th>
                   <th style={{
-                    padding: isMobile ? '8px 6px' : '12px 16px',
+                    padding: isMobile ? '12px 10px' : '14px 16px',
                     textAlign: 'left',
-                    color: '#ffffff',
+                    color: isDarkMode ? '#e5e7eb' : '#374151',
                     fontWeight: '600',
-                    borderBottom: '2px solid #0a7a8f'
+                    fontSize: isMobile ? '0.8125rem' : '0.875rem',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.5px'
                   }}>Status</th>
                 </tr>
               </thead>
@@ -638,7 +666,7 @@ const LabResult = ({ analysis }) => {
                 {tableRows.map((row, idx) => {
                   const statusLower = row.status.toLowerCase();
                   let statusColor = '#475569';
-                  let statusBg = '#f8fafc';
+                  let statusBg = '#f1f5f9';
 
                   if (statusLower.includes('abnormal') || statusLower.includes('low') || statusLower.includes('high')) {
                     statusColor = '#dc2626';
@@ -653,37 +681,36 @@ const LabResult = ({ analysis }) => {
 
                   return (
                     <tr key={idx} style={{
-                      backgroundColor: idx % 2 === 0 ? '#f8fafc' : '#ffffff',
-                      transition: 'background-color 0.2s'
-                    }}>
+                      backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
+                      borderBottom: isDarkMode ? '1px solid #334155' : '1px solid #f3f4f6',
+                      transition: 'background-color 0.15s ease'
+                    }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = isDarkMode ? '#334155' : '#f9fafb'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = isDarkMode ? '#1e293b' : '#ffffff'}>
                       <td style={{
-                        padding: isMobile ? '8px 6px' : '12px 16px',
-                        borderBottom: '1px solid #e2e8f0',
-                        color: '#1e293b',
+                        padding: isMobile ? '12px 10px' : '14px 16px',
+                        color: isDarkMode ? '#f3f4f6' : '#111827',
                         fontWeight: '500'
                       }}>{row.testName}</td>
                       <td style={{
-                        padding: isMobile ? '8px 6px' : '12px 16px',
-                        borderBottom: '1px solid #e2e8f0',
-                        color: '#334155',
+                        padding: isMobile ? '12px 10px' : '14px 16px',
+                        color: isDarkMode ? '#e5e7eb' : '#1f2937',
                         fontWeight: '600'
                       }}>{row.result}</td>
                       <td style={{
-                        padding: isMobile ? '8px 6px' : '12px 16px',
-                        borderBottom: '1px solid #e2e8f0',
-                        color: '#64748b'
+                        padding: isMobile ? '12px 10px' : '14px 16px',
+                        color: isDarkMode ? '#9ca3af' : '#6b7280'
                       }}>{row.normalRange}</td>
                       <td style={{
-                        padding: isMobile ? '8px 6px' : '12px 16px',
-                        borderBottom: '1px solid #e2e8f0'
+                        padding: isMobile ? '12px 10px' : '14px 16px'
                       }}>
                         <span style={{
                           backgroundColor: statusBg,
                           color: statusColor,
-                          padding: '4px 8px',
+                          padding: '4px 10px',
                           borderRadius: '4px',
                           fontWeight: '600',
-                          fontSize: isMobile ? '0.7rem' : '0.8125rem',
+                          fontSize: isMobile ? '0.75rem' : '0.8125rem',
                           display: 'inline-block'
                         }}>
                           {row.status}
@@ -705,7 +732,7 @@ const LabResult = ({ analysis }) => {
 
       if (trimmedLine === '') {
         flushTable();
-        elements.push(<div key={`space-${index}`} style={{ height: '8px' }} />);
+        elements.push(<div key={`space-${index}`} style={{ height: '12px' }} />);
         return;
       }
 
@@ -737,31 +764,35 @@ const LabResult = ({ analysis }) => {
           flushTable();
           elements.push(
             <div key={`imaging-${index}`} style={{
-              marginBottom: isMobile ? '10px' : '14px',
-              padding: isMobile ? '10px' : '14px',
-              backgroundColor: '#f8fafc',
+              marginBottom: isMobile ? '16px' : '20px',
+              padding: isMobile ? '16px' : '20px',
+              backgroundColor: isDarkMode ? '#1e293b' : '#f9fafb',
               borderLeft: '4px solid #0d9db8',
-              borderRadius: '6px'
+              borderRadius: '6px',
+              border: isDarkMode ? '1px solid #334155' : '1px solid #e5e7eb'
             }}>
               <div style={{
                 fontWeight: '600',
-                color: '#1e293b',
-                fontSize: isMobile ? '0.8125rem' : '0.9375rem',
-                marginBottom: '6px'
+                color: isDarkMode ? '#f3f4f6' : '#111827',
+                fontSize: isMobile ? '0.9375rem' : '1rem',
+                marginBottom: '10px',
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
               }}>
                 {tableData.region}
               </div>
               <div style={{
-                color: '#475569',
-                fontSize: isMobile ? '0.75rem' : '0.875rem',
-                marginBottom: '6px'
+                color: isDarkMode ? '#9ca3af' : '#4b5563',
+                fontSize: isMobile ? '0.8125rem' : '0.875rem',
+                marginBottom: '8px',
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
               }}>
-                <strong>Finding:</strong> {tableData.finding}
+                <strong style={{ color: isDarkMode ? '#d1d5db' : '#374151' }}>Finding:</strong> {tableData.finding}
               </div>
               <div style={{
                 color: '#0d9db8',
-                fontSize: isMobile ? '0.75rem' : '0.875rem',
-                fontWeight: '600'
+                fontSize: isMobile ? '0.8125rem' : '0.875rem',
+                fontWeight: '600',
+                fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
               }}>
                 <strong>Impression:</strong> {tableData.impression}
               </div>
@@ -777,12 +808,14 @@ const LabResult = ({ analysis }) => {
         const cleanText = trimmedLine.replace(/#{2,3}/g, '').replace(/\*\*/g, '').trim();
         elements.push(
           <h3 key={`header-${index}`} style={{
-            marginTop: isMobile ? '16px' : '24px',
-            marginBottom: isMobile ? '8px' : '12px',
+            marginTop: isMobile ? '24px' : '32px',
+            marginBottom: isMobile ? '12px' : '16px',
             fontWeight: '600',
-            color: '#1e293b',
-            fontSize: isMobile ? '0.95rem' : '1.125rem',
-            lineHeight: '1.5'
+            color: isDarkMode ? '#f3f4f6' : '#111827',
+            fontSize: isMobile ? '1.125rem' : '1.25rem',
+            lineHeight: '1.4',
+            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+            letterSpacing: '-0.01em'
           }}>
             {cleanText}
           </h3>
@@ -794,14 +827,14 @@ const LabResult = ({ analysis }) => {
         const parts = trimmedLine.split('**');
         elements.push(
           <p key={`text-${index}`} style={{
-            marginBottom: isMobile ? '8px' : '12px',
-            color: '#475569',
-            lineHeight: '1.6',
-            fontSize: isMobile ? '0.8125rem' : '0.9375rem',
-            textAlign: 'justify'
+            marginBottom: isMobile ? '12px' : '16px',
+            color: isDarkMode ? '#d1d5db' : '#374151',
+            lineHeight: '1.7',
+            fontSize: isMobile ? '0.9375rem' : '1rem',
+            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
           }}>
             {parts.map((part, i) =>
-              i % 2 === 1 ? <strong key={i} style={{ fontWeight: '600', color: '#334155' }}>{part}</strong> : part
+              i % 2 === 1 ? <strong key={i} style={{ fontWeight: '600', color: isDarkMode ? '#f9fafb' : '#111827' }}>{part}</strong> : part
             )}
           </p>
         );
@@ -812,12 +845,12 @@ const LabResult = ({ analysis }) => {
         const cleanText = trimmedLine.replace(/^[-*]\s/, '');
         elements.push(
           <li key={`bullet-${index}`} style={{
-            marginBottom: isMobile ? '6px' : '10px',
-            marginLeft: isMobile ? '16px' : '24px',
-            color: '#475569',
-            lineHeight: '1.6',
-            fontSize: isMobile ? '0.8125rem' : '0.9375rem',
-            textAlign: 'justify'
+            marginBottom: isMobile ? '10px' : '12px',
+            marginLeft: isMobile ? '20px' : '28px',
+            color: isDarkMode ? '#d1d5db' : '#374151',
+            lineHeight: '1.7',
+            fontSize: isMobile ? '0.9375rem' : '1rem',
+            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
           }}>
             {cleanText}
           </li>
@@ -827,11 +860,11 @@ const LabResult = ({ analysis }) => {
 
       elements.push(
         <p key={`para-${index}`} style={{
-          marginBottom: isMobile ? '8px' : '12px',
-          color: '#475569',
-          lineHeight: '1.6',
-          fontSize: isMobile ? '0.8125rem' : '0.9375rem',
-          textAlign: 'justify'
+          marginBottom: isMobile ? '12px' : '16px',
+          color: isDarkMode ? '#d1d5db' : '#374151',
+          lineHeight: '1.7',
+          fontSize: isMobile ? '0.9375rem' : '1rem',
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
         }}>
           {addColoredBadges(trimmedLine)}
         </p>
@@ -847,124 +880,200 @@ const LabResult = ({ analysis }) => {
 
   return (
     <div style={{
-      maxWidth: '900px',
+      maxWidth: '1200px',
       margin: '0 auto',
-      padding: isMobile ? '12px' : '24px',
-      backgroundColor: 'transparent'
+      padding: isMobile ? '20px 16px' : '40px 32px',
+      backgroundColor: isDarkMode ? '#0f172a' : '#ffffff',
+      minHeight: '100vh'
     }}>
-      <h1 style={{
-        fontSize: isMobile ? '1.25rem' : '2rem',
-        fontWeight: '700',
-        color: '#0d9db8',
-        textAlign: 'center',
-        marginBottom: isMobile ? '16px' : '32px',
-        letterSpacing: '-0.025em'
+      {/* Header Section */}
+      <div style={{
+        borderBottom: isDarkMode ? '2px solid #334155' : '2px solid #e5e7eb',
+        paddingBottom: isMobile ? '24px' : '32px',
+        marginBottom: isMobile ? '28px' : '36px'
       }}>
-        Lab Result Analysis Report
-      </h1>
+        <h1 style={{
+          fontSize: isMobile ? '1.75rem' : '2.25rem',
+          fontWeight: '700',
+          color: isDarkMode ? '#f9fafb' : '#111827',
+          marginBottom: isMobile ? '8px' : '12px',
+          letterSpacing: '-0.025em',
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+        }}>
+          Medical Analysis Report
+        </h1>
+        <p style={{
+          fontSize: isMobile ? '0.875rem' : '0.9375rem',
+          color: isDarkMode ? '#9ca3af' : '#6b7280',
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+        }}>
+          Generated on {new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          })}
+        </p>
+      </div>
 
+      {/* Status Badge */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        gap: isMobile ? '8px' : '12px',
-        marginBottom: isMobile ? '12px' : '24px',
-        padding: isMobile ? '10px 12px' : '16px 24px',
+        gap: isMobile ? '10px' : '14px',
+        marginBottom: isMobile ? '20px' : '28px',
+        padding: isMobile ? '14px 18px' : '16px 24px',
+        backgroundColor: isDarkMode ? '#1e293b' : '#f9fafb',
+        borderRadius: '8px',
+        border: isDarkMode ? '1px solid #334155' : '1px solid #e5e7eb'
       }}>
-        <span style={{ color: badgeConfig.iconColor, display: 'flex' }}>
-          {React.cloneElement(badgeConfig.icon, { size: isMobile ? 18 : 22 })}
+        <span style={{ color: badgeConfig.iconColor, display: 'flex', flexShrink: 0 }}>
+          {React.cloneElement(badgeConfig.icon, { size: isMobile ? 20 : 24 })}
         </span>
         <span style={{
-          fontSize: isMobile ? '0.875rem' : '1.125rem',
+          fontSize: isMobile ? '0.9375rem' : '1.0625rem',
           fontWeight: '600',
-          color: badgeConfig.textColor
+          color: badgeConfig.textColor,
+          fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
         }}>
           {badgeConfig.text}
         </span>
       </div>
 
+      {/* Disclaimer */}
       <div style={{
-        marginBottom: isMobile ? '12px' : '24px',
-        padding: isMobile ? '10px 12px' : '14px 20px',
-        backgroundColor: 'rgba(254, 252, 232, 0.95)',
-        backdropFilter: 'blur(10px)'
+        marginBottom: isMobile ? '24px' : '32px',
+        padding: isMobile ? '14px 16px' : '16px 20px',
+        backgroundColor: isDarkMode ? '#422006' : '#fffbeb',
+        borderRadius: '8px',
+        border: isDarkMode ? '1px solid #713f12' : '1px solid #fde68a'
       }}>
         <div style={{
           display: 'flex',
-          gap: isMobile ? '6px' : '10px',
+          gap: isMobile ? '10px' : '12px',
           alignItems: 'flex-start'
         }}>
           <AlertTriangle style={{
-            color: '#d97706',
+            color: isDarkMode ? '#fbbf24' : '#d97706',
             flexShrink: 0,
             marginTop: '2px'
-          }} size={isMobile ? 14 : 18} />
+          }} size={isMobile ? 16 : 18} />
           <p style={{
-            fontSize: isMobile ? '0.75rem' : '0.875rem',
-            color: '#92400e',
-            lineHeight: '1.4',
-            margin: 0
+            fontSize: isMobile ? '0.8125rem' : '0.875rem',
+            color: isDarkMode ? '#fde68a' : '#78350f',
+            lineHeight: '1.5',
+            margin: 0,
+            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
           }}>
-            <strong>Disclaimer:</strong> This is an AI-generated analysis, not a medical diagnosis. Please consult a healthcare provider.
+            <strong style={{ fontWeight: '600' }}>Medical Disclaimer:</strong> This report contains AI-generated analysis for informational purposes only. It is not a substitute for professional medical advice, diagnosis, or treatment. Please consult with qualified healthcare providers for medical decisions.
           </p>
         </div>
       </div>
 
+      {/* Content Section */}
       <div style={{
-        border: '1px solid #e2e8f0',
-        padding: isMobile ? '16px' : '32px',
-        marginBottom: isMobile ? '12px' : '20px',
-        backdropFilter: 'blur(10px)'
+        backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
+        borderRadius: '8px',
+        padding: isMobile ? '20px' : '32px',
+        border: isDarkMode ? '1px solid #334155' : '1px solid #e5e7eb',
+        marginBottom: isMobile ? '24px' : '32px'
       }}>
-        <div style={{ color: '#1e293b' }}>
+        <div style={{ color: isDarkMode ? '#f9fafb' : '#111827' }}>
           {formatText(analysis)}
         </div>
       </div>
 
+      {/* Action Buttons */}
       <div style={{
         display: 'flex',
+        flexDirection: isMobile ? 'column' : 'row',
         justifyContent: 'center',
-        marginTop: isMobile ? '12px' : '24px'
+        gap: isMobile ? '12px' : '16px',
+        marginTop: isMobile ? '28px' : '36px',
+        paddingTop: isMobile ? '24px' : '32px',
+        borderTop: isDarkMode ? '1px solid #334155' : '1px solid #e5e7eb'
       }}>
         <button
           onClick={downloadPDF}
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: isMobile ? '6px' : '10px',
-            padding: isMobile ? '10px 20px' : '12px 28px',
+            justifyContent: 'center',
+            gap: isMobile ? '8px' : '12px',
+            padding: isMobile ? '12px 24px' : '14px 32px',
             backgroundColor: '#0d9db8',
             color: 'white',
             border: 'none',
-            borderRadius: '10px',
-            fontSize: isMobile ? '0.8125rem' : '0.9375rem',
+            borderRadius: '6px',
+            fontSize: isMobile ? '0.9375rem' : '1rem',
             fontWeight: '600',
             cursor: 'pointer',
-            transition: 'all 0.2s',
-            boxShadow: '0 4px 12px rgba(13, 157, 184, 0.3)'
+            transition: 'all 0.2s ease',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+            flex: isMobile ? '1' : '0 1 auto'
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = '#0a7a8f';
-            e.currentTarget.style.transform = 'translateY(-2px)';
-            e.currentTarget.style.boxShadow = '0 6px 16px rgba(13, 157, 184, 0.4)';
+            e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+            e.currentTarget.style.transform = 'translateY(-1px)';
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.backgroundColor = '#0d9db8';
+            e.currentTarget.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)';
             e.currentTarget.style.transform = 'translateY(0)';
-            e.currentTarget.style.boxShadow = '0 4px 12px rgba(13, 157, 184, 0.3)';
           }}
         >
-          <Download size={isMobile ? 16 : 18} />
-          Download Report as PDF
+          <Download size={isMobile ? 18 : 20} />
+          Download PDF Report
+        </button>
+
+        <button
+          onClick={onNewAnalysis}
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: isMobile ? '8px' : '12px',
+            padding: isMobile ? '12px 24px' : '14px 32px',
+            backgroundColor: isDarkMode ? '#334155' : '#f3f4f6',
+            color: isDarkMode ? '#f9fafb' : '#111827',
+            border: isDarkMode ? '1px solid #475569' : '1px solid #d1d5db',
+            borderRadius: '6px',
+            fontSize: isMobile ? '0.9375rem' : '1rem',
+            fontWeight: '600',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            boxShadow: '0 1px 2px rgba(0, 0, 0, 0.05)',
+            fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+            flex: isMobile ? '1' : '0 1 auto'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = isDarkMode ? '#475569' : '#e5e7eb';
+            e.currentTarget.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
+            e.currentTarget.style.transform = 'translateY(-1px)';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = isDarkMode ? '#334155' : '#f3f4f6';
+            e.currentTarget.style.boxShadow = '0 1px 2px rgba(0, 0, 0, 0.05)';
+            e.currentTarget.style.transform = 'translateY(0)';
+          }}
+        >
+          <RefreshCw size={isMobile ? 18 : 20} />
+          Analyze Another Report
         </button>
       </div>
 
+      {/* Footer */}
       <p style={{
         textAlign: 'center',
-        fontSize: isMobile ? '0.6875rem' : '0.8125rem',
-        color: '#94a3b8',
-        marginTop: isMobile ? '12px' : '20px'
+        fontSize: isMobile ? '0.8125rem' : '0.875rem',
+        color: isDarkMode ? '#6b7280' : '#9ca3af',
+        marginTop: isMobile ? '24px' : '32px',
+        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
       }}>
-        🔒 Your data is processed securely and not stored permanently
+        🔒 Your data is encrypted and processed securely. Reports are not stored permanently.
       </p>
     </div>
   );
