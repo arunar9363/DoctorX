@@ -257,7 +257,8 @@ const TrackerDashboard = () => {
     container: {
       minHeight: '100vh',
       backgroundColor: isDarkMode ? '#0f172a' : '#f9fafb',
-      padding: '24px'
+      padding: '24px',
+      marginTop: '64px'
     },
     header: {
       maxWidth: '1400px',
