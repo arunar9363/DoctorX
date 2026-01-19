@@ -261,7 +261,7 @@ const TrackerDashboard = () => {
     },
     header: {
       maxWidth: '1400px',
-      marginTop: '60px',
+      marginTop: '64px',
       margin: '0 auto 32px',
       backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
       borderRadius: '16px',
