@@ -410,7 +410,7 @@ function Services() {
         'Proactive health alerts'
       ],
       image: '/assets/chronic.svg',
-      route: '/healthcare-network'
+      route: '/health-tracking/dashboard'
     },
     {
       id: 6,

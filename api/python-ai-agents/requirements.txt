@@ -1,10 +1,12 @@
-fastapi
-uvicorn
-phidata
-google-generativeai
-google-genai
-python-multipart
-duckduckgo-search
-python-dotenv
-pydantic
-pillow
+fastapi  # Web framework for building APIs
+uvicorn  # ASGI server for FastAPI
+phidata  # Phi Data SDK
+google-generativeai   # Google Generative AI SDK
+google-genai   # Google Generative AI SDK
+python-multipart  # For handling file uploads
+duckduckgo-search  # DuckDuckGo search API
+python-dotenv  # For environment variable management
+pydantic # Data validation library
+pillow  # Image processing library
+phi # Phi Data SDK
+recharts  # For frontend charting components

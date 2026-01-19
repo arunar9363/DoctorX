@@ -18,6 +18,8 @@ import DiseaseSearch from "./components/features/DiseaseSearch";
 import IndividualDiseasesInfo from "./components/features/IndividualDiseaseInfo";
 import InfermedicaTriageSymptomChecker from "./components/features/InfermedicaTriageSymptomChecker";
 import LabUpload from "./components/features/ai-agents/LabAnalysis/LabUpload"; // Lab Analysis Component
+import Charts from "./components/features/ai-agents/HealthTracking/Charts"; // Health Tracking Charts
+import TrackerDashboard from "./components/features/ai-agents/HealthTracking/TrackerDashboard"; // Health Tracking Dashboard
 
 // Pages
 import Home from "./pages/Home";
@@ -99,6 +101,8 @@ function App() {
               }
             />
             <Route path="/lab-analysis" element={<LabUpload />} />
+            <Route path="/health-tracking/charts" element={<Charts />} />
+            <Route path="/health-tracking/dashboard" element={<TrackerDashboard />} />
             <Route path="/doctorx-ai" element={<DoctorXAIPage />} />
             <Route path="/dashboard" element={<Dashboard />} />
 
