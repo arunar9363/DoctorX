@@ -1,5 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { LineChart,
+   Line, AreaChart,
+   Area,
+   XAxis,
+   YAxis,
+   CartesianGrid,
+   Tooltip,
+   Legend,
+   ResponsiveContainer
+  } from 'recharts';
 import { TrendingUp, TrendingDown, Activity, Calendar } from 'lucide-react';
 
 const Charts = ({

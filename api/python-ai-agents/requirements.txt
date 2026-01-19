@@ -9,4 +9,3 @@ python-dotenv  # For environment variable management
 pydantic # Data validation library
 pillow  # Image processing library
 phi # Phi Data SDK
-recharts  # For frontend charting components
