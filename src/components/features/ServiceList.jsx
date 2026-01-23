@@ -349,7 +349,7 @@ function Services() {
   const servicesData = [
     {
       id: 1,
-      title: 'AI Symptoms Analysis',
+      title: 'AI Symptom Analysis',
       description: 'Experience clinical-grade AI that analyzes your symptoms with precision, providing instant triage advice backed by medical research.',
       features: [
         'Advanced machine learning algorithms',
