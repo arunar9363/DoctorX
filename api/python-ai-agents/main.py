@@ -15,7 +15,7 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 # Import Agent Logic
 from lab_agent import get_medical_agent
-from tracking_agent import get_health_tracking_agent, get_trend_visualization_agent
+from tracking_agent import get_health_tracking_agent, get_trend_visualization_agent, get_report_extraction_agent
 
 app = FastAPI()
 
@@ -135,6 +135,119 @@ async def analyze_medical_image(file: UploadFile = File(...)):
 # ==========================================
 # SERVICE 2: CHRONIC CARE & HEALTH TRACKING
 # ==========================================
+
+@app.post("/api/health-tracking/scan-report")
+async def scan_health_report(
+    file: UploadFile = File(...),
+    patient_id: str = "demo_patient",
+    condition: str = "General"
+):
+    """
+    NEW ENDPOINT: Scan and extract data from medical reports (Lab reports, BP logs, etc.)
+    Supports: PNG, JPG, JPEG, PDF
+    Returns: Structured vital signs data extracted from the report
+    """
+    try:
+        # Validate file type
+        allowed_extensions = ['.png', '.jpg', '.jpeg', '.pdf']
+        file_ext = os.path.splitext(file.filename)[1].lower()
+        
+        if file_ext not in allowed_extensions:
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Unsupported file type. Please upload PNG, JPG, or PDF files."
+            )
+        
+        # Save file temporarily
+        save_dir = "/tmp" if os.path.exists("/tmp") else "."
+        temp_filename = os.path.join(save_dir, f"health_report_{int(time.time())}_{file.filename}")
+        
+        with open(temp_filename, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
+        # Use Report Extraction Agent
+        agent = get_report_extraction_agent()
+        response = agent.run(
+            f"""Extract vital signs data from this health report.
+            
+Patient Condition: {condition}
+
+Please extract and structure the following data in JSON format:
+- Blood Pressure readings (with dates, systolic, diastolic, pulse if available)
+- Blood Glucose readings (with dates, values, context like fasting/post-meal)
+- Heart Rate readings
+- Weight measurements
+- Any other vital signs present
+
+Return ONLY a valid JSON object with this structure:
+{{
+  "blood_pressure": [
+    {{"date": "2025-01-20T10:30:00", "systolic": 120, "diastolic": 80, "pulse": 72, "context": "Morning"}}
+  ],
+  "blood_glucose": [
+    {{"date": "2025-01-20T10:30:00", "value": 95, "unit": "mg/dL", "context": "Fasting"}}
+  ],
+  "heart_rate": [
+    {{"date": "2025-01-20T10:30:00", "value": 72, "unit": "bpm", "context": "Resting"}}
+  ],
+  "weight": [
+    {{"date": "2025-01-20T10:30:00", "value": 70, "unit": "kg"}}
+  ],
+  "report_date": "2025-01-20",
+  "patient_name": "Name if visible",
+  "summary": "Brief summary of findings"
+}}
+
+If no data is found for a category, use an empty array [].""",
+            images=[temp_filename]
+        )
+        
+        # Parse AI response to extract JSON
+        content = response.content
+        
+        # Try to extract JSON from the response
+        import re
+        json_match = re.search(r'\{[\s\S]*\}', content)
+        
+        if json_match:
+            extracted_data = json.loads(json_match.group())
+        else:
+            # If no JSON found, return raw content for debugging
+            extracted_data = {
+                "raw_response": content,
+                "blood_pressure": [],
+                "blood_glucose": [],
+                "heart_rate": [],
+                "weight": [],
+                "error": "Could not parse structured data from report"
+            }
+        
+        # Clean up temp file
+        try:
+            if os.path.exists(temp_filename):
+                os.remove(temp_filename)
+        except Exception as e:
+            print(f"Warning: Could not delete temp file: {e}")
+        
+        return {
+            "success": True,
+            "patient_id": patient_id,
+            "condition": condition,
+            "filename": file.filename,
+            "extracted_data": extracted_data,
+            "scanned_at": datetime.now().isoformat()
+        }
+        
+    except json.JSONDecodeError as e:
+        print(f"JSON Parsing Error: {str(e)}")
+        return {
+            "success": False,
+            "error": "Failed to parse extracted data",
+            "raw_response": content if 'content' in locals() else "No response"
+        }
+    except Exception as e:
+        print(f"Report Scanning Error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Report scanning failed: {str(e)}")
 
 @app.post("/api/health-tracking/analyze")
 async def analyze_health_tracking(data: HealthTrackingData):
@@ -364,9 +477,10 @@ async def health_check():
     return {
         "status": "online",
         "service": "DoctorX Care API",
-        "version": "2.0",
+        "version": "2.1",
         "endpoints": {
             "lab_analysis": "/api/medical-analysis",
+            "scan_health_report": "/api/health-tracking/scan-report",
             "health_tracking": "/api/health-tracking/analyze",
             "trend_analysis": "/api/health-tracking/trend-analysis",
             "quick_log": "/api/health-tracking/quick-log"
