@@ -1,23 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Activity,
-  Heart,
-  Droplet,
-  Weight,
-  Wind,
-  Plus,
-  TrendingUp,
-  CheckCircle,
-  Download,
-  RefreshCw,
-  BarChart3,
-  Upload,
-  FileText,
-  Sparkles,
-  Info,
-  AlertTriangle,
-  AlertCircle,
-  X
+  Activity, Heart, Droplet, Weight, Wind, Plus, TrendingUp, CheckCircle,
+  Download, RefreshCw, BarChart3, Upload, FileText, Sparkles, Info,
+  AlertTriangle, AlertCircle, Edit2, Save, X, Trash2
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
@@ -26,32 +11,29 @@ const TrackerDashboard = () => {
   const [activeMetric, setActiveMetric] = useState('blood_pressure');
   const [showAddModal, setShowAddModal] = useState(false);
   const [showScanModal, setShowScanModal] = useState(false);
-  const [, setShowAnalysisModal] = useState(false);
+  const [showAnalysisModal, setShowAnalysisModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingIndex, setEditingIndex] = useState(null);
   const [analysis, setAnalysis] = useState(null);
   const [loading, setLoading] = useState(false);
   const [scanningReport, setScanningReport] = useState(false);
   const [selectedCondition, setSelectedCondition] = useState('Diabetes');
   const [uploadedFile, setUploadedFile] = useState(null);
+  const [reportDateTime, setReportDateTime] = useState(new Date().toISOString().slice(0, 16));
 
   const [healthData, setHealthData] = useState({
-    blood_pressure: [],
-    blood_glucose: [],
-    heart_rate: [],
-    weight: [],
-    oxygen_saturation: [],
-    tsh: [],
-    t3: [],
-    t4: []
+    blood_pressure: [], blood_glucose: [], heart_rate: [], weight: [],
+    oxygen_saturation: [], tsh: [], t3: [], t4: []
   });
 
   const [newReading, setNewReading] = useState({
     date: new Date().toISOString().slice(0, 16),
-    systolic: '',
-    diastolic: '',
-    pulse: '',
-    value: '',
-    context: '',
-    notes: ''
+    systolic: '', diastolic: '', pulse: '', value: '', context: '', notes: ''
+  });
+
+  const [editReading, setEditReading] = useState({
+    date: '', systolic: '', diastolic: '', pulse: '', value: '', context: '', notes: ''
   });
 
   useEffect(() => {
@@ -66,7 +48,6 @@ const TrackerDashboard = () => {
   }, []);
 
   useEffect(() => {
-    // Load jsPDF library
     const script = document.createElement('script');
     script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
     script.async = true;
@@ -80,17 +61,10 @@ const TrackerDashboard = () => {
 
   useEffect(() => {
     switch (selectedCondition) {
-      case 'Diabetes':
-        setActiveMetric('blood_glucose');
-        break;
-      case 'Hypertension':
-        setActiveMetric('blood_pressure');
-        break;
-      case 'Thyroid':
-        setActiveMetric('tsh');
-        break;
-      default:
-        setActiveMetric('blood_pressure');
+      case 'Diabetes': setActiveMetric('blood_glucose'); break;
+      case 'Hypertension': setActiveMetric('blood_pressure'); break;
+      case 'Thyroid': setActiveMetric('tsh'); break;
+      default: setActiveMetric('blood_pressure');
     }
   }, [selectedCondition]);
 
@@ -115,14 +89,18 @@ const TrackerDashboard = () => {
       alert('Please select a file to upload');
       return;
     }
+    if (!reportDateTime) {
+      alert('Please select the report date and time');
+      return;
+    }
 
     setScanningReport(true);
-
     try {
       const formData = new FormData();
       formData.append('file', uploadedFile);
       formData.append('patient_id', 'demo_patient_001');
       formData.append('condition', selectedCondition);
+      formData.append('report_date', reportDateTime);
 
       const response = await fetch('http://localhost:8000/api/health-tracking/scan-report', {
         method: 'POST',
@@ -133,81 +111,22 @@ const TrackerDashboard = () => {
 
       if (data.success && data.extracted_data) {
         const newHealthData = { ...healthData };
+        // eslint-disable-next-line no-unused-vars
         let extractedCount = 0;
 
-        if (data.extracted_data.blood_pressure?.length > 0) {
-          newHealthData.blood_pressure = [
-            ...healthData.blood_pressure,
-            ...data.extracted_data.blood_pressure
-          ].sort((a, b) => new Date(a.date) - new Date(b.date));
-          extractedCount += data.extracted_data.blood_pressure.length;
-        }
-
-        if (data.extracted_data.blood_glucose?.length > 0) {
-          newHealthData.blood_glucose = [
-            ...healthData.blood_glucose,
-            ...data.extracted_data.blood_glucose
-          ].sort((a, b) => new Date(a.date) - new Date(b.date));
-          extractedCount += data.extracted_data.blood_glucose.length;
-        }
-
-        if (data.extracted_data.heart_rate?.length > 0) {
-          newHealthData.heart_rate = [
-            ...healthData.heart_rate,
-            ...data.extracted_data.heart_rate
-          ].sort((a, b) => new Date(a.date) - new Date(b.date));
-          extractedCount += data.extracted_data.heart_rate.length;
-        }
-
-        if (data.extracted_data.weight?.length > 0) {
-          newHealthData.weight = [
-            ...healthData.weight,
-            ...data.extracted_data.weight
-          ].sort((a, b) => new Date(a.date) - new Date(b.date));
-          extractedCount += data.extracted_data.weight.length;
-        }
-
-        if (data.extracted_data.tsh?.length > 0) {
-          newHealthData.tsh = [
-            ...healthData.tsh,
-            ...data.extracted_data.tsh
-          ].sort((a, b) => new Date(a.date) - new Date(b.date));
-          extractedCount += data.extracted_data.tsh.length;
-        }
-
-        if (data.extracted_data.t3?.length > 0) {
-          newHealthData.t3 = [
-            ...healthData.t3,
-            ...data.extracted_data.t3
-          ].sort((a, b) => new Date(a.date) - new Date(b.date));
-          extractedCount += data.extracted_data.t3.length;
-        }
-
-        if (data.extracted_data.t4?.length > 0) {
-          newHealthData.t4 = [
-            ...healthData.t4,
-            ...data.extracted_data.t4
-          ].sort((a, b) => new Date(a.date) - new Date(b.date));
-          extractedCount += data.extracted_data.t4.length;
-        }
+        ['blood_pressure', 'blood_glucose', 'heart_rate', 'weight', 'tsh', 't3', 't4'].forEach(metric => {
+          if (data.extracted_data[metric]?.length > 0) {
+            newHealthData[metric] = [
+              ...healthData[metric],
+              ...data.extracted_data[metric]
+            ].sort((a, b) => new Date(a.date) - new Date(b.date));
+            extractedCount += data.extracted_data[metric].length;
+          }
+        });
 
         setHealthData(newHealthData);
-
-        let summaryMessage = `✅ Report scanned successfully!\n\n📊 Extracted ${extractedCount} total readings:\n`;
-        if (data.extracted_data.blood_pressure?.length > 0) summaryMessage += `• ${data.extracted_data.blood_pressure.length} Blood Pressure readings\n`;
-        if (data.extracted_data.blood_glucose?.length > 0) summaryMessage += `• ${data.extracted_data.blood_glucose.length} Blood Glucose readings\n`;
-        if (data.extracted_data.heart_rate?.length > 0) summaryMessage += `• ${data.extracted_data.heart_rate.length} Heart Rate readings\n`;
-        if (data.extracted_data.weight?.length > 0) summaryMessage += `• ${data.extracted_data.weight.length} Weight readings\n`;
-        if (data.extracted_data.tsh?.length > 0) summaryMessage += `• ${data.extracted_data.tsh.length} TSH readings\n`;
-        if (data.extracted_data.t3?.length > 0) summaryMessage += `• ${data.extracted_data.t3.length} T3 readings\n`;
-        if (data.extracted_data.t4?.length > 0) summaryMessage += `• ${data.extracted_data.t4.length} T4 readings\n`;
-
-        if (data.extracted_data.summary) {
-          summaryMessage += `\n📋 ${data.extracted_data.summary}`;
-        }
-
-        alert(summaryMessage);
         setShowScanModal(false);
+        setShowSuccessModal(true);
         setUploadedFile(null);
       } else {
         alert('❌ Could not extract data from the report. Please try manual entry or upload a clearer image.');
@@ -257,26 +176,69 @@ const TrackerDashboard = () => {
 
     setNewReading({
       date: new Date().toISOString().slice(0, 16),
-      systolic: '',
-      diastolic: '',
-      pulse: '',
-      value: '',
-      context: '',
-      notes: ''
+      systolic: '', diastolic: '', pulse: '', value: '', context: '', notes: ''
     });
 
     setShowAddModal(false);
   };
 
+  const handleEditReading = (index) => {
+    const reading = healthData[activeMetric][index];
+    setEditingIndex(index);
+    setEditReading({
+      date: reading.date,
+      systolic: reading.systolic || '',
+      diastolic: reading.diastolic || '',
+      pulse: reading.pulse || '',
+      value: reading.value || '',
+      context: reading.context || '',
+      notes: reading.notes || ''
+    });
+    setShowEditModal(true);
+  };
+
+  const handleSaveEdit = () => {
+    const updatedReading = {
+      date: editReading.date,
+      ...(activeMetric === 'blood_pressure' ? {
+        systolic: parseFloat(editReading.systolic),
+        diastolic: parseFloat(editReading.diastolic),
+        pulse: editReading.pulse ? parseInt(editReading.pulse) : null,
+        context: editReading.context
+      } : {
+        value: parseFloat(editReading.value),
+        unit: getUnitForMetric(activeMetric),
+        context: editReading.context
+      }),
+      notes: editReading.notes
+    };
+
+    const updatedData = [...healthData[activeMetric]];
+    updatedData[editingIndex] = updatedReading;
+
+    setHealthData(prev => ({
+      ...prev,
+      [activeMetric]: updatedData.sort((a, b) => new Date(a.date) - new Date(b.date))
+    }));
+
+    setShowEditModal(false);
+    setEditingIndex(null);
+  };
+
+  const handleDeleteReading = (index) => {
+    if (window.confirm('Are you sure you want to delete this reading?')) {
+      const updatedData = healthData[activeMetric].filter((_, i) => i !== index);
+      setHealthData(prev => ({
+        ...prev,
+        [activeMetric]: updatedData
+      }));
+    }
+  };
+
   const getUnitForMetric = (metric) => {
     const units = {
-      blood_glucose: 'mg/dL',
-      heart_rate: 'bpm',
-      weight: 'kg',
-      oxygen_saturation: '%',
-      tsh: 'mIU/L',
-      t3: 'ng/dL',
-      t4: 'ng/dL'
+      blood_glucose: 'mg/dL', heart_rate: 'bpm', weight: 'kg',
+      oxygen_saturation: '%', tsh: 'mIU/L', t3: 'ng/dL', t4: 'ng/dL'
     };
     return units[metric] || '';
   };
@@ -290,7 +252,6 @@ const TrackerDashboard = () => {
     }
 
     setLoading(true);
-
     try {
       const trackingData = {
         patient_id: 'demo_patient_001',
@@ -309,9 +270,7 @@ const TrackerDashboard = () => {
 
       const response = await fetch('http://localhost:8000/api/health-tracking/analyze', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(trackingData)
       });
 
@@ -331,12 +290,166 @@ const TrackerDashboard = () => {
     }
   };
 
-  const downloadPDF = async () => {
-    if (!analysis) {
-      alert('No analysis data available to export');
-      return;
+  const formatAnalysisText = (text) => {
+    if (!text) return null;
+
+    const lines = text.split('\n');
+    const elements = [];
+    let currentTable = [];
+    let inTable = false;
+
+    const renderTable = (tableLines, key) => {
+      if (tableLines.length === 0) return null;
+
+      const parseRow = (line) => {
+        return line.split('|').map(cell => cell.trim()).filter(cell => cell !== '');
+      };
+
+      const headers = parseRow(tableLines[0]);
+      const rows = tableLines.slice(1).map(parseRow);
+
+      return (
+        <div key={`table-${key}`} style={{
+          overflowX: 'auto',
+          marginTop: '16px',
+          marginBottom: '16px',
+          borderRadius: '8px',
+          border: isDarkMode ? '1px solid #334155' : '1px solid #e5e7eb',
+          backgroundColor: isDarkMode ? '#1e293b' : '#ffffff'
+        }}>
+          <table style={{
+            width: '100%',
+            borderCollapse: 'collapse',
+            fontSize: '0.875rem'
+          }}>
+            <thead>
+              <tr style={{
+                backgroundColor: isDarkMode ? '#0f172a' : '#f8fafc',
+                borderBottom: isDarkMode ? '2px solid #334155' : '2px solid #e5e7eb'
+              }}>
+                {headers.map((header, i) => (
+                  <th key={i} style={{
+                    padding: '12px 16px',
+                    textAlign: 'left',
+                    color: isDarkMode ? '#e5e7eb' : '#374151',
+                    fontWeight: '600',
+                    fontSize: '0.875rem'
+                  }}>
+                    {header}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, i) => (
+                <tr key={i} style={{
+                  borderBottom: isDarkMode ? '1px solid #334155' : '1px solid #f3f4f6'
+                }}>
+                  {row.map((cell, j) => (
+                    <td key={j} style={{
+                      padding: '12px 16px',
+                      color: isDarkMode ? '#d1d5db' : '#111827'
+                    }}>
+                      {cell}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    };
+
+    lines.forEach((line, index) => {
+      const trimmedLine = line.trim();
+
+      if (!trimmedLine) {
+        if (inTable && currentTable.length > 0) {
+          elements.push(renderTable(currentTable, index));
+          currentTable = [];
+          inTable = false;
+        }
+        elements.push(<div key={`space-${index}`} style={{ height: '8px' }} />);
+        return;
+      }
+
+      if (trimmedLine.startsWith('|') && trimmedLine.endsWith('|')) {
+        inTable = true;
+        if (!trimmedLine.includes('---')) {
+          currentTable.push(trimmedLine);
+        }
+        return;
+      } else if (inTable) {
+        elements.push(renderTable(currentTable, index));
+        currentTable = [];
+        inTable = false;
+      }
+
+      if (trimmedLine.startsWith('##')) {
+        const cleanText = trimmedLine.replace(/^##\s*\d*\.?\s*/, '').replace(/\*\*/g, '');
+        elements.push(
+          <h3 key={`h3-${index}`} style={{
+            fontSize: '1.125rem',
+            fontWeight: '700',
+            color: '#0d9db8',
+            marginTop: '24px',
+            marginBottom: '12px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            {cleanText}
+          </h3>
+        );
+      } else if (trimmedLine.startsWith('###') || (trimmedLine.startsWith('**') && trimmedLine.endsWith('**:'))) {
+        const cleanText = trimmedLine.replace(/^###\s*/, '').replace(/\*\*/g, '').replace(/:$/, '');
+        elements.push(
+          <h4 key={`h4-${index}`} style={{
+            fontSize: '1rem',
+            fontWeight: '600',
+            color: isDarkMode ? '#f3f4f6' : '#111827',
+            marginTop: '16px',
+            marginBottom: '8px'
+          }}>
+            {cleanText}
+          </h4>
+        );
+      } else if (trimmedLine.startsWith('- ') || trimmedLine.startsWith('* ')) {
+        const cleanText = trimmedLine.replace(/^[-*]\s/, '').replace(/\*\*/g, '');
+        elements.push(
+          <li key={`li-${index}`} style={{
+            marginLeft: '24px',
+            marginBottom: '8px',
+            color: isDarkMode ? '#d1d5db' : '#374151',
+            lineHeight: '1.6'
+          }}>
+            {cleanText}
+          </li>
+        );
+      } else {
+        const cleanText = trimmedLine.replace(/\*\*/g, '');
+        elements.push(
+          <p key={`p-${index}`} style={{
+            marginBottom: '8px',
+            color: isDarkMode ? '#d1d5db' : '#374151',
+            lineHeight: '1.6'
+          }}>
+            {cleanText}
+          </p>
+        );
+      }
+    });
+
+    if (inTable && currentTable.length > 0) {
+      elements.push(renderTable(currentTable, 'final'));
     }
 
+    return elements;
+  };
+
+  const downloadPDF = async () => {
+    if (!analysis) return;
     try {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
@@ -362,7 +475,6 @@ const TrackerDashboard = () => {
         yPosition += 3;
       };
 
-      // Header
       doc.setTextColor(13, 157, 184);
       doc.setFontSize(20);
       doc.setFont('helvetica', 'bold');
@@ -374,7 +486,6 @@ const TrackerDashboard = () => {
       doc.line(margin, yPosition, pageWidth - margin, yPosition);
       yPosition += 10;
 
-      // Date
       doc.setFontSize(9);
       doc.setFont('helvetica', 'normal');
       doc.setTextColor(100, 100, 100);
@@ -382,45 +493,6 @@ const TrackerDashboard = () => {
       doc.text(`Condition: ${selectedCondition}`, pageWidth - margin - 60, yPosition);
       yPosition += 15;
 
-      // Add Charts
-      const chartData = prepareChartData();
-      if (chartData.length > 0) {
-        doc.setFontSize(14);
-        doc.setFont('helvetica', 'bold');
-        doc.setTextColor(13, 157, 184);
-        doc.text('Trend Analysis', margin, yPosition);
-        yPosition += 10;
-
-        // Create a simple visualization representation
-        const metricName = getMetricCardsForCondition().find(m => m.id === activeMetric)?.title || 'Metric';
-        doc.setFontSize(10);
-        doc.setFont('helvetica', 'normal');
-        doc.setTextColor(60, 60, 60);
-        doc.text(`${metricName} trends over time (${chartData.length} readings)`, margin, yPosition);
-        yPosition += 8;
-
-        // Add statistics
-        const values = chartData.map(d => d.value);
-        const avg = (values.reduce((a, b) => a + b, 0) / values.length).toFixed(2);
-        const min = Math.min(...values).toFixed(2);
-        const max = Math.max(...values).toFixed(2);
-
-        doc.setFillColor(240, 249, 255);
-        doc.rect(margin, yPosition, maxWidth, 25, 'F');
-        doc.setFontSize(9);
-        doc.text(`Average: ${avg} ${getUnitForMetric(activeMetric)}`, margin + 5, yPosition + 8);
-        doc.text(`Range: ${min} - ${max}`, margin + 5, yPosition + 16);
-        yPosition += 30;
-      }
-
-      // Analysis Content
-      doc.setFontSize(14);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(13, 157, 184);
-      doc.text('AI Analysis & Recommendations', margin, yPosition);
-      yPosition += 10;
-
-      // Add analysis text
       const lines = analysis.split('\n');
       lines.forEach(line => {
         const trimmedLine = line.trim();
@@ -444,11 +516,9 @@ const TrackerDashboard = () => {
         }
       });
 
-      // Footer
       const footerY = pageHeight - 25;
       doc.setDrawColor(13, 157, 184);
       doc.line(margin, footerY - 2, pageWidth - margin, footerY - 2);
-
       doc.setFillColor(255, 251, 235);
       doc.roundedRect(margin, footerY + 2, maxWidth, 15, 2, 2, 'F');
       doc.setFontSize(8);
@@ -456,7 +526,7 @@ const TrackerDashboard = () => {
       doc.setTextColor(120, 53, 15);
       doc.text('DISCLAIMER: This is AI-generated analysis. Please consult a healthcare provider.', margin + 4, footerY + 10);
 
-      doc.save(`Health_Analysis_${new Date().toISOString().split('T')[0]}.pdf`);
+      doc.save(`Health_Analysis_${selectedCondition}_${new Date().toISOString().split('T')[0]}.pdf`);
     } catch (error) {
       console.error('PDF download error:', error);
       alert('PDF download failed. Please try again.');
@@ -482,82 +552,48 @@ const TrackerDashboard = () => {
   const getMetricCardsForCondition = () => {
     const allCards = {
       blood_pressure: {
-        id: 'blood_pressure',
-        title: 'Blood Pressure',
-        icon: Heart,
-        color: '#ef4444',
+        id: 'blood_pressure', title: 'Blood Pressure', icon: Heart, color: '#ef4444',
         bgColor: isDarkMode ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.05)',
-        unit: 'mmHg',
-        conditions: ['Hypertension', 'General']
+        unit: 'mmHg', conditions: ['Hypertension', 'General']
       },
       blood_glucose: {
-        id: 'blood_glucose',
-        title: 'Blood Glucose',
-        icon: Droplet,
-        color: '#f59e0b',
+        id: 'blood_glucose', title: 'Blood Glucose', icon: Droplet, color: '#f59e0b',
         bgColor: isDarkMode ? 'rgba(245, 158, 11, 0.1)' : 'rgba(245, 158, 11, 0.05)',
-        unit: 'mg/dL',
-        conditions: ['Diabetes', 'General']
+        unit: 'mg/dL', conditions: ['Diabetes', 'General']
       },
       heart_rate: {
-        id: 'heart_rate',
-        title: 'Heart Rate',
-        icon: Activity,
-        color: '#ec4899',
+        id: 'heart_rate', title: 'Heart Rate', icon: Activity, color: '#ec4899',
         bgColor: isDarkMode ? 'rgba(236, 72, 153, 0.1)' : 'rgba(236, 72, 153, 0.05)',
-        unit: 'bpm',
-        conditions: ['Hypertension', 'General']
+        unit: 'bpm', conditions: ['Hypertension', 'General']
       },
       weight: {
-        id: 'weight',
-        title: 'Weight',
-        icon: Weight,
-        color: '#8b5cf6',
+        id: 'weight', title: 'Weight', icon: Weight, color: '#8b5cf6',
         bgColor: isDarkMode ? 'rgba(139, 92, 246, 0.1)' : 'rgba(139, 92, 246, 0.05)',
-        unit: 'kg',
-        conditions: ['Diabetes', 'Hypertension', 'General']
+        unit: 'kg', conditions: ['Diabetes', 'Hypertension', 'General']
       },
       oxygen_saturation: {
-        id: 'oxygen_saturation',
-        title: 'SpO₂',
-        icon: Wind,
-        color: '#0d9db8',
+        id: 'oxygen_saturation', title: 'SpO₂', icon: Wind, color: '#0d9db8',
         bgColor: isDarkMode ? 'rgba(13, 157, 184, 0.1)' : 'rgba(13, 157, 184, 0.05)',
-        unit: '%',
-        conditions: ['General']
+        unit: '%', conditions: ['General']
       },
       tsh: {
-        id: 'tsh',
-        title: 'TSH',
-        icon: Activity,
-        color: '#06b6d4',
+        id: 'tsh', title: 'TSH', icon: Activity, color: '#06b6d4',
         bgColor: isDarkMode ? 'rgba(6, 182, 212, 0.1)' : 'rgba(6, 182, 212, 0.05)',
-        unit: 'mIU/L',
-        conditions: ['Thyroid']
+        unit: 'mIU/L', conditions: ['Thyroid']
       },
       t3: {
-        id: 't3',
-        title: 'T3',
-        icon: TrendingUp,
-        color: '#8b5cf6',
+        id: 't3', title: 'T3', icon: TrendingUp, color: '#8b5cf6',
         bgColor: isDarkMode ? 'rgba(139, 92, 246, 0.1)' : 'rgba(139, 92, 246, 0.05)',
-        unit: 'ng/dL',
-        conditions: ['Thyroid']
+        unit: 'ng/dL', conditions: ['Thyroid']
       },
       t4: {
-        id: 't4',
-        title: 'Free T4',
-        icon: BarChart3,
-        color: '#ec4899',
+        id: 't4', title: 'Free T4', icon: BarChart3, color: '#ec4899',
         bgColor: isDarkMode ? 'rgba(236, 72, 153, 0.1)' : 'rgba(236, 72, 153, 0.05)',
-        unit: 'ng/dL',
-        conditions: ['Thyroid']
+        unit: 'ng/dL', conditions: ['Thyroid']
       }
     };
 
-    return Object.values(allCards).filter(card =>
-      card.conditions.includes(selectedCondition)
-    );
+    return Object.values(allCards).filter(card => card.conditions.includes(selectedCondition));
   };
 
   const metricCards = getMetricCardsForCondition();
@@ -594,34 +630,6 @@ const TrackerDashboard = () => {
     return `${diffDays} days ago`;
   };
 
-  const analyzeSeverity = (text) => {
-    if (!text) return 'unknown';
-    const lowerText = text.toLowerCase();
-
-    const criticalKeywords = ['critical', 'severe', 'emergency', 'urgent'];
-    const warningKeywords = ['elevated', 'high', 'concern', 'attention', 'warning'];
-    const normalKeywords = ['normal', 'good', 'stable', 'improving'];
-
-    if (criticalKeywords.some(kw => lowerText.includes(kw))) return 'critical';
-    if (warningKeywords.some(kw => lowerText.includes(kw))) return 'warning';
-    if (normalKeywords.some(kw => lowerText.includes(kw))) return 'normal';
-    return 'info';
-  };
-
-  const getBadgeConfig = () => {
-    const severity = analyzeSeverity(analysis);
-    switch (severity) {
-      case 'critical':
-        return { icon: AlertCircle, text: 'Needs Immediate Attention', color: '#dc2626' };
-      case 'warning':
-        return { icon: AlertTriangle, text: 'Requires Monitoring', color: '#ea580c' };
-      case 'normal':
-        return { icon: CheckCircle, text: 'Results Look Good', color: '#0d9db8' };
-      default:
-        return { icon: FileText, text: 'Analysis Complete', color: '#3b82f6' };
-    }
-  };
-
   const styles = {
     container: {
       minHeight: '100vh',
@@ -629,84 +637,34 @@ const TrackerDashboard = () => {
       padding: '24px',
       marginTop: '60px'
     },
-    header: {
-      maxWidth: '1400px',
-      margin: '0 auto 32px',
+    modal: {
+      position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      zIndex: 1000, padding: '20px'
+    },
+    modalContent: {
       backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
-      borderRadius: '16px',
-      padding: '32px',
-      boxShadow: isDarkMode ? '0 4px 6px rgba(0, 0, 0, 0.3)' : '0 4px 6px rgba(0, 0, 0, 0.1)',
-      border: isDarkMode ? '1px solid #334155' : '1px solid #e5e7eb'
-    },
-    headerTitle: {
-      fontSize: '2rem',
-      fontWeight: '700',
-      background: 'linear-gradient(135deg, #0d9db8, #3b82f6)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      backgroundClip: 'text',
-      marginBottom: '8px'
-    },
-    metricsGrid: {
-      display: 'grid',
-      gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-      gap: '16px',
-      maxWidth: '1400px',
-      margin: '0 auto 32px'
-    },
-    chartSection: {
-      maxWidth: '1400px',
-      margin: '0 auto 32px',
-      backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
-      borderRadius: '16px',
-      padding: '32px',
-      border: isDarkMode ? '1px solid #334155' : '1px solid #e5e7eb'
-    },
-    analysisSection: {
-      maxWidth: '1400px',
-      margin: '0 auto 32px',
-      backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
-      borderRadius: '16px',
-      padding: '32px',
-      border: isDarkMode ? '1px solid #334155' : '1px solid #e5e7eb'
+      borderRadius: '16px', padding: '32px',
+      maxWidth: '900px', width: '100%',
+      maxHeight: '90vh', overflowY: 'auto',
+      boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)'
     },
     button: (isPrimary) => ({
-      padding: '12px 24px',
-      borderRadius: '8px',
-      border: 'none',
-      fontSize: '1rem',
-      fontWeight: '600',
-      cursor: 'pointer',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '8px',
+      padding: '12px 24px', borderRadius: '8px', border: 'none',
+      fontSize: '1rem', fontWeight: '600', cursor: 'pointer',
+      display: 'flex', alignItems: 'center', gap: '8px',
       transition: 'all 0.2s ease',
       backgroundColor: isPrimary ? '#0d9db8' : isDarkMode ? '#334155' : '#e5e7eb',
       color: isPrimary ? '#ffffff' : isDarkMode ? '#f3f4f6' : '#111827',
       boxShadow: isPrimary ? '0 2px 4px rgba(13, 157, 184, 0.3)' : 'none'
     }),
-    modal: {
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.7)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 1000,
-      padding: '20px'
-    },
-    modalContent: {
-      backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
-      borderRadius: '16px',
-      padding: '32px',
-      maxWidth: '900px',
-      width: '100%',
-      maxHeight: '90vh',
-      overflowY: 'auto',
-      boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)'
+    input: {
+      width: '100%', padding: '12px', borderRadius: '8px',
+      border: isDarkMode ? '1px solid #334155' : '1px solid #d1d5db',
+      backgroundColor: isDarkMode ? '#0f172a' : '#ffffff',
+      color: isDarkMode ? '#f3f4f6' : '#111827',
+      fontSize: '1rem', boxSizing: 'border-box'
     }
   };
 
@@ -714,29 +672,34 @@ const TrackerDashboard = () => {
 
   return (
     <div style={styles.container}>
-      <div style={styles.header}>
+      {/* Header */}
+      <div style={{
+        maxWidth: '1400px', margin: '0 auto 32px',
+        backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
+        borderRadius: '16px', padding: '32px',
+        boxShadow: isDarkMode ? '0 4px 6px rgba(0, 0, 0, 0.3)' : '0 4px 6px rgba(0, 0, 0, 0.1)',
+        border: isDarkMode ? '1px solid #334155' : '1px solid #e5e7eb'
+      }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
           <div>
-            <h1 style={styles.headerTitle}>Chronic Care Health Tracker</h1>
+            <h1 style={{
+              fontSize: '2rem', fontWeight: '700',
+              background: 'linear-gradient(135deg, #0d9db8, #3b82f6)',
+              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text', marginBottom: '8px'
+            }}>Chronic Care Health Tracker</h1>
             <p style={{ fontSize: '1rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>
-              Monitor your vital signs and track health trends for better chronic disease management
+              Monitor your vital signs and track health trends
             </p>
           </div>
           <select
             value={selectedCondition}
             onChange={(e) => setSelectedCondition(e.target.value)}
-            style={{
-              padding: '10px 16px',
-              borderRadius: '8px',
-              border: isDarkMode ? '1px solid #334155' : '1px solid #d1d5db',
-              backgroundColor: isDarkMode ? '#0f172a' : '#ffffff',
-              color: isDarkMode ? '#f3f4f6' : '#111827'
-            }}
+            style={{ ...styles.input, width: 'auto', padding: '10px 16px' }}
           >
             <option value="Diabetes">Diabetes</option>
             <option value="Hypertension">Hypertension</option>
-            <option value="Thyroid">Thyroid</option>
-            <option value="General">General Health</option>
+            <option value="Thyroid">Thyroid</option><option value="General">General Health</option>
           </select>
         </div>
 
@@ -758,7 +721,8 @@ const TrackerDashboard = () => {
         </div>
       </div>
 
-      <div style={styles.metricsGrid}>
+      {/* Metric Cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px', maxWidth: '1400px', margin: '0 auto 32px' }}>
         {metricCards.map((metric) => {
           const Icon = metric.icon;
           const isActive = activeMetric === metric.id;
@@ -768,9 +732,7 @@ const TrackerDashboard = () => {
               key={metric.id}
               style={{
                 backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
-                borderRadius: '12px',
-                padding: '20px',
-                cursor: 'pointer',
+                borderRadius: '12px', padding: '20px', cursor: 'pointer',
                 transition: 'all 0.3s ease',
                 border: isActive ? `2px solid ${metric.color}` : isDarkMode ? '1px solid #334155' : '1px solid #e5e7eb',
                 boxShadow: isActive ? `0 4px 12px ${metric.color}40` : 'none',
@@ -780,13 +742,9 @@ const TrackerDashboard = () => {
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
                 <div style={{
-                  width: '48px',
-                  height: '48px',
-                  borderRadius: '12px',
+                  width: '48px', height: '48px', borderRadius: '12px',
                   backgroundColor: metric.bgColor,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>
                   <Icon size={24} style={{ color: metric.color }} />
                 </div>
@@ -813,11 +771,28 @@ const TrackerDashboard = () => {
         })}
       </div>
 
-      {healthData[activeMetric]?.length > 0 && (
-        <div style={styles.chartSection}>
-          <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f3f4f6' : '#111827', marginBottom: '20px' }}>
-            {metricCards.find(m => m.id === activeMetric)?.title} Trend
-          </h3>
+      {/* Chart or Empty State */}
+      {healthData[activeMetric]?.length > 0 ? (
+        <div style={{
+          maxWidth: '1400px', margin: '0 auto 32px',
+          backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
+          borderRadius: '16px', padding: '32px',
+          border: isDarkMode ? '1px solid #334155' : '1px solid #e5e7eb'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f3f4f6' : '#111827', margin: 0 }}>
+              {metricCards.find(m => m.id === activeMetric)?.title} Trend
+            </h3>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              <button
+                onClick={() => handleEditReading(healthData[activeMetric].length - 1)}
+                style={{ ...styles.button(false), padding: '8px 16px', fontSize: '0.875rem' }}
+              >
+                <Edit2 size={16} />
+                Edit Latest
+              </button>
+            </div>
+          </div>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={chartData}>
               <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? '#334155' : '#e5e7eb'} />
@@ -841,14 +816,135 @@ const TrackerDashboard = () => {
               )}
             </LineChart>
           </ResponsiveContainer>
+
+          {/* Data Table */}
+          <div style={{ marginTop: '24px' }}>
+            <h4 style={{ fontSize: '1rem', fontWeight: '600', color: isDarkMode ? '#f3f4f6' : '#111827', marginBottom: '12px' }}>
+              All Readings
+            </h4>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
+                <thead>
+                  <tr style={{
+                    backgroundColor: isDarkMode ? '#0f172a' : '#f8fafc',
+                    borderBottom: isDarkMode ? '2px solid #334155' : '2px solid #e5e7eb'
+                  }}>
+                    <th style={{ padding: '12px', textAlign: 'left', color: isDarkMode ? '#e5e7eb' : '#374151', fontWeight: '600' }}>Date</th>
+                    {activeMetric === 'blood_pressure' ? (
+                      <>
+                        <th style={{ padding: '12px', textAlign: 'left', color: isDarkMode ? '#e5e7eb' : '#374151', fontWeight: '600' }}>Systolic</th>
+                        <th style={{ padding: '12px', textAlign: 'left', color: isDarkMode ? '#e5e7eb' : '#374151', fontWeight: '600' }}>Diastolic</th>
+                      </>
+                    ) : (
+                      <th style={{ padding: '12px', textAlign: 'left', color: isDarkMode ? '#e5e7eb' : '#374151', fontWeight: '600' }}>Value</th>
+                    )}
+                    <th style={{ padding: '12px', textAlign: 'left', color: isDarkMode ? '#e5e7eb' : '#374151', fontWeight: '600' }}>Context</th>
+                    <th style={{ padding: '12px', textAlign: 'center', color: isDarkMode ? '#e5e7eb' : '#374151', fontWeight: '600' }}>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {healthData[activeMetric].map((reading, index) => (
+                    <tr key={index} style={{ borderBottom: isDarkMode ? '1px solid #334155' : '1px solid #f3f4f6' }}>
+                      <td style={{ padding: '12px', color: isDarkMode ? '#d1d5db' : '#111827' }}>
+                        {new Date(reading.date).toLocaleString()}
+                      </td>
+                      {activeMetric === 'blood_pressure' ? (
+                        <>
+                          <td style={{ padding: '12px', color: isDarkMode ? '#d1d5db' : '#111827' }}>{reading.systolic} mmHg</td>
+                          <td style={{ padding: '12px', color: isDarkMode ? '#d1d5db' : '#111827' }}>{reading.diastolic} mmHg</td>
+                        </>
+                      ) : (
+                        <td style={{ padding: '12px', color: isDarkMode ? '#d1d5db' : '#111827' }}>
+                          {reading.value} {reading.unit}
+                        </td>
+                      )}
+                      <td style={{ padding: '12px', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>{reading.context || '-'}</td>
+                      <td style={{ padding: '12px', textAlign: 'center' }}>
+                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                          <button
+                            onClick={() => handleEditReading(index)}
+                            style={{
+                              padding: '6px 12px',
+                              borderRadius: '6px',
+                              border: 'none',
+                              backgroundColor: isDarkMode ? '#334155' : '#e5e7eb',
+                              color: isDarkMode ? '#f3f4f6' : '#111827',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              fontSize: '0.75rem'
+                            }}
+                          >
+                            <Edit2 size={14} />
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteReading(index)}
+                            style={{
+                              padding: '6px 12px',
+                              borderRadius: '6px',
+                              border: 'none',
+                              backgroundColor: '#fee2e2',
+                              color: '#dc2626',
+                              cursor: 'pointer',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              fontSize: '0.75rem'
+                            }}
+                          >
+                            <Trash2 size={14} />
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div style={{
+          maxWidth: '1400px', margin: '0 auto 32px', textAlign: 'center',
+          padding: '60px 20px',
+          backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
+          borderRadius: '12px',
+          border: `2px dashed ${isDarkMode ? '#334155' : '#d1d5db'}`
+        }}>
+          <Info size={48} style={{ color: isDarkMode ? '#64748b' : '#94a3b8', margin: '0 auto 16px' }} />
+          <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f3f4f6' : '#111827', marginBottom: '8px' }}>
+            No {metricCards.find(m => m.id === activeMetric)?.title} Data Available for {selectedCondition}
+          </h3>
+          <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginBottom: '24px' }}>
+            Start tracking by scanning a report or adding readings manually
+          </p>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button onClick={() => setShowScanModal(true)} style={{ ...styles.button(true), background: 'linear-gradient(135deg, #0d9db8, #06b6d4)' }}>
+              <Sparkles size={20} />
+              Scan Report
+            </button>
+            <button onClick={() => setShowAddModal(true)} style={styles.button(false)}>
+              <Plus size={20} />
+              Add Manually
+            </button>
+          </div>
         </div>
       )}
 
+      {/* Analysis Section */}
       {analysis && (
-        <div style={styles.analysisSection}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <div style={{
+          maxWidth: '1400px', margin: '0 auto 32px',
+          backgroundColor: isDarkMode ? '#1e293b' : '#ffffff',
+          borderRadius: '16px', padding: '32px',
+          border: isDarkMode ? '1px solid #334155' : '1px solid #e5e7eb'
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
             <h3 style={{ fontSize: '1.25rem', fontWeight: '600', color: isDarkMode ? '#f3f4f6' : '#111827', margin: 0 }}>
-              AI Health Analysis
+              AI Health Analysis - {selectedCondition}
             </h3>
             <button onClick={downloadPDF} style={styles.button(true)}>
               <Download size={20} />
@@ -856,28 +952,19 @@ const TrackerDashboard = () => {
             </button>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', backgroundColor: isDarkMode ? '#0f172a' : '#f9fafb', borderRadius: '8px', marginBottom: '20px' }}>
-            {React.createElement(getBadgeConfig().icon, { size: 22, style: { color: getBadgeConfig().color } })}
-            <span style={{ fontSize: '1rem', fontWeight: '600', color: getBadgeConfig().color }}>
-              {getBadgeConfig().text}
-            </span>
+          <div style={{
+            backgroundColor: isDarkMode ? '#0f172a' : '#f9fafb',
+            padding: '20px', borderRadius: '8px', marginBottom: '20px'
+          }}>
+            {formatAnalysisText(analysis)}
           </div>
 
           <div style={{
-            backgroundColor: isDarkMode ? '#0f172a' : '#f9fafb',
-            padding: '20px',
+            marginTop: '20px', padding: '16px',
+            backgroundColor: isDarkMode ? '#422006' : '#fffbeb',
             borderRadius: '8px',
-            whiteSpace: 'pre-wrap',
-            lineHeight: '1.7',
-            color: isDarkMode ? '#d1d5db' : '#374151',
-            fontSize: '0.9375rem',
-            maxHeight: '500px',
-            overflowY: 'auto'
+            border: isDarkMode ? '1px solid #713f12' : '1px solid #fde68a'
           }}>
-            {analysis}
-          </div>
-
-          <div style={{ marginTop: '20px', padding: '16px', backgroundColor: isDarkMode ? '#422006' : '#fffbeb', borderRadius: '8px', border: isDarkMode ? '1px solid #713f12' : '1px solid #fde68a' }}>
             <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
               <AlertTriangle style={{ color: isDarkMode ? '#fbbf24' : '#d97706', flexShrink: 0, marginTop: '2px' }} size={18} />
               <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#fde68a' : '#78350f', lineHeight: '1.5', margin: 0 }}>
@@ -888,6 +975,7 @@ const TrackerDashboard = () => {
         </div>
       )}
 
+      {/* Action Buttons */}
       <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
         <button onClick={() => setShowScanModal(true)} style={{ ...styles.button(true), background: 'linear-gradient(135deg, #0d9db8, #06b6d4)' }}>
           <Sparkles size={20} />
@@ -906,24 +994,84 @@ const TrackerDashboard = () => {
             cursor: (loading || getTotalReadings() === 0) ? 'not-allowed' : 'pointer'
           }}
         >
-          {loading ? <><RefreshCw size={20} className="animate-spin" />Analyzing...</> : <><BarChart3 size={20} />Get AI Analysis</>}
+          {loading ? (
+            <>
+              <RefreshCw size={20} className="animate-spin" />
+              Analyzing...
+            </>
+          ) : (
+            <>
+              <BarChart3 size={20} />
+              Get AI Analysis
+            </>
+          )}
         </button>
       </div>
+
+      {/* Modals - Success, Scan, Add, Edit, Analysis */}
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div style={styles.modal} onClick={() => setShowSuccessModal(false)}>
+          <div style={{ ...styles.modalContent, maxWidth: '500px' }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ textAlign: 'center' }}>
+              <CheckCircle size={64} style={{ color: '#10b981', margin: '0 auto 20px' }} />
+              <h2 style={{ fontSize: '1.5rem', fontWeight: '700', color: isDarkMode ? '#f3f4f6' : '#111827', marginBottom: '12px' }}>
+                Report Analysis Complete!
+              </h2>
+              <p style={{ fontSize: '1.125rem', color: '#0d9db8', fontWeight: '600', marginBottom: '16px' }}>
+                Condition: {selectedCondition}
+              </p>
+              <p style={{ fontSize: '0.9375rem', color: isDarkMode ? '#9ca3af' : '#6b7280', lineHeight: '1.6' }}>
+                Your health data has been successfully extracted and added to the dashboard. You can now view trends and get AI-powered insights.
+              </p>
+              <button
+                onClick={() => setShowSuccessModal(false)}
+                style={{ ...styles.button(true), width: '100%', justifyContent: 'center', marginTop: '24px' }}
+              >
+                View Dashboard
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Scan Modal */}
       {showScanModal && (
         <div style={styles.modal} onClick={() => setShowScanModal(false)}>
           <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: '700', color: isDarkMode ? '#f3f4f6' : '#111827', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <h2 style={{
+              fontSize: '1.5rem', fontWeight: '700',
+              color: isDarkMode ? '#f3f4f6' : '#111827',
+              marginBottom: '24px',
+              display: 'flex', alignItems: 'center', gap: '12px'
+            }}>
               <Sparkles size={28} style={{ color: '#0d9db8' }} />
               Scan Medical Report
             </h2>
+
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{
+                display: 'block', marginBottom: '8px',
+                fontWeight: '600',
+                color: isDarkMode ? '#f3f4f6' : '#111827'
+              }}>
+                Report Date & Time *
+              </label>
+              <input
+                type="datetime-local"
+                value={reportDateTime}
+                onChange={(e) => setReportDateTime(e.target.value)}
+                style={styles.input}
+              />
+              <p style={{ fontSize: '0.75rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginTop: '4px' }}>
+                When was this report generated or reading taken?
+              </p>
+            </div>
+
             <div
               style={{
                 border: `2px dashed ${isDarkMode ? '#334155' : '#d1d5db'}`,
-                borderRadius: '12px',
-                padding: '32px',
-                textAlign: 'center',
+                borderRadius: '12px', padding: '32px', textAlign: 'center',
                 cursor: 'pointer',
                 backgroundColor: isDarkMode ? '#0f172a' : '#f9fafb'
               }}
@@ -939,21 +1087,48 @@ const TrackerDashboard = () => {
               {uploadedFile ? (
                 <div>
                   <FileText size={48} style={{ color: '#0d9db8', margin: '0 auto 12px' }} />
-                  <p style={{ fontSize: '1rem', fontWeight: '600', color: isDarkMode ? '#f3f4f6' : '#111827' }}>{uploadedFile.name}</p>
+                  <p style={{ fontSize: '1rem', fontWeight: '600', color: isDarkMode ? '#f3f4f6' : '#111827' }}>
+                    {uploadedFile.name}
+                  </p>
                 </div>
               ) : (
                 <div>
                   <Upload size={48} style={{ color: isDarkMode ? '#64748b' : '#94a3b8', margin: '0 auto 12px' }} />
-                  <p style={{ fontSize: '1rem', fontWeight: '600', color: isDarkMode ? '#f3f4f6' : '#111827' }}>Click to upload or drag and drop</p>
-                  <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>PNG, JPG, or PDF (Max 10MB)</p>
+                  <p style={{ fontSize: '1rem', fontWeight: '600', color: isDarkMode ? '#f3f4f6' : '#111827' }}>
+                    Click to upload or drag and drop
+                  </p>
+                  <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>
+                    PNG, JPG, or PDF (Max 10MB)
+                  </p>
                 </div>
               )}
             </div>
+
             <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
-              <button onClick={handleScanReport} disabled={!uploadedFile || scanningReport} style={{ ...styles.button(true), flex: 1, opacity: (!uploadedFile || scanningReport) ? 0.5 : 1 }}>
-                {scanningReport ? <><RefreshCw size={20} className="animate-spin" />Scanning...</> : <><Sparkles size={20} />Scan & Extract</>}
+              <button
+                onClick={handleScanReport}
+                disabled={!uploadedFile || scanningReport}
+                style={{
+                  ...styles.button(true), flex: 1,
+                  opacity: (!uploadedFile || scanningReport) ? 0.5 : 1
+                }}
+              >
+                {scanningReport ? (
+                  <>
+                    <RefreshCw size={20} className="animate-spin" />
+                    Scanning...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles size={20} />
+                    Scan & Extract
+                  </>
+                )}
               </button>
-              <button onClick={() => { setShowScanModal(false); setUploadedFile(null); }} style={{ ...styles.button(false), flex: 1 }}>
+              <button
+                onClick={() => { setShowScanModal(false); setUploadedFile(null); }}
+                style={{ ...styles.button(false), flex: 1 }}
+              >
                 Cancel
               </button>
             </div>
@@ -969,41 +1144,56 @@ const TrackerDashboard = () => {
               Add {metricCards.find(m => m.id === activeMetric)?.title} Reading
             </h2>
             <div style={{ marginBottom: '20px' }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: isDarkMode ? '#f3f4f6' : '#111827' }}>Date & Time</label>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: isDarkMode ? '#f3f4f6' : '#111827' }}>
+                Date & Time
+              </label>
               <input
                 type="datetime-local"
                 value={newReading.date}
                 onChange={(e) => setNewReading({ ...newReading, date: e.target.value })}
-                style={{
-                  width: '100%',
-                  padding: '12px',
-                  borderRadius: '8px',
-                  border: isDarkMode ? '1px solid #334155' : '1px solid #d1d5db',
-                  backgroundColor: isDarkMode ? '#0f172a' : '#ffffff',
-                  color: isDarkMode ? '#f3f4f6' : '#111827',
-                  boxSizing: 'border-box'
-                }}
+                style={styles.input}
               />
             </div>
             {activeMetric === 'blood_pressure' ? (
-              <>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: isDarkMode ? '#f3f4f6' : '#111827' }}>Systolic (mmHg)*</label>
-                    <input type="number" value={newReading.systolic} onChange={(e) => setNewReading({ ...newReading, systolic: e.target.value })} placeholder="120" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: isDarkMode ? '1px solid #334155' : '1px solid #d1d5db', backgroundColor: isDarkMode ? '#0f172a' : '#ffffff', color: isDarkMode ? '#f3f4f6' : '#111827', boxSizing: 'border-box' }} />
-                  </div>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: isDarkMode ? '#f3f4f6' : '#111827' }}>Diastolic (mmHg)*</label>
-                    <input type="number" value={newReading.diastolic} onChange={(e) => setNewReading({ ...newReading, diastolic: e.target.value })} placeholder="80" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: isDarkMode ? '1px solid #334155' : '1px solid #d1d5db', backgroundColor: isDarkMode ? '#0f172a' : '#ffffff', color: isDarkMode ? '#f3f4f6' : '#111827', boxSizing: 'border-box' }} />
-                  </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: isDarkMode ? '#f3f4f6' : '#111827' }}>
+                    Systolic (mmHg)*
+                  </label>
+                  <input
+                    type="number"
+                    value={newReading.systolic}
+                    onChange={(e) => setNewReading({ ...newReading, systolic: e.target.value })}
+                    placeholder="120"
+                    style={styles.input}
+                  />
                 </div>
-              </>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: isDarkMode ? '#f3f4f6' : '#111827' }}>
+                    Diastolic (mmHg)*
+                  </label>
+                  <input
+                    type="number"
+                    value={newReading.diastolic}
+                    onChange={(e) => setNewReading({ ...newReading, diastolic: e.target.value })}
+                    placeholder="80"
+                    style={styles.input}
+                  />
+                </div>
+              </div>
             ) : (
               <div style={{ marginBottom: '20px' }}>
                 <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: isDarkMode ? '#f3f4f6' : '#111827' }}>
                   Value ({getUnitForMetric(activeMetric)})*
                 </label>
-                <input type="number" step="0.1" value={newReading.value} onChange={(e) => setNewReading({ ...newReading, value: e.target.value })} placeholder="Enter value" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: isDarkMode ? '1px solid #334155' : '1px solid #d1d5db', backgroundColor: isDarkMode ? '#0f172a' : '#ffffff', color: isDarkMode ? '#f3f4f6' : '#111827', boxSizing: 'border-box' }} />
+                <input
+                  type="number"
+                  step="0.1"
+                  value={newReading.value}
+                  onChange={(e) => setNewReading({ ...newReading, value: e.target.value })}
+                  placeholder="Enter value"
+                  style={styles.input}
+                />
               </div>
             )}
             <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
@@ -1015,6 +1205,144 @@ const TrackerDashboard = () => {
                 Cancel
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {showEditModal && (
+        <div style={styles.modal} onClick={() => setShowEditModal(false)}>
+          <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <h2 style={{ fontSize: '1.5rem', fontWeight: '700', color: isDarkMode ? '#f3f4f6' : '#111827', marginBottom: '24px' }}>
+              Edit {metricCards.find(m => m.id === activeMetric)?.title} Reading
+            </h2>
+            <div style={{ marginBottom: '20px' }}>
+              <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: isDarkMode ? '#f3f4f6' : '#111827' }}>
+                Date & Time
+              </label>
+              <input
+                type="datetime-local"
+                value={editReading.date}
+                onChange={(e) => setEditReading({ ...editReading, date: e.target.value })}
+                style={styles.input}
+              />
+            </div>
+            {activeMetric === 'blood_pressure' ? (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: isDarkMode ? '#f3f4f6' : '#111827' }}>
+                    Systolic (mmHg)*
+                  </label>
+                  <input
+                    type="number"
+                    value={editReading.systolic}
+                    onChange={(e) => setEditReading({ ...editReading, systolic: e.target.value })}
+                    style={styles.input}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: isDarkMode ? '#f3f4f6' : '#111827' }}>
+                    Diastolic (mmHg)*
+                  </label>
+                  <input
+                    type="number"
+                    value={editReading.diastolic}
+                    onChange={(e) => setEditReading({ ...editReading, diastolic: e.target.value })}
+                    style={styles.input}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div style={{ marginBottom: '20px' }}>
+                <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600', color: isDarkMode ? '#f3f4f6' : '#111827' }}>
+                  Value ({getUnitForMetric(activeMetric)})*
+                </label>
+                <input
+                  type="number"
+                  step="0.1"
+                  value={editReading.value}
+                  onChange={(e) => setEditReading({ ...editReading, value: e.target.value })}
+                  style={styles.input}
+                />
+              </div>
+            )}
+            <div style={{ display: 'flex', gap: '12px', marginTop: '24px' }}>
+              <button onClick={handleSaveEdit} style={{ ...styles.button(true), flex: 1 }}>
+                <Save size={20} />
+                Save Changes
+              </button>
+              <button onClick={() => setShowEditModal(false)} style={{ ...styles.button(false), flex: 1 }}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Analysis Modal */}
+      {showAnalysisModal && analysis && (
+        <div style={styles.modal} onClick={() => setShowAnalysisModal(false)}>
+          <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <div>
+                <h2 style={{ fontSize: '1.5rem', fontWeight: '700', color: isDarkMode ? '#f3f4f6' : '#111827', margin: 0 }}>
+                  Analysis Complete!
+                </h2>
+                <p style={{ fontSize: '1.125rem', color: '#0d9db8', fontWeight: '600', marginTop: '8px', margin: 0 }}>
+                  Condition: {selectedCondition}
+                </p>
+              </div>
+              <button
+                onClick={() => setShowAnalysisModal(false)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '1.5rem',
+                  cursor: 'pointer',
+                  color: isDarkMode ? '#9ca3af' : '#6b7280',
+                  padding: '4px'
+                }}
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <div style={{
+              backgroundColor: isDarkMode ? '#0f172a' : '#f9fafb',
+              padding: '20px',
+              borderRadius: '8px',
+              maxHeight: '60vh',
+              overflowY: 'auto',
+              marginBottom: '20px'
+            }}>
+              {formatAnalysisText(analysis)}
+            </div>
+
+            <div style={{
+              padding: '16px',
+              backgroundColor: isDarkMode ? '#422006' : '#fffbeb',
+              borderRadius: '8px',
+              border: isDarkMode ? '1px solid #713f12' : '1px solid #fde68a',
+              marginBottom: '16px'
+            }}>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                <AlertTriangle style={{ color: isDarkMode ? '#fbbf24' : '#d97706', flexShrink: 0, marginTop: '2px' }} size={18} />
+                <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#fde68a' : '#78350f', lineHeight: '1.5', margin: 0 }}>
+                  <strong>Disclaimer:</strong> This is AI-generated analysis for informational purposes only. Consult healthcare providers for medical decisions.
+                </p>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowAnalysisModal(false)}
+              style={{
+                ...styles.button(true),
+                width: '100%',
+                justifyContent: 'center'
+              }}
+            >
+              Close
+            </button>
           </div>
         </div>
       )}
