@@ -919,7 +919,7 @@ const TrackerDashboard = () => {
             No {metricCards.find(m => m.id === activeMetric)?.title} Data Available for {selectedCondition}
           </h3>
           <p style={{ fontSize: '0.875rem', color: isDarkMode ? '#9ca3af' : '#6b7280', marginBottom: '24px' }}>
-            Start tracking by scanning a report or adding reading manually
+            Start tracking by scanning a report or adding readings manually
           </p>
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
             <button onClick={() => setShowScanModal(true)} style={{ ...styles.button(true), background: 'linear-gradient(135deg, #0d9db8, #06b6d4)' }}>
