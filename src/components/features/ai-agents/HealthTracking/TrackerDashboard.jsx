@@ -6,6 +6,11 @@ import {
 } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
+
+const API_BASE_URL = window.location.hostname === 'localhost'
+  ? 'http://localhost:8000'
+  : 'https://doctorxcare.in';
+
 const TrackerDashboard = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [activeMetric, setActiveMetric] = useState('blood_pressure');
@@ -21,6 +26,20 @@ const TrackerDashboard = () => {
   const [selectedCondition, setSelectedCondition] = useState('Diabetes');
   const [uploadedFile, setUploadedFile] = useState(null);
   const [reportDateTime, setReportDateTime] = useState(new Date().toISOString().slice(0, 16));
+
+  // for scrolling to analysis section
+  const analysisRef = React.useRef(null);
+
+  useEffect(() => {
+    if (analysis && analysisRef.current) {
+      setTimeout(() => {
+        analysisRef.current.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+      }, 300);
+    }
+  }, [analysis]);
 
   const [healthData, setHealthData] = useState({
     blood_pressure: [], blood_glucose: [], heart_rate: [], weight: [],
@@ -102,7 +121,7 @@ const TrackerDashboard = () => {
       formData.append('condition', selectedCondition);
       formData.append('report_date', reportDateTime);
 
-      const response = await fetch('http://localhost:8000/api/health-tracking/scan-report', {
+      const response = await fetch(`${API_BASE_URL}/api/health-tracking/scan-report`, {
         method: 'POST',
         body: formData
       });
@@ -278,7 +297,7 @@ const TrackerDashboard = () => {
 
       if (data.success) {
         setAnalysis(data.analysis);
-        setShowAnalysisModal(true);
+        // setShowAnalysisModal(true);
       } else {
         alert('❌ Analysis failed. Please try again.');
       }
@@ -951,11 +970,13 @@ const TrackerDashboard = () => {
               Export PDF
             </button>
           </div>
-
-          <div style={{
-            backgroundColor: isDarkMode ? '#0f172a' : '#f9fafb',
-            padding: '20px', borderRadius: '8px', marginBottom: '20px'
-          }}>
+          <div
+            ref={analysisRef}
+            style={{
+              backgroundColor: isDarkMode ? '#0f172a' : '#f9fafb',
+              padding: '20px', borderRadius: '8px', marginBottom: '20px'
+            }}
+          >
             {formatAnalysisText(analysis)}
           </div>
 
