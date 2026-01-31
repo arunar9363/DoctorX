@@ -9,7 +9,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 const API_BASE_URL = window.location.hostname === 'localhost'
   ? 'http://localhost:8000'
-  : 'https://doctorxcare.in';
+  : 'https://www.doctorxcare.in';
 
 const TrackerDashboard = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -287,7 +287,7 @@ const TrackerDashboard = () => {
         lifestyle_changes: ''
       };
 
-      const response = await fetch('http://localhost:8000/api/health-tracking/analyze', {
+      const response = await fetch(`${API_BASE_URL}/api/health-tracking/analyze`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(trackingData)
