@@ -27,6 +27,21 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+# --- Update CORS to specific origins ---
+origins = [
+    "http://localhost:3000",
+    "http://localhost:8000",
+    "https://doctorxcare.in",
+    "https://www.doctorxcare.in", 
+]
+#    "https://app.doctorxcare.in",
+app.add_middleware(
+    CORSMiddleware,
+    [cite_start]allow_origins=origins, # Explicit origins list use karein [cite: 1]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # ==========================================
 # DATA MODELS
@@ -489,3 +504,4 @@ async def health_check():
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
+        
