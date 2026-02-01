@@ -708,7 +708,7 @@ const TrackerDashboard = () => {
               backgroundClip: 'text', marginBottom: '8px'
             }}>Chronic Care Health Tracker</h1>
             <p style={{ fontSize: '1rem', color: isDarkMode ? '#9ca3af' : '#6b7280' }}>
-              Monitor your vital signs and track health trends
+              Monitors your vital signs and track health trends
             </p>
           </div>
           <select
