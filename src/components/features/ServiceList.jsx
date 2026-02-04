@@ -412,9 +412,9 @@ function Services() {
       image: '/assets/chronic.svg',
       route: '/health-tracking/dashboard'
     },
-    
+
     {
-      id: 7,
+      id: 6,
       title: 'Healthcare Network',
       description: 'Discover nearby specialists and hospitals with smart filtering, ratings, and seamless appointment booking.',
       features: [
