@@ -37,7 +37,7 @@ origins = [
 #    "https://app.doctorxcare.in",
 app.add_middleware(
     CORSMiddleware,
-    [cite_start]allow_origins=origins, # Explicit origins list use karein [cite: 1]
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
