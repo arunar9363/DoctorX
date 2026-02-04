@@ -218,9 +218,9 @@ function Services() {
       cursor: 'pointer',
       overflow: 'hidden',
       opacity: isVisibleCard ? 1 : 0,
-      transform: isVisibleCard
-        ? isHovered ? 'translateY(-12px) scale(1.02)' : 'translateY(0) scale(1)'
-        : 'translateY(60px) scale(0.95)',
+      // transform: isVisibleCard
+      //   ? isHovered ? 'translateY(-12px) scale(1.02)' : 'translateY(0) scale(1)'
+      //   : 'translateY(60px) scale(0.95)',
       animation: isVisibleCard ? `fadeInUp 0.6s ease-out ${index * 0.1}s backwards` : 'none',
       ...(isHovered && {
         boxShadow: isDarkMode
@@ -410,7 +410,7 @@ function Services() {
         'Proactive health alerts'
       ],
       image: '/assets/chronic.svg',
-      route: '/health-tracking/dashboard'
+      route: '/health-tracking/chronic-care'
     },
 
     {

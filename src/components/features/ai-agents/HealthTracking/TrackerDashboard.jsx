@@ -29,6 +29,7 @@ const TrackerDashboard = () => {
 
   // for scrolling to analysis section
   const analysisRef = React.useRef(null);
+  
 
   useEffect(() => {
     if (analysis && analysisRef.current) {
@@ -152,7 +153,7 @@ const TrackerDashboard = () => {
       }
     } catch (error) {
       console.error('Report scanning error:', error);
-      alert('❌ Failed to scan report. Please ensure backend server is running on port 8000.');
+      alert('❌ Failed to scan report. Please try again later.');
     } finally {
       setScanningReport(false);
     }
@@ -303,7 +304,7 @@ const TrackerDashboard = () => {
       }
     } catch (error) {
       console.error('Analysis error:', error);
-      alert('❌ Could not connect to backend. Ensure the Python server is running on port 8000.');
+      alert('❌ Failed to analyze data. Please try again later.');
     } finally {
       setLoading(false);
     }
