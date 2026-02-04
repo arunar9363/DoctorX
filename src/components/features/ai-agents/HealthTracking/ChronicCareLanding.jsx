@@ -616,11 +616,11 @@ function ChronicCareLanding() {
 
             <div style={styles.statsContainer}>
               <div style={styles.statItem}>
-                <div style={styles.statNumber}>500+</div>
+                <div style={styles.statNumber}>50+</div>
                 <div style={styles.statLabel}>Users Tracking</div>
               </div>
               <div style={styles.statItem}>
-                <div style={styles.statNumber}>10K+</div>
+                <div style={styles.statNumber}>100+</div>
                 <div style={styles.statLabel}>Vitals Logged</div>
               </div>
               <div style={styles.statItem}>
