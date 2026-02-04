@@ -412,19 +412,7 @@ function Services() {
       image: '/assets/chronic.svg',
       route: '/health-tracking/dashboard'
     },
-    {
-      id: 6,
-      title: 'Post-Discharge Care',
-      description: 'Structured recovery support to ensure smooth transitions from hospital to home with continuous monitoring.',
-      features: [
-        'Personalized recovery plans',
-        'Critical warning indicators',
-        'Mental health support',
-        'Progress tracking dashboard'
-      ],
-      image: '/assets/postdischarge.svg',
-      route: '/healthcare-network'
-    },
+    
     {
       id: 7,
       title: 'Healthcare Network',
