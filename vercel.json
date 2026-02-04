@@ -5,6 +5,22 @@
       "destination": "/api/python-ai-agents/main"
     },
     {
+      "source": "/api/health-tracking/scan-report",
+      "destination": "/api/python-ai-agents/main"
+    },
+    {
+      "source": "/api/health-tracking/analyze",
+      "destination": "/api/python-ai-agents/main"
+    },
+    {
+      "source": "/api/health-tracking/trend-analysis",
+      "destination": "/api/python-ai-agents/main"
+    },
+    {
+      "source": "/api/health-tracking/quick-log",
+      "destination": "/api/python-ai-agents/main"
+    },
+    {
       "source": "/api/chronic-care",
       "destination": "/api/python-ai-agents/main"
     },
