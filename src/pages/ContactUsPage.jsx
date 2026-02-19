@@ -116,7 +116,6 @@ function ContactPage() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
-  const [pageLoading, setPageLoading] = useState(true);
   const [rating, setRating] = useState(0);
   const [hoverRating, setHoverRating] = useState(0);
   const [feedbacks, setFeedbacks] = useState([]);
@@ -172,12 +171,6 @@ function ContactPage() {
       }
     };
     loadFeedbacks();
-  }, []);
-
-  // Page loading
-  useEffect(() => {
-    const timer = setTimeout(() => setPageLoading(false), 1000);
-    return () => clearTimeout(timer);
   }, []);
 
   // Animations
@@ -730,50 +723,6 @@ function ContactPage() {
       transition: 'all 0.3s ease'
     }
   };
-
-  const loaderStyles = {
-    overlay: {
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      background: isDarkMode ? '#0f172a' : '#ffffff',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      zIndex: 9999
-    },
-    container: {
-      textAlign: 'center'
-    },
-    spinner: {
-      width: '48px',
-      height: '48px',
-      borderRadius: '50%',
-      border: '4px solid transparent',
-      borderTop: '4px solid var(--color-secondary)',
-      borderRight: '4px solid var(--color-third)',
-      animation: 'rotation 1s linear infinite'
-    },
-    text: {
-      marginTop: '20px',
-      fontSize: '1.2rem',
-      color: isDarkMode ? '#60a5fa' : '#0d9db8',
-      fontWeight: 600
-    }
-  };
-
-  if (pageLoading) {
-    return (
-      <div style={loaderStyles.overlay}>
-        <div style={loaderStyles.container}>
-          <div style={loaderStyles.spinner}></div>
-          <p style={loaderStyles.text}>Loading...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div style={styles.pageWrapper}>

@@ -81,7 +81,7 @@ function Hero() {
   // Inject animations
   useEffect(() => {
     const styleTag = document.createElement('style');
-    styleTag.id = 'hero-animations';
+    styleTag.id = 'hero-page-animations';
     styleTag.innerHTML = `
       @keyframes fadeInUp {
         from {
@@ -236,10 +236,14 @@ function Hero() {
         -webkit-mask-composite: xor;
         mask-composite: exclude;
       }
+
+      .loader-spin {
+        animation: rotation 1s linear infinite;
+      }
     `;
     document.head.appendChild(styleTag);
     return () => {
-      const existing = document.getElementById('hero-animations');
+      const existing = document.getElementById('hero-page-animations');
       if (existing) document.head.removeChild(existing);
     };
   }, []);
@@ -558,6 +562,7 @@ function Hero() {
     }
   };
 
+  // ✅ Dashboard-style loader (same as Dashboard.jsx)
   const loaderStyles = {
     overlay: {
       position: 'fixed',
@@ -565,32 +570,43 @@ function Hero() {
       left: 0,
       width: '100%',
       height: '100%',
-      background: isDarkMode ? '#0f172a' : '#ffffff',
+      background: isDarkMode
+        ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)'
+        : 'linear-gradient(135deg, #ffffff 0%, #f0f9ff 50%, #ffffff 100%)',
       display: 'flex',
+      flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
-      zIndex: 9999,
-      animation: 'fadeIn 0.3s ease-out'
+      zIndex: 9999
     },
-    container: {
-      textAlign: 'center'
-    },
-    spinner: {
-      width: '56px',
-      height: '56px',
-      border: '4px solid transparent',
-      borderTop: '4px solid var(--color-secondary)',
-      borderRight: '4px solid var(--color-third)',
+    loader: {
+      width: '60px',
+      height: '60px',
       borderRadius: '50%',
-      animation: 'rotation 1s linear infinite',
-      margin: '0 auto'
+      border: '4px solid transparent',
+      borderTopColor: '#0d9db8',
+      borderRightColor: '#3b82f6',
+      boxSizing: 'border-box',
+      position: 'relative'
+    },
+    loaderInner: {
+      position: 'absolute',
+      top: '4px',
+      left: '4px',
+      right: '4px',
+      bottom: '4px',
+      borderRadius: '50%',
+      border: '4px solid transparent',
+      borderTopColor: '#60a5fa',
+      borderLeftColor: '#0d9db8'
     },
     text: {
       marginTop: '24px',
-      fontSize: '1.2rem',
-      color: isDarkMode ? '#60a5fa' : '#0d9db8',
+      fontSize: '1.1rem',
+      color: '#0d9db8',
       fontWeight: 700,
-      fontFamily: "'Merriweather', serif"
+      fontFamily: "'Merriweather', serif",
+      animation: 'pulse 2s ease-in-out infinite'
     }
   };
 
@@ -624,10 +640,10 @@ function Hero() {
   if (pageLoading || (loading && user)) {
     return (
       <div style={loaderStyles.overlay}>
-        <div style={loaderStyles.container}>
-          <div style={loaderStyles.spinner}></div>
-          <p style={loaderStyles.text}>Loading DoctorXCare...</p>
+        <div style={loaderStyles.loader} className="loader-spin">
+          <div style={loaderStyles.loaderInner} className="loader-spin"></div>
         </div>
+        <p style={loaderStyles.text}>Loading DoctorXCare...</p>
       </div>
     );
   }
