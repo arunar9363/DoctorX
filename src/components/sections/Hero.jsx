@@ -616,16 +616,8 @@ function Hero() {
       desc: "Monitor diabetes, hypertension & thyroid with trend analytics"
     },
     {
-      title: "Post-Discharge Support",
-      desc: "Recovery plans, danger signs & mental health support"
-    },
-    {
       title: "Healthcare Network",
       desc: "Find specialists, hospitals & book appointments nearby"
-    },
-    {
-      title: "Medical Records Storage",
-      desc: "Securely store and access your health history"
     }
   ];
 
