@@ -752,11 +752,7 @@ function Hero() {
                 <div style={styles.statLabel}>AI Health Assistance</div>
               </div>
               <div style={styles.statItem}>
-                <div style={styles.statValue}>Secure</div>
-                <div style={styles.statLabel}>Medical Records Storage</div>
-              </div>
-              <div style={styles.statItem}>
-                <div style={styles.statValue}>Clinicall Guided</div>
+                <div style={styles.statValue}>Clinically Guided</div>
                 <div style={styles.statLabel}>Medical Advisor Validation</div>
               </div>
             </div>
