@@ -626,45 +626,6 @@ function RegisterPage() {
     textUnderlineOffset: '3px',
   };
 
-  const featureListStyle = {
-    display: 'grid',
-    gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
-    gap: '10px',
-    marginTop: '20px',
-    paddingTop: '20px',
-    borderTop: `1px solid ${isDark ? '#334155' : '#e5e7eb'}`,
-  };
-
-  const featureItemStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    fontSize: '12px',
-    color: isDark ? '#cbd5e1' : '#475569',
-  };
-
-  const featureIconStyle = {
-    width: '18px',
-    height: '18px',
-    minWidth: '18px',
-    borderRadius: '50%',
-    background: 'linear-gradient(135deg, #0d9db8, #60a5fa)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: '#ffffff',
-    fontSize: '10px',
-    fontWeight: 'bold',
-    boxShadow: '0 2px 8px rgba(13, 157, 184, 0.3)',
-  };
-
-  const features = [
-    'AI-Powered Healthcare',
-    'Secure Data Encryption',
-    '24/7 Health Monitoring',
-    'Expert Medical Insights'
-  ];
-
   return (
     <div style={pageStyle}>
       <div style={backgroundPattern}></div>
@@ -792,15 +753,6 @@ function RegisterPage() {
               )}
             </button>
           </form>
-
-          <div style={featureListStyle}>
-            {features.map((feature, idx) => (
-              <div key={idx} style={featureItemStyle}>
-                <div style={featureIconStyle}>✓</div>
-                <span>{feature}</span>
-              </div>
-            ))}
-          </div>
 
           <p style={loginLinkStyle}>
             Already have an account?{" "}
