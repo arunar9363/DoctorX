@@ -33,6 +33,7 @@ import DoctorXAIPage from "./pages/DoctorXAIPage";
 import HistoryPage from "./pages/HistoryPage";
 import ForgotPassword from './pages/ForgotPassword';
 import Dashboard from "./pages/Dashboard";
+
 import DoctorList from "./components/features/ai-agents/SpecialistFinder/FinderMap";
 
 
@@ -85,6 +86,8 @@ function App() {
           <Route path="/history" element={<HistoryPage />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
 
+          <Route path="/healthcare-network" element={<DoctorList />} />
+
           {/* Protected Routes */}
           <Route element={<ProtectedRouter />}>
             <Route path="/services" element={<Services />} />
@@ -108,7 +111,7 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
 
             {/* Development Phase Pages - In sab par wahi popup dikhega */}
-            <Route path="/healthcare-network" element={<DoctorList />} />
+            
           </Route>
 
         </Routes>
