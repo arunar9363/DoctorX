@@ -651,7 +651,7 @@ function RegisterPage() {
             <span className="gradient-text">Create Account</span>
           </h2>
           <p style={subtitleStyle}>
-            Start your journey to better health with our intelligent platform
+            Start your journey to better health with our intelligent platform.
           </p>
 
           <div style={infoBoxStyle}>

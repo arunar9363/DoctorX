@@ -33,8 +33,6 @@ import DoctorXAIPage from "./pages/DoctorXAIPage";
 import HistoryPage from "./pages/HistoryPage";
 import ForgotPassword from './pages/ForgotPassword';
 import Dashboard from "./pages/Dashboard";
-
-// In-Development Component
 import DoctorList from "./components/features/ai-agents/SpecialistFinder/FinderMap";
 
 

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional
@@ -16,6 +16,11 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 # Import Agent Logic
 from lab_agent import get_medical_agent
 from tracking_agent import get_health_tracking_agent, get_trend_visualization_agent, get_report_extraction_agent
+
+# =============================================
+# NEW IMPORT: Nearby Facility Finder Agent
+# =============================================
+from doctorfinder import get_nearby_facilities, get_place_details
 
 app = FastAPI()
 
@@ -469,6 +474,100 @@ async def quick_vital_log(
         print(f"Quick Log Error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Logging failed: {str(e)}")
 
+
+# ==========================================
+# SERVICE 3: NEARBY MEDICAL FACILITY FINDER   ← NEW
+# ==========================================
+
+@app.get("/api/v1/nearby-finder")
+async def nearby_medical_finder(
+    latitude: float = Query(..., description="User's current latitude", ge=-90, le=90),
+    longitude: float = Query(..., description="User's current longitude", ge=-180, le=180),
+    facility_type: str = Query(
+        default="hospital",
+        description="Type of facility: 'hospital', 'pharmacy', 'doctor', 'emergency', 'clinic'"
+    ),
+    radius: Optional[int] = Query(
+        default=None,
+        description="Search radius in meters (default varies by facility type, max 50000)",
+        ge=100,
+        le=50000
+    )
+):
+    """
+    Find nearby medical facilities using Google Places API.
+
+    Returns a ranked, cleaned list of nearby facilities with id, name,
+    address, rating, open status, and coordinates — ready for map rendering.
+
+    **Facility Types:**
+    - `hospital`  — General hospitals (default, 5 km radius)
+    - `emergency` — Emergency hospitals (5 km radius)
+    - `pharmacy`  — Pharmacies & drug stores (3 km radius)
+    - `doctor`    — Specialist clinics & GPs (5 km radius)
+    - `clinic`    — Outpatient clinics (5 km radius)
+    """
+    try:
+        facilities = await get_nearby_facilities(
+            latitude=latitude,
+            longitude=longitude,
+            facility_type=facility_type,
+            radius=radius,
+        )
+
+        return {
+            "success": True,
+            "facility_type": facility_type,
+            "total": len(facilities),
+            "location": {"latitude": latitude, "longitude": longitude},
+            "facilities": facilities,
+            "fetched_at": datetime.now().isoformat(),
+        }
+
+    except ValueError as e:
+        # Bad input — 400
+        raise HTTPException(status_code=400, detail=str(e))
+    except RuntimeError as e:
+        # External API failure — 502
+        raise HTTPException(status_code=502, detail=str(e))
+    except Exception as e:
+        print(f"Nearby Finder Error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"An unexpected error occurred while searching for facilities."
+        )
+
+
+@app.get("/api/v1/facility-details/{place_id}")
+async def facility_details(place_id: str):
+    """
+    Get detailed information for a specific medical facility.
+
+    Returns full contact details, opening hours, website, and ratings
+    for a facility identified by its Google Places place_id.
+    """
+    if not place_id or len(place_id.strip()) < 5:
+        raise HTTPException(status_code=400, detail="Invalid place_id provided.")
+
+    try:
+        details = await get_place_details(place_id=place_id)
+        return {
+            "success": True,
+            "details": details,
+            "fetched_at": datetime.now().isoformat(),
+        }
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except RuntimeError as e:
+        raise HTTPException(status_code=502, detail=str(e))
+    except Exception as e:
+        print(f"Facility Details Error: {str(e)}")
+        raise HTTPException(
+            status_code=500,
+            detail="An unexpected error occurred while fetching facility details."
+        )
+
+
 # ==========================================
 # Placeholder Services (Existing)
 # ==========================================
@@ -492,16 +591,18 @@ async def health_check():
     return {
         "status": "online",
         "service": "DoctorX Care API",
-        "version": "2.1",
+        "version": "2.2",
         "endpoints": {
             "lab_analysis": "/api/medical-analysis",
             "scan_health_report": "/api/health-tracking/scan-report",
             "health_tracking": "/api/health-tracking/analyze",
             "trend_analysis": "/api/health-tracking/trend-analysis",
-            "quick_log": "/api/health-tracking/quick-log"
+            "quick_log": "/api/health-tracking/quick-log",
+            # NEW
+            "nearby_finder": "/api/v1/nearby-finder",
+            "facility_details": "/api/v1/facility-details/{place_id}",
         }
     }
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
-        
