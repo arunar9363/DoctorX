@@ -20,19 +20,11 @@ from tracking_agent import get_health_tracking_agent, get_trend_visualization_ag
 # =============================================
 # NEW IMPORT: Nearby Facility Finder Agent
 # =============================================
-from doctorfinder import get_nearby_facilities, get_place_details
+from DoctorFinder import get_nearby_facilities, get_place_details
 
 app = FastAPI()
 
 # --- CORS SETTINGS ---
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-# --- Update CORS to specific origins ---
 origins = [
     "http://localhost:3000",
     "http://localhost:8000",
