@@ -436,25 +436,6 @@ export default function FinderMap() {
       width: "7px", height: "7px", borderRadius: "50%", background: "#10b981",
       animation: "pulse 1.5s infinite",
     },
-    viewToggle: {
-      display: isMobile ? "flex" : "none",
-      gap: "4px",
-      background: isDarkMode ? "rgba(15,23,42,0.9)" : "rgba(240,249,255,0.9)",
-      borderRadius: "12px", padding: "4px",
-      border: isDarkMode ? "1px solid rgba(13,157,184,0.3)" : "1px solid rgba(13,157,184,0.25)",
-      boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
-    },
-    toggleBtn: (isActive) => ({
-      padding: "6px 14px", borderRadius: "9px", border: "none",
-      background: isActive
-        ? "linear-gradient(135deg, #0d9db8, #3b82f6)"
-        : "transparent",
-      color: isActive ? "#ffffff" : (isDarkMode ? "#94a3b8" : "#475569"),
-      fontSize: "0.8rem", fontWeight: 700, cursor: "pointer",
-      fontFamily: "'Inter', sans-serif",
-      boxShadow: isActive ? "0 2px 8px rgba(13,157,184,0.4)" : "none",
-      transition: "all 0.2s ease",
-    }),
     // ── List panel ────────────────────────────────────────────────────────
     listPanel: {
       display: "flex", flexDirection: "column", height: isMobile ? "auto" : "640px",
@@ -779,295 +760,345 @@ export default function FinderMap() {
               <div style={S.locationSub}>Please allow location access when prompted…</div>
             </div>
           ) : (
-            /* ── Main Grid ─────────────────────────────────────────────── */
-            <div style={S.mainGrid}>
-              {/* MAP PANEL */}
-              <div
-                style={{
-                  ...S.mapPanel,
-                  display: isMobile && isListView ? "none" : "block",
-                }}
-              >
-                {/* Map top bar */}
-                <div style={S.mapTopBar}>
-                  <div style={S.mapLabel}>
-                    <div style={S.liveDot} />
-                    Live Map — {activeFilterConfig.icon} {activeFilterConfig.label}
-                  </div>
-                  {/* Mobile toggle */}
-                  <div style={S.viewToggle}>
-                    <button style={S.toggleBtn(!isListView)} onClick={() => setIsListView(false)}>Map</button>
-                    <button style={S.toggleBtn(isListView)} onClick={() => setIsListView(true)}>List</button>
-                  </div>
-                </div>
-
-                {/* Map loading overlay */}
-                {facilitiesLoading && (
-                  <div style={{
-                    position: "absolute", inset: 0, zIndex: 20,
-                    background: "rgba(15,23,42,0.65)", backdropFilter: "blur(4px)",
-                    display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "16px",
-                  }}>
-                    <div style={S.bigSpinner} />
-                    <div style={{ color: "#94a3b8", fontWeight: 600, fontSize: "0.95rem" }}>
-                      Scanning {activeFilterConfig.label}…
-                    </div>
-                  </div>
-                )}
-
-                {mapsLoaded && userLocation && !mapsLoadError ? (
-                  <GoogleMap
-                    mapContainerStyle={MAP_CONTAINER_STYLE}
-                    center={userLocation}
-                    zoom={14}
-                    onLoad={onMapLoad}
-                    onUnmount={onMapUnmount}
-                    options={{
-                      styles: isDarkMode ? DARK_MAP_STYLE : [],
-                      disableDefaultUI: false,
-                      zoomControl: true,
-                      mapTypeControl: false,
-                      streetViewControl: false,
-                      fullscreenControl: true,
-                      clickableIcons: false,
-                    }}
-                  >
-                    {/* User marker */}
-                    <Marker
-                      position={userLocation}
-                      icon={{
-                        url: `data:image/svg+xml,${userMarkerSvg}`,
-                        scaledSize: new window.google.maps.Size(32, 32),
-                        anchor: new window.google.maps.Point(16, 16),
-                      }}
-                      title="Your Location"
-                      zIndex={1000}
-                    />
-
-                    {/* Facility markers */}
-                    {facilities.map((facility) => (
-                      facility.geometry?.lat && facility.geometry?.lng && (
-                        <Marker
-                          key={facility.id}
-                          position={{ lat: facility.geometry.lat, lng: facility.geometry.lng }}
-                          onClick={() => handleMarkerClick(facility)}
-                          icon={{
-                            url: `data:image/svg+xml,${getFacilityMarkerSvg(
-                              activeFilterConfig.color,
-                              selectedFacility?.id === facility.id
-                            )}`,
-                            scaledSize: new window.google.maps.Size(
-                              selectedFacility?.id === facility.id ? 38 : 30,
-                              selectedFacility?.id === facility.id ? 46 : 38
-                            ),
-                            anchor: new window.google.maps.Point(
-                              selectedFacility?.id === facility.id ? 19 : 15,
-                              selectedFacility?.id === facility.id ? 46 : 38
-                            ),
-                          }}
-                          title={facility.name}
-                          zIndex={selectedFacility?.id === facility.id ? 500 : 100}
-                        />
-                      )
-                    ))}
-
-                    {/* InfoWindow */}
-                    {selectedFacility && selectedFacility.geometry?.lat && (
-                      <InfoWindow
-                        position={{ lat: selectedFacility.geometry.lat, lng: selectedFacility.geometry.lng }}
-                        onCloseClick={() => setSelectedFacility(null)}
-                        options={{ pixelOffset: new window.google.maps.Size(0, -40) }}
-                      >
-                        <div style={S.infoWinWrap}>
-                          <div style={S.infoWinName}>{selectedFacility.name}</div>
-                          <div style={S.infoWinAddr}>{selectedFacility.vicinity}</div>
-                          <div style={{ marginBottom: "10px" }}>
-                            <StarRating rating={selectedFacility.rating} />
-                            {selectedFacility.user_ratings_total > 0 && (
-                              <span style={{ color: "#6b7280", fontSize: "0.75rem", marginLeft: "6px" }}>
-                                ({selectedFacility.user_ratings_total.toLocaleString()})
-                              </span>
-                            )}
-                          </div>
-                          <div style={S.infoWinMeta}>
-                            {selectedFacility.open_now !== null && selectedFacility.open_now !== undefined && (
-                              <span style={S.openBadge(selectedFacility.open_now)}>
-                                {selectedFacility.open_now ? "● Open Now" : "● Closed"}
-                              </span>
-                            )}
-                            <button
-                              className="nav-btn"
-                              style={S.navBtn}
-                              onClick={() => openNavigation(selectedFacility)}
-                            >
-                              🧭 Navigate
-                            </button>
-                          </div>
-                        </div>
-                      </InfoWindow>
-                    )}
-                  </GoogleMap>
-                ) : !mapsLoadError && (
-                  <div style={{
-                    width: "100%", height: "100%",
-                    background: isDarkMode ? "#0d1a2d" : "#e8f4f8",
-                    display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "16px",
-                  }}>
-                    <div style={S.bigSpinner} />
-                    <div style={{ color: isDarkMode ? "#64748b" : "#94a3b8", fontSize: "0.9rem" }}>
-                      Loading Google Maps…
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* FACILITY LIST PANEL */}
-              <div style={{
-                ...S.listPanel,
-                display: isMobile && !isListView ? "none" : "flex",
-              }}>
-                {/* Mobile list header with background — shows above the map area */}
+            <>
+              {/* ── Mobile Map/List Toggle — OUTSIDE grid so always visible ── */}
+              {isMobile && (
                 <div style={{
-                  ...S.listHeader,
-                  ...(isMobile ? {
-                    position: "sticky", top: 0, zIndex: 5,
-                    background: isDarkMode
-                      ? "linear-gradient(180deg, #0f172a 80%, transparent 100%)"
-                      : "linear-gradient(180deg, #f0f9ff 80%, transparent 100%)",
-                    paddingTop: "4px", paddingBottom: "12px",
-                    marginBottom: "8px",
-                  } : {}),
+                  display: "flex",
+                  justifyContent: "center",
+                  marginBottom: "14px",
+                  animation: "fadeInUp 0.4s ease-out",
                 }}>
-                  <span style={S.listTitle}>
-                    {activeFilterConfig.icon}&nbsp; Nearby {activeFilterConfig.label}
-                  </span>
-                  <span style={S.countBadge}>
-                    {facilitiesLoading ? "…" : `${facilities.length} found`}
-                  </span>
+                  <div style={{
+                    display: "flex",
+                    gap: "4px",
+                    background: isDarkMode ? "rgba(15,23,42,0.95)" : "rgba(255,255,255,0.95)",
+                    borderRadius: "14px",
+                    padding: "5px",
+                    border: isDarkMode ? "1px solid rgba(13,157,184,0.35)" : "1px solid rgba(13,157,184,0.3)",
+                    boxShadow: "0 4px 20px rgba(0,0,0,0.18)",
+                  }}>
+                    <button
+                      style={{
+                        padding: "8px 28px", borderRadius: "10px", border: "none",
+                        background: !isListView
+                          ? "linear-gradient(135deg, #0d9db8, #3b82f6)"
+                          : "transparent",
+                        color: !isListView ? "#ffffff" : (isDarkMode ? "#94a3b8" : "#475569"),
+                        fontSize: "0.88rem", fontWeight: 700, cursor: "pointer",
+                        fontFamily: "'Inter', sans-serif",
+                        boxShadow: !isListView ? "0 2px 10px rgba(13,157,184,0.4)" : "none",
+                        transition: "all 0.25s ease",
+                      }}
+                      onClick={() => setIsListView(false)}
+                    >
+                      🗺️ Map
+                    </button>
+                    <button
+                      style={{
+                        padding: "8px 28px", borderRadius: "10px", border: "none",
+                        background: isListView
+                          ? "linear-gradient(135deg, #0d9db8, #3b82f6)"
+                          : "transparent",
+                        color: isListView ? "#ffffff" : (isDarkMode ? "#94a3b8" : "#475569"),
+                        fontSize: "0.88rem", fontWeight: 700, cursor: "pointer",
+                        fontFamily: "'Inter', sans-serif",
+                        boxShadow: isListView ? "0 2px 10px rgba(13,157,184,0.4)" : "none",
+                        transition: "all 0.25s ease",
+                      }}
+                      onClick={() => setIsListView(true)}
+                    >
+                      📋 List
+                    </button>
+                  </div>
                 </div>
+              )}
 
-                <div style={S.listScroll}>
-                  {facilitiesLoading ? (
-                    Array(5).fill(0).map((_, i) => <SkeletonCard key={i} isDarkMode={isDarkMode} />)
-                  ) : facilities.length === 0 ? (
-                    <div style={S.emptyState}>
-                      <div style={S.emptyIcon}>🏥</div>
-                      <div style={S.emptyTitle}>No facilities found</div>
-                      <div style={S.emptyText}>
-                        Try a different filter or expand your search radius.
+              {/* ── Main Grid ─────────────────────────────────────────────── */}
+              <div style={S.mainGrid}>
+                {/* MAP PANEL */}
+                <div
+                  style={{
+                    ...S.mapPanel,
+                    display: isMobile && isListView ? "none" : "block",
+                  }}
+                >
+                  {/* Map top bar — desktop only label, no toggle here anymore */}
+                  <div style={S.mapTopBar}>
+                    <div style={S.mapLabel}>
+                      <div style={S.liveDot} />
+                      Live Map — {activeFilterConfig.icon} {activeFilterConfig.label}
+                    </div>
+                  </div>
+
+                  {/* Map loading overlay */}
+                  {facilitiesLoading && (
+                    <div style={{
+                      position: "absolute", inset: 0, zIndex: 20,
+                      background: "rgba(15,23,42,0.65)", backdropFilter: "blur(4px)",
+                      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "16px",
+                    }}>
+                      <div style={S.bigSpinner} />
+                      <div style={{ color: "#94a3b8", fontWeight: 600, fontSize: "0.95rem" }}>
+                        Scanning {activeFilterConfig.label}…
                       </div>
                     </div>
-                  ) : (
-                    facilities.map((facility, idx) => {
-                      const isSelected = selectedFacility?.id === facility.id;
-                      return (
-                        <div
-                          key={facility.id}
-                          className="facility-card"
-                          style={{
-                            ...S.facilityCard(isSelected),
-                            animation: `fadeInUp 0.5s ease-out ${idx * 0.06}s backwards`,
-                          }}
-                          onClick={() => {
-                            handleMarkerClick(facility);
-                            if (isMobile) setIsListView(false);
-                          }}
+                  )}
+
+                  {mapsLoaded && userLocation && !mapsLoadError ? (
+                    <GoogleMap
+                      mapContainerStyle={MAP_CONTAINER_STYLE}
+                      center={userLocation}
+                      zoom={14}
+                      onLoad={onMapLoad}
+                      onUnmount={onMapUnmount}
+                      options={{
+                        styles: isDarkMode ? DARK_MAP_STYLE : [],
+                        disableDefaultUI: false,
+                        zoomControl: true,
+                        mapTypeControl: false,
+                        streetViewControl: false,
+                        fullscreenControl: true,
+                        clickableIcons: false,
+                      }}
+                    >
+                      {/* User marker */}
+                      <Marker
+                        position={userLocation}
+                        icon={{
+                          url: `data:image/svg+xml,${userMarkerSvg}`,
+                          scaledSize: new window.google.maps.Size(32, 32),
+                          anchor: new window.google.maps.Point(16, 16),
+                        }}
+                        title="Your Location"
+                        zIndex={1000}
+                      />
+
+                      {/* Facility markers */}
+                      {facilities.map((facility) => (
+                        facility.geometry?.lat && facility.geometry?.lng && (
+                          <Marker
+                            key={facility.id}
+                            position={{ lat: facility.geometry.lat, lng: facility.geometry.lng }}
+                            onClick={() => handleMarkerClick(facility)}
+                            icon={{
+                              url: `data:image/svg+xml,${getFacilityMarkerSvg(
+                                activeFilterConfig.color,
+                                selectedFacility?.id === facility.id
+                              )}`,
+                              scaledSize: new window.google.maps.Size(
+                                selectedFacility?.id === facility.id ? 38 : 30,
+                                selectedFacility?.id === facility.id ? 46 : 38
+                              ),
+                              anchor: new window.google.maps.Point(
+                                selectedFacility?.id === facility.id ? 19 : 15,
+                                selectedFacility?.id === facility.id ? 46 : 38
+                              ),
+                            }}
+                            title={facility.name}
+                            zIndex={selectedFacility?.id === facility.id ? 500 : 100}
+                          />
+                        )
+                      ))}
+
+                      {/* InfoWindow */}
+                      {selectedFacility && selectedFacility.geometry?.lat && (
+                        <InfoWindow
+                          position={{ lat: selectedFacility.geometry.lat, lng: selectedFacility.geometry.lng }}
+                          onCloseClick={() => setSelectedFacility(null)}
+                          options={{ pixelOffset: new window.google.maps.Size(0, -40) }}
                         >
-                          {/* Glow bar on hover — needs own overflow-hidden wrapper */}
-                          <div style={{
-                            position: "absolute", top: 0, left: 0, right: 0, height: "3px",
-                            borderRadius: "20px 20px 0 0", overflow: "hidden",
-                          }}>
-                            <div className="card-glow-bar" style={{ position: "relative", top: 0, left: 0, right: 0, borderRadius: 0 }} />
+                          <div style={S.infoWinWrap}>
+                            <div style={S.infoWinName}>{selectedFacility.name}</div>
+                            <div style={S.infoWinAddr}>{selectedFacility.vicinity}</div>
+                            <div style={{ marginBottom: "10px" }}>
+                              <StarRating rating={selectedFacility.rating} />
+                              {selectedFacility.user_ratings_total > 0 && (
+                                <span style={{ color: "#6b7280", fontSize: "0.75rem", marginLeft: "6px" }}>
+                                  ({selectedFacility.user_ratings_total.toLocaleString()})
+                                </span>
+                              )}
+                            </div>
+                            <div style={S.infoWinMeta}>
+                              {selectedFacility.open_now !== null && selectedFacility.open_now !== undefined && (
+                                <span style={S.openBadge(selectedFacility.open_now)}>
+                                  {selectedFacility.open_now ? "● Open Now" : "● Closed"}
+                                </span>
+                              )}
+                              <button
+                                className="nav-btn"
+                                style={S.navBtn}
+                                onClick={() => openNavigation(selectedFacility)}
+                              >
+                                🧭 Navigate
+                              </button>
+                            </div>
                           </div>
+                        </InfoWindow>
+                      )}
+                    </GoogleMap>
+                  ) : !mapsLoadError && (
+                    <div style={{
+                      width: "100%", height: "100%",
+                      background: isDarkMode ? "#0d1a2d" : "#e8f4f8",
+                      display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "16px",
+                    }}>
+                      <div style={S.bigSpinner} />
+                      <div style={{ color: isDarkMode ? "#64748b" : "#94a3b8", fontSize: "0.9rem" }}>
+                        Loading Google Maps…
+                      </div>
+                    </div>
+                  )}
+                </div>
 
-                          {/* Left accent stripe */}
-                          <div style={S.cardAccent(activeFilterConfig)} />
+                {/* FACILITY LIST PANEL */}
+                <div style={{
+                  ...S.listPanel,
+                  display: isMobile && !isListView ? "none" : "flex",
+                }}>
+                  {/* Mobile list header with background — shows above the map area */}
+                  <div style={{
+                    ...S.listHeader,
+                    ...(isMobile ? {
+                      position: "sticky", top: 0, zIndex: 5,
+                      background: isDarkMode
+                        ? "linear-gradient(180deg, #0f172a 80%, transparent 100%)"
+                        : "linear-gradient(180deg, #f0f9ff 80%, transparent 100%)",
+                      paddingTop: "4px", paddingBottom: "12px",
+                      marginBottom: "8px",
+                    } : {}),
+                  }}>
+                    <span style={S.listTitle}>
+                      {activeFilterConfig.icon}&nbsp; Nearby {activeFilterConfig.label}
+                    </span>
+                    <span style={S.countBadge}>
+                      {facilitiesLoading ? "…" : `${facilities.length} found`}
+                    </span>
+                  </div>
 
-                          {/* Rank number */}
-                          <div style={S.cardRank(idx)}>{idx + 1}</div>
-
-                          <div style={{ paddingLeft: "12px", paddingRight: "36px" }}>
-                            {/* Category icon chip */}
-                            <div style={S.cardIcon(activeFilterConfig)}>
-                              {activeFilterConfig.icon}
+                  <div style={S.listScroll}>
+                    {facilitiesLoading ? (
+                      Array(5).fill(0).map((_, i) => <SkeletonCard key={i} isDarkMode={isDarkMode} />)
+                    ) : facilities.length === 0 ? (
+                      <div style={S.emptyState}>
+                        <div style={S.emptyIcon}>🏥</div>
+                        <div style={S.emptyTitle}>No facilities found</div>
+                        <div style={S.emptyText}>
+                          Try a different filter or expand your search radius.
+                        </div>
+                      </div>
+                    ) : (
+                      facilities.map((facility, idx) => {
+                        const isSelected = selectedFacility?.id === facility.id;
+                        return (
+                          <div
+                            key={facility.id}
+                            className="facility-card"
+                            style={{
+                              ...S.facilityCard(isSelected),
+                              animation: `fadeInUp 0.5s ease-out ${idx * 0.06}s backwards`,
+                            }}
+                            onClick={() => {
+                              handleMarkerClick(facility);
+                              if (isMobile) setIsListView(false);
+                            }}
+                          >
+                            {/* Glow bar on hover — needs own overflow-hidden wrapper */}
+                            <div style={{
+                              position: "absolute", top: 0, left: 0, right: 0, height: "3px",
+                              borderRadius: "20px 20px 0 0", overflow: "hidden",
+                            }}>
+                              <div className="card-glow-bar" style={{ position: "relative", top: 0, left: 0, right: 0, borderRadius: 0 }} />
                             </div>
 
-                            {/* Name */}
-                            <div style={S.cardName}>{facility.name}</div>
+                            {/* Left accent stripe */}
+                            <div style={S.cardAccent(activeFilterConfig)} />
 
-                            {/* Address */}
-                            <div style={S.cardAddr}>📍 {facility.vicinity}</div>
+                            {/* Rank number */}
+                            <div style={S.cardRank(idx)}>{idx + 1}</div>
 
-                            {/* Features row — ratings + open badge */}
-                            <div style={{
-                              display: "flex", flexDirection: "column", gap: "8px",
-                              marginBottom: "14px",
-                            }}>
-                              {/* Rating row */}
-                              <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-                                <StarRating rating={facility.rating} />
-                                {facility.user_ratings_total > 0 && (
-                                  <span style={{
-                                    fontSize: "0.72rem",
-                                    color: isDarkMode ? "#6b7280" : "#94a3b8",
+                            <div style={{ paddingLeft: "12px", paddingRight: "36px" }}>
+                              {/* Category icon chip */}
+                              <div style={S.cardIcon(activeFilterConfig)}>
+                                {activeFilterConfig.icon}
+                              </div>
+
+                              {/* Name */}
+                              <div style={S.cardName}>{facility.name}</div>
+
+                              {/* Address */}
+                              <div style={S.cardAddr}>📍 {facility.vicinity}</div>
+
+                              {/* Features row — ratings + open badge */}
+                              <div style={{
+                                display: "flex", flexDirection: "column", gap: "8px",
+                                marginBottom: "14px",
+                              }}>
+                                {/* Rating row */}
+                                <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                                  <StarRating rating={facility.rating} />
+                                  {facility.user_ratings_total > 0 && (
+                                    <span style={{
+                                      fontSize: "0.72rem",
+                                      color: isDarkMode ? "#6b7280" : "#94a3b8",
+                                    }}>
+                                      ({facility.user_ratings_total.toLocaleString()} reviews)
+                                    </span>
+                                  )}
+                                </div>
+
+                                {/* Open status as feature item — matches Services checkmarks style */}
+                                {facility.open_now !== null && facility.open_now !== undefined && (
+                                  <div style={{
+                                    display: "flex", alignItems: "center", gap: "8px",
+                                    fontSize: "0.82rem",
+                                    color: isDarkMode ? "#d1d5db" : "#475569",
                                   }}>
-                                    ({facility.user_ratings_total.toLocaleString()} reviews)
-                                  </span>
+                                    <div style={{
+                                      width: "20px", height: "20px", minWidth: "20px",
+                                      borderRadius: "50%",
+                                      background: facility.open_now
+                                        ? "linear-gradient(135deg, #10b981, #059669)"
+                                        : "linear-gradient(135deg, #ef4444, #dc2626)",
+                                      display: "flex", alignItems: "center", justifyContent: "center",
+                                      color: "#ffffff", fontSize: "0.65rem", fontWeight: "bold",
+                                      flexShrink: 0,
+                                      boxShadow: facility.open_now
+                                        ? "0 4px 12px rgba(16,185,129,0.35)"
+                                        : "0 4px 12px rgba(239,68,68,0.3)",
+                                    }}>
+                                      {facility.open_now ? "✓" : "✕"}
+                                    </div>
+                                    <span style={{ fontWeight: 500 }}>
+                                      {facility.open_now ? "Open Now" : "Currently Closed"}
+                                    </span>
+                                  </div>
                                 )}
                               </div>
 
-                              {/* Open status as feature item — matches Services checkmarks style */}
-                              {facility.open_now !== null && facility.open_now !== undefined && (
-                                <div style={{
-                                  display: "flex", alignItems: "center", gap: "8px",
-                                  fontSize: "0.82rem",
-                                  color: isDarkMode ? "#d1d5db" : "#475569",
-                                }}>
-                                  <div style={{
-                                    width: "20px", height: "20px", minWidth: "20px",
-                                    borderRadius: "50%",
-                                    background: facility.open_now
-                                      ? "linear-gradient(135deg, #10b981, #059669)"
-                                      : "linear-gradient(135deg, #ef4444, #dc2626)",
-                                    display: "flex", alignItems: "center", justifyContent: "center",
-                                    color: "#ffffff", fontSize: "0.65rem", fontWeight: "bold",
-                                    flexShrink: 0,
-                                    boxShadow: facility.open_now
-                                      ? "0 4px 12px rgba(16,185,129,0.35)"
-                                      : "0 4px 12px rgba(239,68,68,0.3)",
-                                  }}>
-                                    {facility.open_now ? "✓" : "✕"}
-                                  </div>
-                                  <span style={{ fontWeight: 500 }}>
-                                    {facility.open_now ? "Open Now" : "Currently Closed"}
-                                  </span>
-                                </div>
-                              )}
+                              {/* CTA button — matches Services ctaButton style */}
+                              <button
+                                className="nav-btn"
+                                style={{
+                                  ...S.navBtn,
+                                  width: "100%", justifyContent: "center",
+                                  padding: "10px 16px", borderRadius: "12px",
+                                  fontSize: "0.85rem", fontWeight: 600,
+                                  textTransform: "none", letterSpacing: "0",
+                                }}
+                                onClick={(e) => { e.stopPropagation(); openNavigation(facility); }}
+                              >
+                                Get Directions &nbsp;→
+                              </button>
                             </div>
-
-                            {/* CTA button — matches Services ctaButton style */}
-                            <button
-                              className="nav-btn"
-                              style={{
-                                ...S.navBtn,
-                                width: "100%", justifyContent: "center",
-                                padding: "10px 16px", borderRadius: "12px",
-                                fontSize: "0.85rem", fontWeight: 600,
-                                textTransform: "none", letterSpacing: "0",
-                              }}
-                              onClick={(e) => { e.stopPropagation(); openNavigation(facility); }}
-                            >
-                              Get Directions &nbsp;→
-                            </button>
                           </div>
-                        </div>
-                      );
-                    })
-                  )}
+                        );
+                      })
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
+            </>
           )}
 
           {/* ── Footer note ──────────────────────────────────────────────── */}
