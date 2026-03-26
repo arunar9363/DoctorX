@@ -126,80 +126,19 @@ function DistanceBadge({ userLocation, facility, isDarkMode, compact = false }) 
   );
   const { walk, drive } = getTravelTime(km);
 
-  if (compact) {
-    return (
-      <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
-        <span style={{
-          display: "inline-flex", alignItems: "center", gap: "4px",
-          padding: "2px 8px", borderRadius: "50px",
-          background: isDarkMode ? "rgba(13,157,184,0.15)" : "rgba(13,157,184,0.1)",
-          border: "1px solid rgba(13,157,184,0.3)",
-          fontSize: "0.72rem", fontWeight: 700, color: "#0d9db8",
-        }}>
-          📍 {formatDistance(km)}
-        </span>
-        <span style={{
-          display: "inline-flex", alignItems: "center", gap: "4px",
-          padding: "2px 8px", borderRadius: "50px",
-          background: isDarkMode ? "rgba(59,130,246,0.12)" : "rgba(59,130,246,0.08)",
-          border: "1px solid rgba(59,130,246,0.25)",
-          fontSize: "0.72rem", fontWeight: 600, color: isDarkMode ? "#93c5fd" : "#3b82f6",
-        }}>
-          🚗 {drive}
-        </span>
-      </div>
-    );
-  }
-
   return (
     <div style={{
-      display: "grid", gridTemplateColumns: "1fr 1fr",
-      gap: "8px", marginBottom: "12px",
+      display: "flex", alignItems: "center", gap: "12px",
+      fontSize: "0.8rem",
+      color: isDarkMode ? "#94a3b8" : "#64748b",
+      marginBottom: compact ? "0" : "12px",
+      flexWrap: "wrap",
     }}>
-      {/* Distance */}
-      <div style={{
-        display: "flex", flexDirection: "column", alignItems: "center",
-        padding: "10px 8px", borderRadius: "12px",
-        background: isDarkMode ? "rgba(13,157,184,0.1)" : "rgba(13,157,184,0.07)",
-        border: "1px solid rgba(13,157,184,0.25)",
-      }}>
-        <span style={{ fontSize: "1rem", marginBottom: "3px" }}>📍</span>
-        <span style={{ fontSize: "0.88rem", fontWeight: 800, color: "#0d9db8", lineHeight: 1 }}>
-          {formatDistance(km)}
-        </span>
-        <span style={{ fontSize: "0.68rem", color: isDarkMode ? "#64748b" : "#94a3b8", marginTop: "3px" }}>
-          Distance
-        </span>
-      </div>
-
-      {/* Drive time */}
-      <div style={{
-        display: "flex", flexDirection: "column", alignItems: "center",
-        padding: "10px 8px", borderRadius: "12px",
-        background: isDarkMode ? "rgba(59,130,246,0.1)" : "rgba(59,130,246,0.07)",
-        border: "1px solid rgba(59,130,246,0.2)",
-      }}>
-        <span style={{ fontSize: "1rem", marginBottom: "3px" }}>🚗</span>
-        <span style={{ fontSize: "0.88rem", fontWeight: 800, color: isDarkMode ? "#93c5fd" : "#3b82f6", lineHeight: 1 }}>
-          {drive}
-        </span>
-        <span style={{ fontSize: "0.68rem", color: isDarkMode ? "#64748b" : "#94a3b8", marginTop: "3px" }}>
-          By Car
-        </span>
-      </div>
-
-      {/* Walk time — full width */}
-      <div style={{
-        gridColumn: "1 / -1",
-        display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-        padding: "8px", borderRadius: "12px",
-        background: isDarkMode ? "rgba(16,185,129,0.08)" : "rgba(16,185,129,0.06)",
-        border: "1px solid rgba(16,185,129,0.2)",
-      }}>
-        <span style={{ fontSize: "0.9rem" }}>🚶</span>
-        <span style={{ fontSize: "0.82rem", fontWeight: 700, color: "#10b981" }}>{walk}</span>
-        <span style={{ fontSize: "0.72rem", color: isDarkMode ? "#64748b" : "#94a3b8" }}>on foot</span>
-      </div>
+      <span>📍 <strong style={{ color: "#0d9db8" }}>{formatDistance(km)}</strong></span>
+      <span style={{ color: isDarkMode ? "#334155" : "#cbd5e1" }}>·</span>
+      <span>🚗 <strong style={{ color: isDarkMode ? "#93c5fd" : "#3b82f6" }}>{drive}</strong></span>
+      <span style={{ color: isDarkMode ? "#334155" : "#cbd5e1" }}>·</span>
+      <span>🚶 <strong style={{ color: "#10b981" }}>{walk}</strong></span>
     </div>
   );
 }
@@ -1052,7 +991,6 @@ export default function FinderMap() {
                                 userLocation={userLocation}
                                 facility={selectedFacility}
                                 isDarkMode={isDarkMode}
-                                compact={true}
                               />
                             </div>
                             <div style={{ marginBottom: "10px" }}>
