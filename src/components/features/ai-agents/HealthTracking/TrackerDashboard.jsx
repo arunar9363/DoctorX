@@ -9,7 +9,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 const API_BASE_URL = window.location.hostname === 'localhost'
   ? 'http://localhost:8000'
-  : 'https://www.doctorxcare.in';
+  : import.meta.env.VITE_API_URL;
 
 const TrackerDashboard = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);

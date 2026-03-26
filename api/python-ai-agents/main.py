@@ -29,6 +29,8 @@ origins = [
     "http://localhost:3000",
     "http://localhost:8000",
     "https://doctorxcare.in",
+    "http://localhost:5173",    
+    "https://doctorxcare.in",
     "https://www.doctorxcare.in", 
 ]
 #    "https://app.doctorxcare.in",

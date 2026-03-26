@@ -218,7 +218,8 @@ export default function FinderMap() {
     setSelectedFacility(null);
 
     try {
-      const url = `/api/v1/nearby-finder?latitude=${userLocation.lat}&longitude=${userLocation.lng}&facility_type=${facilityType}`;
+      const BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      const url = `${BASE}/api/v1/nearby-finder?latitude=${userLocation.lat}&longitude=${userLocation.lng}&facility_type=${facilityType}`;
       const res = await fetch(url);
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));

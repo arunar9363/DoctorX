@@ -238,7 +238,7 @@ const LabUpload = () => {
     formData.append("file", file);
 
     try {
-      const response = await fetch("/api/medical-analysis", {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api/medical-analysis`, {
         method: "POST",
         body: formData,
       });
