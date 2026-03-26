@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { GoogleMap, useJsApiLoader, Marker, InfoWindow } from "@react-google-maps/api";
 
+// ─── IMPORTANT: Declare libraries OUTSIDE component to avoid re-render loops ──
+const GOOGLE_MAPS_LIBRARIES = ["places"];
+
 // ─── Constants ────────────────────────────────────────────────────────────────
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_Maps_API_KEY || "";
 
@@ -85,19 +88,24 @@ function StarRating({ rating }) {
 }
 
 // ─── Skeleton Card ─────────────────────────────────────────────────────────────
-function SkeletonCard() {
+function SkeletonCard({ isDarkMode }) {
   return (
     <div style={{
-      background: "linear-gradient(135deg, rgba(30,41,59,0.95), rgba(15,23,42,0.95))",
-      borderRadius: "16px",
+      background: isDarkMode
+        ? "linear-gradient(135deg, rgba(30,41,59,0.95), rgba(15,23,42,0.95))"
+        : "#ffffff",
+      borderRadius: "20px",
       padding: "20px",
-      border: "1px solid rgba(255,255,255,0.05)",
+      border: isDarkMode ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(148,163,184,0.15)",
+      boxShadow: isDarkMode ? "0 4px 16px rgba(0,0,0,0.2)" : "0 4px 16px rgba(0,0,0,0.06)",
     }}>
       {[80, 50, 60].map((w, i) => (
         <div key={i} style={{
           height: i === 0 ? "18px" : "12px",
           width: `${w}%`,
-          background: "linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%)",
+          background: isDarkMode
+            ? "linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%)"
+            : "linear-gradient(90deg, rgba(0,0,0,0.04) 25%, rgba(0,0,0,0.08) 50%, rgba(0,0,0,0.04) 75%)",
           backgroundSize: "200% 100%",
           borderRadius: "6px",
           marginBottom: "10px",
@@ -110,7 +118,7 @@ function SkeletonCard() {
 
 // ─── Main Component ────────────────────────────────────────────────────────────
 export default function FinderMap() {
-  const [, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [isPageLoading, setIsPageLoading] = useState(true);
   const [locationLoading, setLocationLoading] = useState(true);
   const [facilitiesLoading, setFacilitiesLoading] = useState(false);
@@ -126,9 +134,12 @@ export default function FinderMap() {
   const isSmall = typeof window !== "undefined" && window.matchMedia("(max-width: 480px)").matches;
 
   // ── Load Google Maps JS SDK ───────────────────────────────────────────────
+  // FIX: Use the constant declared outside this component to prevent
+  // "LoadScript has been reloaded unintentionally" errors and the
+  // "This page can't load Google Maps correctly" dialog.
   const { isLoaded: mapsLoaded, loadError: mapsLoadError } = useJsApiLoader({
     googleMapsApiKey: GOOGLE_MAPS_API_KEY,
-    libraries: ["places"],
+    libraries: GOOGLE_MAPS_LIBRARIES,
   });
 
   // ── Theme detection ───────────────────────────────────────────────────────
@@ -156,9 +167,10 @@ export default function FinderMap() {
       @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
       @keyframes shimmer { 0%{background-position:-200% 0;} 100%{background-position:200% 0;} }
       @keyframes ripple { 0%{transform:scale(0);opacity:1;} 100%{transform:scale(2.5);opacity:0;} }
+      @keyframes shimmerLight { 0%{background-position:-1000px 0;} 100%{background-position:1000px 0;} }
 
-      .facility-card { transition: all 0.35s cubic-bezier(0.4,0,0.2,1); }
-      .facility-card:hover { transform: translateY(-4px); }
+      .facility-card { transition: all 0.5s cubic-bezier(0.4,0,0.2,1); }
+      .facility-card:hover { transform: translateY(-8px) scale(1.01); }
       .filter-btn { transition: all 0.3s cubic-bezier(0.4,0,0.2,1); }
       .filter-btn:hover { transform: translateY(-2px); }
       .gradient-text {
@@ -168,7 +180,20 @@ export default function FinderMap() {
         background-clip: text;
       }
       .nav-btn { transition: all 0.3s ease; }
-      .nav-btn:hover { transform: translateY(-1px); }
+      .nav-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(13,157,184,0.4) !important; }
+
+      .card-glow-bar {
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #0d9db8, #3b82f6, #0d9db8);
+        background-size: 200% 100%;
+        border-radius: 20px 20px 0 0;
+        opacity: 0;
+        animation: shimmerLight 2s infinite;
+        transition: opacity 0.3s ease;
+      }
+      .facility-card:hover .card-glow-bar { opacity: 1; }
 
       ::-webkit-scrollbar { width: 6px; }
       ::-webkit-scrollbar-track { background: rgba(15,23,42,0.5); }
@@ -262,12 +287,14 @@ export default function FinderMap() {
   const activeFilterConfig = FILTER_OPTIONS.find(f => f.id === activeFilter) || FILTER_OPTIONS[0];
 
   // ─────────────────────────────────────────────────────────────────────────
-  // STYLES
+  // STYLES — now light/dark aware, matching Services.jsx
   // ─────────────────────────────────────────────────────────────────────────
   const S = {
     pageLoader: {
       position: "fixed", top: 0, left: 0, width: "100%", height: "100%",
-      background: "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)",
+      background: isDarkMode
+        ? "linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)"
+        : "linear-gradient(135deg, #ffffff 0%, #f0f9ff 50%, #ffffff 100%)",
       display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
       zIndex: 9999,
       animation: isPageLoading ? "none" : "fadeOut 0.5s ease-out 0.1s forwards",
@@ -285,37 +312,54 @@ export default function FinderMap() {
       WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text",
       fontFamily: "'Inter', sans-serif",
     },
+    // ── Page wrapper — matches Services.jsx backgrounds ──────────────────
     pageWrapper: {
       width: "100%", minHeight: "100vh",
-      background: "linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #0f172a 50%, #1e1b4b 75%, #0f172a 100%)",
+      background: isDarkMode
+        ? "linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #0f172a 50%, #1e1b4b 75%, #0f172a 100%)"
+        : "linear-gradient(135deg, #ffffff 0%, #f0f9ff 25%, #e0f2fe 50%, #f0f9ff 75%, #ffffff 100%)",
       position: "relative", overflow: "hidden", fontFamily: "'Inter', sans-serif",
     },
     bgPattern: {
-      position: "absolute", top: 0, left: 0, right: 0, bottom: 0, opacity: 0.03, pointerEvents: "none",
-      backgroundImage: "radial-gradient(circle at 25px 25px, #60a5fa 2%, transparent 0%), radial-gradient(circle at 75px 75px, #0d9db8 2%, transparent 0%)",
+      position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+      opacity: isDarkMode ? 0.03 : 0.05,
+      pointerEvents: "none",
+      backgroundImage: `radial-gradient(circle at 25px 25px, ${isDarkMode ? "#60a5fa" : "#0d9db8"} 2%, transparent 0%), radial-gradient(circle at 75px 75px, ${isDarkMode ? "#0d9db8" : "#60a5fa"} 2%, transparent 0%)`,
       backgroundSize: "100px 100px",
     },
     contentWrap: {
       maxWidth: "1500px", margin: "0 auto",
-      padding: isSmall ? "90px 12px 40px" : isMobile ? "100px 16px 40px" : "120px 32px 60px",
+      padding: isSmall ? "90px 16px 40px" : isMobile ? "100px 16px 40px" : "120px 40px 60px",
       position: "relative", zIndex: 1,
     },
-    // Header
-    header: { marginBottom: isSmall ? "24px" : "36px", animation: "fadeInUp 0.6s ease-out" },
+    // ── Header ───────────────────────────────────────────────────────────
+    header: { marginBottom: isSmall ? "24px" : "36px", animation: "fadeInUp 0.8s ease-out" },
     badge: {
-      display: "inline-block", padding: "6px 18px",
-      background: "linear-gradient(135deg, rgba(13,157,184,0.15), rgba(96,165,250,0.15))",
-      border: "1px solid rgba(13,157,184,0.3)", borderRadius: "50px",
+      display: "inline-block", padding: "8px 20px",
+      background: isDarkMode
+        ? "linear-gradient(135deg, rgba(13,157,184,0.15), rgba(96,165,250,0.15))"
+        : "linear-gradient(135deg, rgba(13,157,184,0.1), rgba(59,130,246,0.1))",
+      border: `1px solid ${isDarkMode ? "rgba(13,157,184,0.3)" : "rgba(13,157,184,0.2)"}`,
+      borderRadius: "50px",
       fontSize: "0.72rem", fontWeight: 700, letterSpacing: "1.5px", textTransform: "uppercase",
-      color: "#60a5fa", marginBottom: "14px",
+      color: isDarkMode ? "#60a5fa" : "#0d9db8",
+      marginBottom: "14px",
+      animation: "scaleIn 0.6s ease-out",
     },
     heroTitle: {
-      fontSize: isSmall ? "1.8rem" : isMobile ? "2.2rem" : "2.8rem",
-      fontWeight: 900, lineHeight: 1.2, color: "#f9fafb",
+      fontSize: isSmall ? "1.8rem" : isMobile ? "2.2rem" : "3rem",
+      fontWeight: 900, lineHeight: 1.2,
+      color: isDarkMode ? "#f9fafb" : "#0f172a",
       fontFamily: "'Merriweather', serif", marginBottom: "10px",
+      animation: "slideInLeft 0.8s ease-out 0.2s backwards",
     },
-    heroSub: { fontSize: isSmall ? "0.9rem" : "1rem", color: "#9ca3af", lineHeight: 1.6, maxWidth: "680px" },
-    // Stats bar
+    heroSub: {
+      fontSize: isSmall ? "0.9rem" : "1.1rem",
+      color: isDarkMode ? "#9ca3af" : "#64748b",
+      lineHeight: 1.6, maxWidth: "680px",
+      animation: "fadeInUp 0.8s ease-out 0.4s backwards",
+    },
+    // ── Stats bar ─────────────────────────────────────────────────────────
     statsBar: {
       display: "flex", gap: isSmall ? "12px" : "20px", marginBottom: "28px",
       flexWrap: "wrap", animation: "fadeInUp 0.6s ease-out 0.1s backwards",
@@ -323,16 +367,18 @@ export default function FinderMap() {
     statChip: {
       display: "flex", alignItems: "center", gap: "8px",
       padding: "8px 16px",
-      background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+      background: isDarkMode ? "rgba(255,255,255,0.04)" : "rgba(255,255,255,0.8)",
+      border: isDarkMode ? "1px solid rgba(255,255,255,0.08)" : "1px solid rgba(148,163,184,0.2)",
       borderRadius: "50px",
+      boxShadow: isDarkMode ? "none" : "0 2px 8px rgba(0,0,0,0.05)",
     },
     statDot: (color) => ({
       width: "8px", height: "8px", borderRadius: "50%", background: color,
       animation: "pulse 2s infinite",
     }),
-    statText: { fontSize: "0.82rem", color: "#94a3b8", fontWeight: 500 },
-    statBold: { color: "#e2e8f0", fontWeight: 700 },
-    // Filters
+    statText: { fontSize: "0.82rem", color: isDarkMode ? "#94a3b8" : "#64748b", fontWeight: 500 },
+    statBold: { color: isDarkMode ? "#e2e8f0" : "#0f172a", fontWeight: 700 },
+    // ── Filters ───────────────────────────────────────────────────────────
     filtersWrap: {
       display: "flex", gap: isSmall ? "8px" : "12px", marginBottom: "24px",
       flexWrap: "wrap", animation: "fadeInUp 0.6s ease-out 0.15s backwards",
@@ -341,42 +387,47 @@ export default function FinderMap() {
       display: "inline-flex", alignItems: "center", gap: "8px",
       padding: isSmall ? "9px 16px" : "10px 20px",
       borderRadius: "50px",
-      border: isActive ? `2px solid ${cfg.color}` : "2px solid rgba(255,255,255,0.08)",
-      background: isActive ? cfg.bg : "rgba(255,255,255,0.03)",
-      color: isActive ? cfg.color : "#94a3b8",
+      border: isActive ? `2px solid ${cfg.color}` : `2px solid ${isDarkMode ? "rgba(255,255,255,0.08)" : "rgba(148,163,184,0.25)"}`,
+      background: isActive ? cfg.bg : isDarkMode ? "rgba(255,255,255,0.03)" : "rgba(255,255,255,0.7)",
+      color: isActive ? cfg.color : isDarkMode ? "#94a3b8" : "#64748b",
       fontWeight: isActive ? 700 : 500,
       fontSize: isSmall ? "0.8rem" : "0.88rem",
       cursor: "pointer",
-      boxShadow: isActive ? `0 0 16px ${cfg.color}30` : "none",
+      boxShadow: isActive ? `0 0 16px ${cfg.color}30` : isDarkMode ? "none" : "0 2px 8px rgba(0,0,0,0.06)",
       outline: "none",
       fontFamily: "'Inter', sans-serif",
     }),
     filterIcon: { fontSize: isSmall ? "1rem" : "1.1rem" },
-    // Main grid
+    // ── Main grid ─────────────────────────────────────────────────────────
     mainGrid: {
       display: "grid",
-      gridTemplateColumns: isMobile ? "1fr" : "1fr 380px",
-      gridTemplateRows: isMobile ? "460px auto" : "620px",
-      gap: isSmall ? "16px" : "24px",
+      gridTemplateColumns: isMobile ? "1fr" : "1fr 400px",
+      gridTemplateRows: isMobile ? "460px auto" : "640px",
+      gap: isSmall ? "16px" : "28px",
       animation: "scaleIn 0.7s ease-out 0.2s backwards",
     },
-    // Map panel
+    // ── Map panel ─────────────────────────────────────────────────────────
     mapPanel: {
       position: "relative",
-      borderRadius: "20px", overflow: "hidden",
-      border: "1px solid rgba(13,157,184,0.2)",
-      boxShadow: "0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.03)",
-      background: "#0d1a2d",
+      borderRadius: "24px", overflow: "hidden",
+      border: isDarkMode ? "1px solid rgba(13,157,184,0.2)" : "1px solid rgba(13,157,184,0.15)",
+      boxShadow: isDarkMode
+        ? "0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.03)"
+        : "0 20px 60px rgba(0,0,0,0.1), 0 0 0 1px rgba(148,163,184,0.1)",
+      background: isDarkMode ? "#0d1a2d" : "#e8f4f8",
     },
     mapTopBar: {
       position: "absolute", top: 0, left: 0, right: 0, zIndex: 10,
       padding: isSmall ? "10px 12px" : "14px 18px",
-      background: "linear-gradient(180deg, rgba(15,23,42,0.95) 0%, transparent 100%)",
+      background: isDarkMode
+        ? "linear-gradient(180deg, rgba(15,23,42,0.95) 0%, transparent 100%)"
+        : "linear-gradient(180deg, rgba(255,255,255,0.95) 0%, transparent 100%)",
       display: "flex", alignItems: "center", justifyContent: "space-between",
     },
     mapLabel: {
       display: "flex", alignItems: "center", gap: "8px",
-      fontSize: "0.82rem", fontWeight: 600, color: "#94a3b8",
+      fontSize: "0.82rem", fontWeight: 600,
+      color: isDarkMode ? "#94a3b8" : "#475569",
     },
     liveDot: {
       width: "7px", height: "7px", borderRadius: "50%", background: "#10b981",
@@ -384,92 +435,141 @@ export default function FinderMap() {
     },
     viewToggle: {
       display: isMobile ? "flex" : "none",
-      gap: "4px", background: "rgba(255,255,255,0.06)", borderRadius: "10px", padding: "4px",
+      gap: "4px",
+      background: isDarkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)",
+      borderRadius: "10px", padding: "4px",
     },
     toggleBtn: (isActive) => ({
       padding: "5px 12px", borderRadius: "7px", border: "none",
-      background: isActive ? "rgba(13,157,184,0.25)" : "transparent",
-      color: isActive ? "#60a5fa" : "#6b7280",
+      background: isActive
+        ? (isDarkMode ? "rgba(13,157,184,0.25)" : "rgba(13,157,184,0.15)")
+        : "transparent",
+      color: isActive ? "#0d9db8" : (isDarkMode ? "#6b7280" : "#9ca3af"),
       fontSize: "0.75rem", fontWeight: 600, cursor: "pointer",
       fontFamily: "'Inter', sans-serif",
     }),
-    // List panel
+    // ── List panel ────────────────────────────────────────────────────────
     listPanel: {
-      display: "flex", flexDirection: "column", height: isMobile ? "auto" : "620px",
-      ...(isMobile && isListView ? {} : {}),
+      display: "flex", flexDirection: "column", height: isMobile ? "auto" : "640px",
     },
     listHeader: {
       display: "flex", alignItems: "center", justifyContent: "space-between",
       marginBottom: "14px", flexShrink: 0,
+      padding: "0 2px",
     },
     listTitle: {
-      fontSize: "1rem", fontWeight: 700, color: "#e2e8f0",
-      fontFamily: "'Inter', sans-serif",
+      fontSize: "1.1rem", fontWeight: 700,
+      color: isDarkMode ? "#e2e8f0" : "#0f172a",
+      fontFamily: "'Merriweather', serif",
     },
     countBadge: {
-      padding: "3px 10px", borderRadius: "50px",
-      background: "rgba(13,157,184,0.15)", border: "1px solid rgba(13,157,184,0.3)",
-      fontSize: "0.78rem", fontWeight: 700, color: "#60a5fa",
+      padding: "4px 12px", borderRadius: "50px",
+      background: isDarkMode ? "rgba(13,157,184,0.15)" : "rgba(13,157,184,0.1)",
+      border: "1px solid rgba(13,157,184,0.3)",
+      fontSize: "0.78rem", fontWeight: 700, color: "#0d9db8",
     },
     listScroll: {
-      flex: 1, overflowY: "auto", paddingRight: "4px",
-      display: "flex", flexDirection: "column", gap: "12px",
-      maxHeight: isMobile ? "none" : "580px",
+      flex: 1, overflowY: "auto", paddingRight: "6px",
+      display: "flex", flexDirection: "column", gap: "14px",
+      maxHeight: isMobile ? "none" : "610px",
     },
+    // ── Improved facility card — matches Services card style ──────────────
     facilityCard: (isSelected) => ({
-      background: isSelected
-        ? "linear-gradient(135deg, rgba(13,157,184,0.18), rgba(59,130,246,0.12))"
-        : "linear-gradient(135deg, rgba(30,41,59,0.95), rgba(15,23,42,0.95))",
-      border: isSelected
-        ? "1px solid rgba(13,157,184,0.5)"
-        : "1px solid rgba(255,255,255,0.05)",
-      borderRadius: "16px", padding: isSmall ? "14px 16px" : "16px 18px",
+      background: isDarkMode
+        ? (isSelected
+          ? "linear-gradient(135deg, rgba(13,157,184,0.18), rgba(59,130,246,0.12))"
+          : "linear-gradient(135deg, rgba(30,41,59,0.95) 0%, rgba(15,23,42,0.95) 100%)")
+        : (isSelected
+          ? "linear-gradient(135deg, rgba(13,157,184,0.08), rgba(59,130,246,0.05))"
+          : "#ffffff"),
+      backdropFilter: "blur(20px)",
+      border: isDarkMode
+        ? (isSelected ? "1px solid rgba(13,157,184,0.5)" : "1px solid rgba(255,255,255,0.05)")
+        : (isSelected ? "1.5px solid rgba(13,157,184,0.4)" : "1px solid rgba(148,163,184,0.15)"),
+      borderRadius: "20px",
+      padding: isSmall ? "14px 16px" : "18px 20px",
       cursor: "pointer",
-      boxShadow: isSelected ? "0 4px 20px rgba(13,157,184,0.2)" : "0 2px 8px rgba(0,0,0,0.2)",
+      boxShadow: isDarkMode
+        ? (isSelected ? "0 8px 32px rgba(13,157,184,0.25)" : "0 4px 16px rgba(0,0,0,0.25)")
+        : (isSelected ? "0 8px 32px rgba(13,157,184,0.18)" : "0 4px 16px rgba(0,0,0,0.07)"),
       position: "relative", overflow: "hidden",
+      transition: "all 0.5s cubic-bezier(0.4,0,0.2,1)",
     }),
     cardAccent: (cfg) => ({
-      position: "absolute", left: 0, top: 0, bottom: 0, width: "3px",
+      position: "absolute", left: 0, top: 0, bottom: 0, width: "4px",
       background: `linear-gradient(180deg, ${cfg.color}, transparent)`,
-      borderRadius: "3px 0 0 3px",
+      borderRadius: "4px 0 0 4px",
+    }),
+    // Card rank number — like Services card number
+    cardRank: () => ({
+      position: "absolute", top: "14px", right: "14px",
+      width: "28px", height: "28px", borderRadius: "50%",
+      background: isDarkMode ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.04)",
+      border: isDarkMode ? "1px solid rgba(255,255,255,0.06)" : "1px solid rgba(148,163,184,0.2)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      fontSize: "0.7rem", fontWeight: 700,
+      color: isDarkMode ? "#475569" : "#94a3b8",
+    }),
+    cardIcon: (cfg) => ({
+      display: "inline-flex", alignItems: "center", justifyContent: "center",
+      width: "40px", height: "40px", borderRadius: "12px",
+      background: `${cfg.bg}`,
+      border: `1px solid ${cfg.color}30`,
+      fontSize: "1.2rem",
+      marginBottom: "10px",
+      boxShadow: `0 4px 12px ${cfg.color}20`,
     }),
     cardName: {
-      fontSize: isSmall ? "0.9rem" : "0.95rem", fontWeight: 700, color: "#f1f5f9",
-      marginBottom: "4px", lineHeight: 1.3,
+      fontSize: isSmall ? "0.92rem" : "0.98rem", fontWeight: 700,
+      color: isDarkMode ? "#f1f5f9" : "#0f172a",
+      marginBottom: "5px", lineHeight: 1.3,
       display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+      fontFamily: "'Merriweather', serif",
     },
     cardAddr: {
-      fontSize: "0.78rem", color: "#64748b", marginBottom: "8px", lineHeight: 1.4,
+      fontSize: "0.78rem",
+      color: isDarkMode ? "#64748b" : "#94a3b8",
+      marginBottom: "10px", lineHeight: 1.4,
       display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
     },
-    cardMeta: { display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "6px" },
+    cardMeta: {
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      flexWrap: "wrap", gap: "6px",
+    },
     openBadge: (isOpen) => ({
-      padding: "2px 8px", borderRadius: "50px", fontSize: "0.7rem", fontWeight: 700,
+      padding: "3px 10px", borderRadius: "50px", fontSize: "0.7rem", fontWeight: 700,
       background: isOpen ? "rgba(16,185,129,0.15)" : "rgba(239,68,68,0.12)",
       color: isOpen ? "#10b981" : "#ef4444",
       border: `1px solid ${isOpen ? "rgba(16,185,129,0.3)" : "rgba(239,68,68,0.25)"}`,
     }),
     navBtn: {
       display: "inline-flex", alignItems: "center", gap: "5px",
-      padding: "5px 12px", borderRadius: "8px", border: "none",
+      padding: "7px 14px", borderRadius: "10px", border: "none",
       background: "linear-gradient(135deg, #0d9db8, #3b82f6)",
       color: "#fff", fontSize: "0.75rem", fontWeight: 700, cursor: "pointer",
       fontFamily: "'Inter', sans-serif", textTransform: "uppercase", letterSpacing: "0.4px",
+      boxShadow: "0 4px 12px rgba(13,157,184,0.25)",
     },
-    // InfoWindow
+    // ── InfoWindow ─────────────────────────────────────────────────────────
     infoWinWrap: {
-      background: "#0f172a", borderRadius: "12px",
+      background: isDarkMode ? "#0f172a" : "#ffffff",
+      borderRadius: "12px",
       padding: "14px 16px", minWidth: "220px", maxWidth: "280px",
       border: "1px solid rgba(13,157,184,0.3)",
       fontFamily: "'Inter', sans-serif",
     },
     infoWinName: {
-      fontSize: "0.95rem", fontWeight: 700, color: "#f1f5f9",
+      fontSize: "0.95rem", fontWeight: 700,
+      color: isDarkMode ? "#f1f5f9" : "#0f172a",
       marginBottom: "4px", lineHeight: 1.3,
     },
-    infoWinAddr: { fontSize: "0.78rem", color: "#64748b", marginBottom: "10px", lineHeight: 1.4 },
+    infoWinAddr: {
+      fontSize: "0.78rem",
+      color: isDarkMode ? "#64748b" : "#94a3b8",
+      marginBottom: "10px", lineHeight: 1.4,
+    },
     infoWinMeta: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: "8px" },
-    // Error / Empty states
+    // ── Error / empty states ───────────────────────────────────────────────
     errorBox: {
       padding: "20px 24px",
       background: "rgba(239,68,68,0.08)",
@@ -483,9 +583,17 @@ export default function FinderMap() {
       padding: "48px 24px", textAlign: "center",
     },
     emptyIcon: { fontSize: "3rem", marginBottom: "16px", animation: "float 3s ease-in-out infinite" },
-    emptyTitle: { fontSize: "1rem", fontWeight: 700, color: "#e2e8f0", marginBottom: "6px" },
-    emptyText: { fontSize: "0.85rem", color: "#64748b", lineHeight: 1.5 },
-    // Location loading
+    emptyTitle: {
+      fontSize: "1rem", fontWeight: 700,
+      color: isDarkMode ? "#e2e8f0" : "#0f172a",
+      marginBottom: "6px",
+    },
+    emptyText: {
+      fontSize: "0.85rem",
+      color: isDarkMode ? "#64748b" : "#94a3b8",
+      lineHeight: 1.5,
+    },
+    // ── Location loading ───────────────────────────────────────────────────
     locationLoadWrap: {
       display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
       minHeight: "340px", gap: "20px",
@@ -496,8 +604,14 @@ export default function FinderMap() {
       borderTop: "4px solid #0d9db8",
       borderRadius: "50%", animation: "rotation 1s linear infinite",
     },
-    locationText: { fontSize: "1.05rem", fontWeight: 600, color: "#94a3b8" },
-    locationSub: { fontSize: "0.85rem", color: "#64748b" },
+    locationText: {
+      fontSize: "1.05rem", fontWeight: 600,
+      color: isDarkMode ? "#94a3b8" : "#475569",
+    },
+    locationSub: {
+      fontSize: "0.85rem",
+      color: isDarkMode ? "#64748b" : "#94a3b8",
+    },
   };
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -540,7 +654,7 @@ export default function FinderMap() {
         <div style={S.pageLoader}>
           <div style={S.spinner} />
           <div style={S.loaderText}>Loading DoctorXCare</div>
-          <div style={{ fontSize: "0.85rem", color: "#64748b", marginTop: "6px", fontFamily: "'Inter',sans-serif" }}>
+          <div style={{ fontSize: "0.85rem", color: isDarkMode ? "#64748b" : "#94a3b8", marginTop: "6px", fontFamily: "'Inter',sans-serif" }}>
             Nearby Medical Finder
           </div>
         </div>
@@ -691,7 +805,7 @@ export default function FinderMap() {
                     onLoad={onMapLoad}
                     onUnmount={onMapUnmount}
                     options={{
-                      styles: DARK_MAP_STYLE,
+                      styles: isDarkMode ? DARK_MAP_STYLE : [],
                       disableDefaultUI: false,
                       zoomControl: true,
                       mapTypeControl: false,
@@ -777,11 +891,14 @@ export default function FinderMap() {
                   </GoogleMap>
                 ) : !mapsLoadError && (
                   <div style={{
-                    width: "100%", height: "100%", background: "#0d1a2d",
+                    width: "100%", height: "100%",
+                    background: isDarkMode ? "#0d1a2d" : "#e8f4f8",
                     display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: "16px",
                   }}>
                     <div style={S.bigSpinner} />
-                    <div style={{ color: "#64748b", fontSize: "0.9rem" }}>Loading Google Maps…</div>
+                    <div style={{ color: isDarkMode ? "#64748b" : "#94a3b8", fontSize: "0.9rem" }}>
+                      Loading Google Maps…
+                    </div>
                   </div>
                 )}
               </div>
@@ -802,7 +919,7 @@ export default function FinderMap() {
 
                 <div style={S.listScroll}>
                   {facilitiesLoading ? (
-                    Array(5).fill(0).map((_, i) => <SkeletonCard key={i} />)
+                    Array(5).fill(0).map((_, i) => <SkeletonCard key={i} isDarkMode={isDarkMode} />)
                   ) : facilities.length === 0 ? (
                     <div style={S.emptyState}>
                       <div style={S.emptyIcon}>🏥</div>
@@ -820,34 +937,95 @@ export default function FinderMap() {
                           className="facility-card"
                           style={{
                             ...S.facilityCard(isSelected),
-                            animation: `fadeInUp 0.4s ease-out ${idx * 0.05}s backwards`,
+                            animation: `fadeInUp 0.5s ease-out ${idx * 0.06}s backwards`,
                           }}
                           onClick={() => {
                             handleMarkerClick(facility);
                             if (isMobile) setIsListView(false);
                           }}
                         >
+                          {/* Glow bar on hover (via CSS class) */}
+                          <div className="card-glow-bar" />
+
+                          {/* Left accent stripe */}
                           <div style={S.cardAccent(activeFilterConfig)} />
-                          <div style={{ paddingLeft: "8px" }}>
+
+                          {/* Rank number */}
+                          <div style={S.cardRank(idx)}>{idx + 1}</div>
+
+                          <div style={{ paddingLeft: "10px", paddingRight: "6px" }}>
+                            {/* Category icon chip */}
+                            <div style={S.cardIcon(activeFilterConfig)}>
+                              {activeFilterConfig.icon}
+                            </div>
+
+                            {/* Name */}
                             <div style={S.cardName}>{facility.name}</div>
+
+                            {/* Address */}
                             <div style={S.cardAddr}>📍 {facility.vicinity}</div>
-                            <div style={S.cardMeta}>
+
+                            {/* Features row — ratings + open badge */}
+                            <div style={{
+                              display: "flex", flexDirection: "column", gap: "8px",
+                              marginBottom: "14px",
+                            }}>
+                              {/* Rating row */}
                               <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
                                 <StarRating rating={facility.rating} />
-                                {facility.open_now !== null && facility.open_now !== undefined && (
-                                  <span style={S.openBadge(facility.open_now)}>
-                                    {facility.open_now ? "Open" : "Closed"}
+                                {facility.user_ratings_total > 0 && (
+                                  <span style={{
+                                    fontSize: "0.72rem",
+                                    color: isDarkMode ? "#6b7280" : "#94a3b8",
+                                  }}>
+                                    ({facility.user_ratings_total.toLocaleString()} reviews)
                                   </span>
                                 )}
                               </div>
-                              <button
-                                className="nav-btn"
-                                style={S.navBtn}
-                                onClick={(e) => { e.stopPropagation(); openNavigation(facility); }}
-                              >
-                                🧭 Go
-                              </button>
+
+                              {/* Open status as feature item — matches Services checkmarks style */}
+                              {facility.open_now !== null && facility.open_now !== undefined && (
+                                <div style={{
+                                  display: "flex", alignItems: "center", gap: "8px",
+                                  fontSize: "0.82rem",
+                                  color: isDarkMode ? "#d1d5db" : "#475569",
+                                }}>
+                                  <div style={{
+                                    width: "20px", height: "20px", minWidth: "20px",
+                                    borderRadius: "50%",
+                                    background: facility.open_now
+                                      ? "linear-gradient(135deg, #10b981, #059669)"
+                                      : "linear-gradient(135deg, #ef4444, #dc2626)",
+                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                    color: "#ffffff", fontSize: "0.65rem", fontWeight: "bold",
+                                    flexShrink: 0,
+                                    boxShadow: facility.open_now
+                                      ? "0 4px 12px rgba(16,185,129,0.35)"
+                                      : "0 4px 12px rgba(239,68,68,0.3)",
+                                  }}>
+                                    {facility.open_now ? "✓" : "✕"}
+                                  </div>
+                                  <span style={{ fontWeight: 500 }}>
+                                    {facility.open_now ? "Open Now" : "Currently Closed"}
+                                  </span>
+                                </div>
+                              )}
                             </div>
+
+                            {/* CTA button — matches Services ctaButton style */}
+                            <button
+                              className="nav-btn"
+                              style={{
+                                ...S.navBtn,
+                                width: "100%", justifyContent: "center",
+                                padding: "10px 16px", borderRadius: "12px",
+                                fontSize: "0.85rem", fontWeight: 600,
+                                textTransform: "none", letterSpacing: "0",
+                              }}
+                              onClick={(e) => { e.stopPropagation(); openNavigation(facility); }}
+                            >
+                              Get Directions &nbsp;→
+                            </button>
                           </div>
                         </div>
                       );
@@ -861,7 +1039,9 @@ export default function FinderMap() {
           {/* ── Footer note ──────────────────────────────────────────────── */}
           <div style={{
             marginTop: "28px", textAlign: "center",
-            fontSize: "0.78rem", color: "#475569", lineHeight: 1.5,
+            fontSize: "0.78rem",
+            color: isDarkMode ? "#475569" : "#94a3b8",
+            lineHeight: 1.5,
           }}>
             🔐 Location data is only used for this search and is never stored.
             Results powered by Google Places API. For emergencies, call <strong style={{ color: "#ef4444" }}>112</strong>.
