@@ -410,19 +410,22 @@ export default function FinderMap() {
     mapPanel: {
       position: "relative",
       borderRadius: "24px", overflow: "hidden",
-      border: isDarkMode ? "1px solid rgba(13,157,184,0.2)" : "1px solid rgba(13,157,184,0.15)",
+      border: isDarkMode
+        ? "2px solid rgba(13,157,184,0.55)"
+        : "2px solid rgba(13,157,184,0.45)",
       boxShadow: isDarkMode
-        ? "0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.03)"
-        : "0 20px 60px rgba(0,0,0,0.1), 0 0 0 1px rgba(148,163,184,0.1)",
+        ? "0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(13,157,184,0.1), 0 0 24px rgba(13,157,184,0.12)"
+        : "0 20px 60px rgba(0,0,0,0.12), 0 0 0 1px rgba(13,157,184,0.08), 0 0 24px rgba(13,157,184,0.08)",
       background: isDarkMode ? "#0d1a2d" : "#e8f4f8",
     },
     mapTopBar: {
       position: "absolute", top: 0, left: 0, right: 0, zIndex: 10,
       padding: isSmall ? "10px 12px" : "14px 18px",
       background: isDarkMode
-        ? "linear-gradient(180deg, rgba(15,23,42,0.95) 0%, transparent 100%)"
-        : "linear-gradient(180deg, rgba(255,255,255,0.95) 0%, transparent 100%)",
+        ? "linear-gradient(180deg, rgba(10,18,35,0.98) 0%, rgba(10,18,35,0.85) 70%, transparent 100%)"
+        : "linear-gradient(180deg, rgba(255,255,255,0.98) 0%, rgba(255,255,255,0.85) 70%, transparent 100%)",
       display: "flex", alignItems: "center", justifyContent: "space-between",
+      backdropFilter: "blur(6px)",
     },
     mapLabel: {
       display: "flex", alignItems: "center", gap: "8px",
@@ -436,21 +439,35 @@ export default function FinderMap() {
     viewToggle: {
       display: isMobile ? "flex" : "none",
       gap: "4px",
-      background: isDarkMode ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.05)",
-      borderRadius: "10px", padding: "4px",
+      background: isDarkMode ? "rgba(15,23,42,0.9)" : "rgba(240,249,255,0.9)",
+      borderRadius: "12px", padding: "4px",
+      border: isDarkMode ? "1px solid rgba(13,157,184,0.3)" : "1px solid rgba(13,157,184,0.25)",
+      boxShadow: "0 4px 16px rgba(0,0,0,0.2)",
     },
     toggleBtn: (isActive) => ({
-      padding: "5px 12px", borderRadius: "7px", border: "none",
+      padding: "6px 14px", borderRadius: "9px", border: "none",
       background: isActive
-        ? (isDarkMode ? "rgba(13,157,184,0.25)" : "rgba(13,157,184,0.15)")
+        ? "linear-gradient(135deg, #0d9db8, #3b82f6)"
         : "transparent",
-      color: isActive ? "#0d9db8" : (isDarkMode ? "#6b7280" : "#9ca3af"),
-      fontSize: "0.75rem", fontWeight: 600, cursor: "pointer",
+      color: isActive ? "#ffffff" : (isDarkMode ? "#94a3b8" : "#475569"),
+      fontSize: "0.8rem", fontWeight: 700, cursor: "pointer",
       fontFamily: "'Inter', sans-serif",
+      boxShadow: isActive ? "0 2px 8px rgba(13,157,184,0.4)" : "none",
+      transition: "all 0.2s ease",
     }),
     // ── List panel ────────────────────────────────────────────────────────
     listPanel: {
       display: "flex", flexDirection: "column", height: isMobile ? "auto" : "640px",
+      ...(isMobile ? {
+        background: isDarkMode
+          ? "linear-gradient(135deg, #0f172a 0%, #1e293b 100%)"
+          : "linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%)",
+        borderRadius: "20px",
+        padding: "20px 16px",
+        border: isDarkMode ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(148,163,184,0.18)",
+        boxShadow: isDarkMode ? "0 8px 32px rgba(0,0,0,0.3)" : "0 8px 32px rgba(0,0,0,0.08)",
+        minHeight: "400px",
+      } : {}),
     },
     listHeader: {
       display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -469,9 +486,9 @@ export default function FinderMap() {
       fontSize: "0.78rem", fontWeight: 700, color: "#0d9db8",
     },
     listScroll: {
-      flex: 1, overflowY: "auto", paddingRight: "6px",
+      flex: 1, overflowY: "auto", paddingRight: "4px",
       display: "flex", flexDirection: "column", gap: "14px",
-      maxHeight: isMobile ? "none" : "610px",
+      maxHeight: isMobile ? "600px" : "610px",
     },
     // ── Improved facility card — matches Services card style ──────────────
     facilityCard: (isSelected) => ({
@@ -484,21 +501,22 @@ export default function FinderMap() {
           : "#ffffff"),
       backdropFilter: "blur(20px)",
       border: isDarkMode
-        ? (isSelected ? "1px solid rgba(13,157,184,0.5)" : "1px solid rgba(255,255,255,0.05)")
-        : (isSelected ? "1.5px solid rgba(13,157,184,0.4)" : "1px solid rgba(148,163,184,0.15)"),
+        ? (isSelected ? "1px solid rgba(13,157,184,0.5)" : "1px solid rgba(255,255,255,0.07)")
+        : (isSelected ? "1.5px solid rgba(13,157,184,0.4)" : "1px solid rgba(148,163,184,0.2)"),
       borderRadius: "20px",
-      padding: isSmall ? "14px 16px" : "18px 20px",
+      padding: "16px 16px 16px 20px",
       cursor: "pointer",
       boxShadow: isDarkMode
-        ? (isSelected ? "0 8px 32px rgba(13,157,184,0.25)" : "0 4px 16px rgba(0,0,0,0.25)")
-        : (isSelected ? "0 8px 32px rgba(13,157,184,0.18)" : "0 4px 16px rgba(0,0,0,0.07)"),
-      position: "relative", overflow: "hidden",
+        ? (isSelected ? "0 8px 32px rgba(13,157,184,0.25)" : "0 4px 16px rgba(0,0,0,0.3)")
+        : (isSelected ? "0 8px 32px rgba(13,157,184,0.18)" : "0 4px 16px rgba(0,0,0,0.08)"),
+      position: "relative",
+      overflow: "visible",
       transition: "all 0.5s cubic-bezier(0.4,0,0.2,1)",
     }),
     cardAccent: (cfg) => ({
-      position: "absolute", left: 0, top: 0, bottom: 0, width: "4px",
+      position: "absolute", left: 0, top: "8px", bottom: "8px", width: "4px",
       background: `linear-gradient(180deg, ${cfg.color}, transparent)`,
-      borderRadius: "4px 0 0 4px",
+      borderRadius: "4px",
     }),
     // Card rank number — like Services card number
     cardRank: () => ({
@@ -520,17 +538,17 @@ export default function FinderMap() {
       boxShadow: `0 4px 12px ${cfg.color}20`,
     }),
     cardName: {
-      fontSize: isSmall ? "0.92rem" : "0.98rem", fontWeight: 700,
+      fontSize: "0.96rem", fontWeight: 700,
       color: isDarkMode ? "#f1f5f9" : "#0f172a",
-      marginBottom: "5px", lineHeight: 1.3,
-      display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+      marginBottom: "4px", lineHeight: 1.35,
       fontFamily: "'Merriweather', serif",
+      paddingRight: "30px",
     },
     cardAddr: {
-      fontSize: "0.78rem",
-      color: isDarkMode ? "#64748b" : "#94a3b8",
-      marginBottom: "10px", lineHeight: 1.4,
-      display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden",
+      fontSize: "0.79rem",
+      color: isDarkMode ? "#94a3b8" : "#64748b",
+      marginBottom: "10px", lineHeight: 1.5,
+      paddingRight: "4px",
     },
     cardMeta: {
       display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -908,7 +926,18 @@ export default function FinderMap() {
                 ...S.listPanel,
                 display: isMobile && !isListView ? "none" : "flex",
               }}>
-                <div style={S.listHeader}>
+                {/* Mobile list header with background — shows above the map area */}
+                <div style={{
+                  ...S.listHeader,
+                  ...(isMobile ? {
+                    position: "sticky", top: 0, zIndex: 5,
+                    background: isDarkMode
+                      ? "linear-gradient(180deg, #0f172a 80%, transparent 100%)"
+                      : "linear-gradient(180deg, #f0f9ff 80%, transparent 100%)",
+                    paddingTop: "4px", paddingBottom: "12px",
+                    marginBottom: "8px",
+                  } : {}),
+                }}>
                   <span style={S.listTitle}>
                     {activeFilterConfig.icon}&nbsp; Nearby {activeFilterConfig.label}
                   </span>
@@ -944,8 +973,13 @@ export default function FinderMap() {
                             if (isMobile) setIsListView(false);
                           }}
                         >
-                          {/* Glow bar on hover (via CSS class) */}
-                          <div className="card-glow-bar" />
+                          {/* Glow bar on hover — needs own overflow-hidden wrapper */}
+                          <div style={{
+                            position: "absolute", top: 0, left: 0, right: 0, height: "3px",
+                            borderRadius: "20px 20px 0 0", overflow: "hidden",
+                          }}>
+                            <div className="card-glow-bar" style={{ position: "relative", top: 0, left: 0, right: 0, borderRadius: 0 }} />
+                          </div>
 
                           {/* Left accent stripe */}
                           <div style={S.cardAccent(activeFilterConfig)} />
@@ -953,7 +987,7 @@ export default function FinderMap() {
                           {/* Rank number */}
                           <div style={S.cardRank(idx)}>{idx + 1}</div>
 
-                          <div style={{ paddingLeft: "10px", paddingRight: "6px" }}>
+                          <div style={{ paddingLeft: "12px", paddingRight: "36px" }}>
                             {/* Category icon chip */}
                             <div style={S.cardIcon(activeFilterConfig)}>
                               {activeFilterConfig.icon}
