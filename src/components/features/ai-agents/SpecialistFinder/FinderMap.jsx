@@ -87,6 +87,123 @@ function StarRating({ rating }) {
   );
 }
 
+// ─── Haversine Distance ───────────────────────────────────────────────────────
+function haversineKm(lat1, lng1, lat2, lng2) {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLng = ((lng2 - lng1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos((lat1 * Math.PI) / 180) *
+    Math.cos((lat2 * Math.PI) / 180) *
+    Math.sin(dLng / 2) *
+    Math.sin(dLng / 2);
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+// ─── Format distance nicely ───────────────────────────────────────────────────
+function formatDistance(km) {
+  if (km < 1) return `${Math.round(km * 1000)} m`;
+  return `${km.toFixed(1)} km`;
+}
+
+// ─── Estimate travel time (road factor ~1.4x straight line) ──────────────────
+function getTravelTime(km) {
+  const roadKm = km * 1.4;
+  // Walking: 5 km/h, Driving: 30 km/h (urban)
+  const walkMin = Math.round((roadKm / 5) * 60);
+  const driveMin = Math.round((roadKm / 30) * 60);
+  const fmt = (m) => m < 60 ? `${m} min` : `${Math.floor(m / 60)}h ${m % 60}m`;
+  return { walk: fmt(walkMin), drive: fmt(driveMin) };
+}
+
+// ─── Distance + Time Badge component ─────────────────────────────────────────
+function DistanceBadge({ userLocation, facility, isDarkMode, compact = false }) {
+  if (!userLocation || !facility?.geometry?.lat) return null;
+  const km = haversineKm(
+    userLocation.lat, userLocation.lng,
+    facility.geometry.lat, facility.geometry.lng
+  );
+  const { walk, drive } = getTravelTime(km);
+
+  if (compact) {
+    return (
+      <div style={{ display: "flex", alignItems: "center", gap: "6px", flexWrap: "wrap" }}>
+        <span style={{
+          display: "inline-flex", alignItems: "center", gap: "4px",
+          padding: "2px 8px", borderRadius: "50px",
+          background: isDarkMode ? "rgba(13,157,184,0.15)" : "rgba(13,157,184,0.1)",
+          border: "1px solid rgba(13,157,184,0.3)",
+          fontSize: "0.72rem", fontWeight: 700, color: "#0d9db8",
+        }}>
+          📍 {formatDistance(km)}
+        </span>
+        <span style={{
+          display: "inline-flex", alignItems: "center", gap: "4px",
+          padding: "2px 8px", borderRadius: "50px",
+          background: isDarkMode ? "rgba(59,130,246,0.12)" : "rgba(59,130,246,0.08)",
+          border: "1px solid rgba(59,130,246,0.25)",
+          fontSize: "0.72rem", fontWeight: 600, color: isDarkMode ? "#93c5fd" : "#3b82f6",
+        }}>
+          🚗 {drive}
+        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{
+      display: "grid", gridTemplateColumns: "1fr 1fr",
+      gap: "8px", marginBottom: "12px",
+    }}>
+      {/* Distance */}
+      <div style={{
+        display: "flex", flexDirection: "column", alignItems: "center",
+        padding: "10px 8px", borderRadius: "12px",
+        background: isDarkMode ? "rgba(13,157,184,0.1)" : "rgba(13,157,184,0.07)",
+        border: "1px solid rgba(13,157,184,0.25)",
+      }}>
+        <span style={{ fontSize: "1rem", marginBottom: "3px" }}>📍</span>
+        <span style={{ fontSize: "0.88rem", fontWeight: 800, color: "#0d9db8", lineHeight: 1 }}>
+          {formatDistance(km)}
+        </span>
+        <span style={{ fontSize: "0.68rem", color: isDarkMode ? "#64748b" : "#94a3b8", marginTop: "3px" }}>
+          Distance
+        </span>
+      </div>
+
+      {/* Drive time */}
+      <div style={{
+        display: "flex", flexDirection: "column", alignItems: "center",
+        padding: "10px 8px", borderRadius: "12px",
+        background: isDarkMode ? "rgba(59,130,246,0.1)" : "rgba(59,130,246,0.07)",
+        border: "1px solid rgba(59,130,246,0.2)",
+      }}>
+        <span style={{ fontSize: "1rem", marginBottom: "3px" }}>🚗</span>
+        <span style={{ fontSize: "0.88rem", fontWeight: 800, color: isDarkMode ? "#93c5fd" : "#3b82f6", lineHeight: 1 }}>
+          {drive}
+        </span>
+        <span style={{ fontSize: "0.68rem", color: isDarkMode ? "#64748b" : "#94a3b8", marginTop: "3px" }}>
+          By Car
+        </span>
+      </div>
+
+      {/* Walk time — full width */}
+      <div style={{
+        gridColumn: "1 / -1",
+        display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
+        padding: "8px", borderRadius: "12px",
+        background: isDarkMode ? "rgba(16,185,129,0.08)" : "rgba(16,185,129,0.06)",
+        border: "1px solid rgba(16,185,129,0.2)",
+      }}>
+        <span style={{ fontSize: "0.9rem" }}>🚶</span>
+        <span style={{ fontSize: "0.82rem", fontWeight: 700, color: "#10b981" }}>{walk}</span>
+        <span style={{ fontSize: "0.72rem", color: isDarkMode ? "#64748b" : "#94a3b8" }}>on foot</span>
+      </div>
+    </div>
+  );
+}
+
 // ─── Skeleton Card ─────────────────────────────────────────────────────────────
 function SkeletonCard({ isDarkMode }) {
   return (
@@ -689,6 +806,25 @@ export default function FinderMap() {
                 Searching <span style={S.statBold}>5 km</span> radius
               </span>
             </div>
+            {userLocation && facilities.length > 0 && (() => {
+              const nearest = facilities
+                .filter(f => f.geometry?.lat && f.geometry?.lng)
+                .reduce((best, f) => {
+                  const d = haversineKm(userLocation.lat, userLocation.lng, f.geometry.lat, f.geometry.lng);
+                  return (!best || d < best.d) ? { d, f } : best;
+                }, null);
+              if (!nearest) return null;
+              const { drive } = getTravelTime(nearest.d);
+              return (
+                <div style={S.statChip}>
+                  <div style={S.statDot("#f59e0b")} />
+                  <span style={S.statText}>
+                    Nearest: <span style={S.statBold}>{formatDistance(nearest.d)}</span>
+                    &nbsp;·&nbsp;🚗 <span style={S.statBold}>{drive}</span>
+                  </span>
+                </div>
+              );
+            })()}
             {userLocation && (
               <div style={S.statChip}>
                 <div style={S.statDot("#8b5cf6")} />
@@ -911,6 +1047,14 @@ export default function FinderMap() {
                           <div style={S.infoWinWrap}>
                             <div style={S.infoWinName}>{selectedFacility.name}</div>
                             <div style={S.infoWinAddr}>{selectedFacility.vicinity}</div>
+                            <div style={{ marginBottom: "8px" }}>
+                              <DistanceBadge
+                                userLocation={userLocation}
+                                facility={selectedFacility}
+                                isDarkMode={isDarkMode}
+                                compact={true}
+                              />
+                            </div>
                             <div style={{ marginBottom: "10px" }}>
                               <StarRating rating={selectedFacility.rating} />
                               {selectedFacility.user_ratings_total > 0 && (
@@ -1075,6 +1219,13 @@ export default function FinderMap() {
                                   </div>
                                 )}
                               </div>
+
+                              {/* Distance + Travel time */}
+                              <DistanceBadge
+                                userLocation={userLocation}
+                                facility={facility}
+                                isDarkMode={isDarkMode}
+                              />
 
                               {/* CTA button — matches Services ctaButton style */}
                               <button
