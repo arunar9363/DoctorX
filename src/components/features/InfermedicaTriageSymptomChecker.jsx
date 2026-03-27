@@ -366,7 +366,7 @@ export default function InfermedicaTriageSymptomChecker({
   const [step, setStep] = useState(0);
   const [patientInfo, setPatientInfo] = useState({
     name: "",
-    age: 18,
+    age: "",
     sex: "male",
   });
 
