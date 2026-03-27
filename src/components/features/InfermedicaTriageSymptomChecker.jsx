@@ -395,6 +395,17 @@ export default function InfermedicaTriageSymptomChecker({
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState('success');
 
+  // FIX: Helper to get a safe age integer for all API calls.
+  // Infermedica free plan does not support pediatric mode (age < 12).
+  // If age is empty or below 12 during typing, we clamp it to 12 so
+  // the API never receives NaN or a pediatric age value.
+  const getSafeAge = (ageValue) => {
+    const parsed = parseInt(ageValue);
+    if (isNaN(parsed) || parsed < 12) return 12;
+    if (parsed > 130) return 130;
+    return parsed;
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setIsAuthenticated(!!user);
@@ -473,7 +484,9 @@ export default function InfermedicaTriageSymptomChecker({
 
   const loadAllSymptoms = async () => {
     try {
-      const result = await apiCall(`/symptoms?age=${patientInfo.age}`);
+      // FIX: Use getSafeAge so the query never sends NaN or a pediatric age (<12)
+      const safeAge = getSafeAge(patientInfo.age);
+      const result = await apiCall(`/symptoms?age=${safeAge}`);
       console.log("Loaded symptoms:", result.length);
       setAllSymptoms(Array.isArray(result) ? result : []);
     } catch (err) {
@@ -508,7 +521,9 @@ export default function InfermedicaTriageSymptomChecker({
 
       console.log("No local results, trying API suggest...");
 
-      const response = await fetch(`${apiBaseUrl}/symptoms?q=${encodeURIComponent(query)}&age=${patientInfo.age}`, {
+      // FIX: Use getSafeAge so the query never sends NaN or a pediatric age (<12)
+      const safeAge = getSafeAge(patientInfo.age);
+      const response = await fetch(`${apiBaseUrl}/symptoms?q=${encodeURIComponent(query)}&age=${safeAge}`, {
         headers: { "Content-Type": "application/json" }
       });
 
@@ -576,10 +591,11 @@ export default function InfermedicaTriageSymptomChecker({
     setError(null);
 
     try {
+      // FIX: Use getSafeAge so the payload never sends NaN or a pediatric age (<12)
       const diagnosisPayload = {
         sex: patientInfo.sex,
         age: {
-          value: parseInt(patientInfo.age),
+          value: getSafeAge(patientInfo.age),
           unit: "year"
         },
         evidence: evidence
@@ -654,10 +670,11 @@ export default function InfermedicaTriageSymptomChecker({
     }
 
     try {
+      // FIX: Use getSafeAge so the payload never sends NaN or a pediatric age (<12)
       const diagnosisPayload = {
         sex: patientInfo.sex,
         age: {
-          value: parseInt(patientInfo.age),
+          value: getSafeAge(patientInfo.age),
           unit: "year"
         },
         evidence: updatedEvidence
@@ -694,10 +711,11 @@ export default function InfermedicaTriageSymptomChecker({
     setError(null);
 
     try {
+      // FIX: Use getSafeAge so the payload never sends NaN or a pediatric age (<12)
       const triagePayload = {
         sex: patientInfo.sex,
         age: {
-          value: parseInt(patientInfo.age),
+          value: getSafeAge(patientInfo.age),
           unit: "year"
         },
         evidence: evidence,
@@ -902,6 +920,7 @@ export default function InfermedicaTriageSymptomChecker({
           placeholder="Enter patient name"
         />
       </div>
+
       <div style={styles.field}>
         <label style={getThemedStyle(styles.label, styles.darkLabel)}>Age:</label>
         <input
@@ -909,10 +928,17 @@ export default function InfermedicaTriageSymptomChecker({
           style={getThemedStyle(styles.input, styles.darkInput)}
           value={patientInfo.age}
           onChange={(e) => setPatientInfo(prev => ({ ...prev, age: e.target.value }))}
-          min="1"
+          min="12"
           max="130"
         />
+        {/* FIX: Show warning when user types an age below 12, so they know it will be clamped */}
+        {patientInfo.age !== "" && parseInt(patientInfo.age) < 12 && (
+          <div style={{ fontSize: "0.78rem", color: "#f59e0b", marginTop: 4 }}>
+            ⚠️ Minimum supported age is 12. Age will be set to 12 for the assessment.
+          </div>
+        )}
       </div>
+
       <div style={styles.field}>
         <label style={getThemedStyle(styles.label, styles.darkLabel)}>Sex:</label>
         <select
@@ -1539,8 +1565,8 @@ export default function InfermedicaTriageSymptomChecker({
               transform: translateY(-50px);
             }
             to {
-              opacity: 1;
-              transform: translateY(0);
+                opacity: 1;
+                transform: translateY(0);
             }
           }
           
