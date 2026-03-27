@@ -530,6 +530,73 @@ function Dashboard() {
       transition: "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)"
     },
 
+    // AI Doctor card special style — emoji-based, no image needed
+    aiDoctorCard: (index, isVisibleCard) => ({
+      background: isDarkMode
+        ? 'linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(99, 102, 241, 0.08) 100%)'
+        : 'linear-gradient(135deg, rgba(14, 165, 233, 0.05) 0%, rgba(99, 102, 241, 0.05) 100%)',
+      padding: "32px 28px",
+      borderRadius: "20px",
+      boxShadow: isDarkMode
+        ? '0 8px 30px rgba(0, 0, 0, 0.3)'
+        : '0 8px 30px rgba(0, 0, 0, 0.08)',
+      border: isDarkMode
+        ? "1px solid rgba(14, 165, 233, 0.2)"
+        : "1px solid rgba(14, 165, 233, 0.25)",
+      transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+      cursor: "pointer",
+      display: "flex",
+      flexDirection: "column",
+      minHeight: "340px",
+      position: "relative",
+      overflow: "hidden",
+      opacity: isVisibleCard ? 1 : 0,
+      transform: isVisibleCard ? 'translateY(0)' : 'translateY(40px)',
+      animation: isVisibleCard ? `fadeInUp 0.6s ease-out ${index * 0.1}s backwards` : 'none'
+    }),
+    aiDoctorGlowBg: {
+      position: 'absolute',
+      top: '-40px',
+      right: '-40px',
+      width: '180px',
+      height: '180px',
+      borderRadius: '50%',
+      background: 'radial-gradient(circle, rgba(14,165,233,0.12) 0%, transparent 70%)',
+      pointerEvents: 'none'
+    },
+    aiDoctorEmoji: {
+      fontSize: '64px',
+      marginBottom: '20px',
+      display: 'block',
+      lineHeight: 1,
+      filter: 'drop-shadow(0 4px 12px rgba(14,165,233,0.3))',
+      transition: 'transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)'
+    },
+    aiDoctorBadge: {
+      display: 'inline-flex',
+      alignItems: 'center',
+      gap: '6px',
+      padding: '5px 12px',
+      background: isDarkMode
+        ? 'rgba(14, 165, 233, 0.15)'
+        : 'rgba(14, 165, 233, 0.1)',
+      border: '1px solid rgba(14, 165, 233, 0.3)',
+      borderRadius: '50px',
+      fontSize: '0.72rem',
+      fontWeight: 700,
+      color: '#0ea5e9',
+      letterSpacing: '0.5px',
+      textTransform: 'uppercase',
+      marginBottom: '12px'
+    },
+    aiDoctorPulseDot: {
+      width: '7px',
+      height: '7px',
+      borderRadius: '50%',
+      background: '#22c55e',
+      animation: 'pulse 1.5s ease-in-out infinite'
+    },
+
     // Bottom Section
     bottomSection: {
       display: "grid",
@@ -770,7 +837,7 @@ function Dashboard() {
             }}
           >
             <div style={styles.statIcon}>🎯</div>
-            <div style={styles.statValue}>7</div>
+            <div style={styles.statValue}>8</div>
             <div style={styles.statLabel}>Active Services</div>
           </div>
         </div>
@@ -810,11 +877,11 @@ function Dashboard() {
               icon: '🧪'
             },
             {
-              title: 'AI Health Assistant',
-              desc: 'Chat with DoctorXCare for personalized health guidance 24/7.',
-              link: 'Chat Now',
-              route: '/doctorx-ai',
-              image: '/assets/hi.svg',
+              title: 'AI Doctor',
+              desc: 'Speak with Doctorxcare Assistance describe your symptoms and get a professiona assessment with emergency triage, diagnosis, and next- step guidance.',
+              link: 'Start Consultation',
+              route: '/ai-doctor',
+              image: '/assets/aidoctor2.jpeg',
               icon: '💬'
             }
           ].map((service, index) => (
@@ -858,6 +925,7 @@ function Dashboard() {
               />
             </div>
           ))}
+
         </div>
 
         {/* Bottom Section */}

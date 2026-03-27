@@ -35,7 +35,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="D:\CodeByArun\DoctorX-care\DoctorX\python-ai-agents\venv"
+VIRTUAL_ENV="D:\CodeByArun\DoctorX-care\DoctorX\api\python-ai-agents\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

@@ -22,6 +22,11 @@ from tracking_agent import get_health_tracking_agent, get_trend_visualization_ag
 # =============================================
 from DoctorFinder import get_nearby_facilities, get_place_details
 
+# =============================================
+# NEW IMPORT: AI Doctor Consultation Agent
+# =============================================
+from ai_doctor_agent import start_consultation, continue_consultation, get_emergency_info
+
 app = FastAPI()
 
 # --- CORS SETTINGS ---
@@ -110,6 +115,18 @@ class TrendAnalysisRequest(BaseModel):
     metric_type: str  # "blood_pressure", "blood_glucose", "weight", etc.
     time_range: int = 30  # days
     readings: List[dict]  # Array of {date, value} objects
+
+# --- New Models for AI Doctor ---
+
+class DoctorStartRequest(BaseModel):
+    """Start a fresh AI Doctor consultation."""
+    patient_name: Optional[str] = "Patient"
+
+class DoctorContinueRequest(BaseModel):
+    """Continue an ongoing consultation turn."""
+    patient_message: str
+    history: List[dict]          # serialised Gemini chat history
+    turn: int = 0
 
 # ==========================================
 # SERVICE 1: LAB REPORT & IMAGING ANALYSIS
@@ -470,7 +487,7 @@ async def quick_vital_log(
 
 
 # ==========================================
-# SERVICE 3: NEARBY MEDICAL FACILITY FINDER   ← NEW
+# SERVICE 3: NEARBY MEDICAL FACILITY FINDER
 # ==========================================
 
 @app.get("/api/v1/nearby-finder")
@@ -563,6 +580,74 @@ async def facility_details(place_id: str):
 
 
 # ==========================================
+# SERVICE 4: AI DOCTOR CONSULTATION
+# ==========================================
+
+@app.post("/api/ai-doctor/start")
+async def ai_doctor_start(data: DoctorStartRequest):
+    """
+    Start a new AI Doctor consultation session.
+    Returns the doctor's opening greeting and first question.
+    The session history must be passed back on every subsequent call.
+    """
+    try:
+        result = start_consultation()
+        return {
+            "success": True,
+            "session_id": result["session_id"],
+            "turn": result["turn"],
+            "assessment_ready": False,
+            "response": result["response"],
+            "history": result["history"],
+        }
+    except Exception as e:
+        print(f"AI Doctor Start Error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"AI Doctor error: {str(e)}")
+
+
+@app.post("/api/ai-doctor/respond")
+async def ai_doctor_respond(data: DoctorContinueRequest):
+    """
+    Send the patient's reply and receive the next question or final assessment.
+
+    The frontend must pass back the full `history` array from the previous
+    response so the conversation context is maintained across stateless calls.
+
+    When `assessment_ready` is true the response includes:
+    - possible_conditions
+    - emergency_level (1–5)
+    - emergency_meta  (label, color, icon, action)
+    - immediate_actions
+    - lifestyle_advice
+    - specialist_referral
+    - red_flags
+    - summary
+    """
+    try:
+        result = continue_consultation(
+            patient_message=data.patient_message,
+            history=data.history,
+            turn=data.turn,
+        )
+
+        # Enrich the assessment payload with human-readable emergency metadata
+        if result["assessment_ready"]:
+            level = result["response"].get("emergency_level", 3)
+            result["response"]["emergency_meta"] = get_emergency_info(level)
+
+        return {
+            "success": True,
+            "turn": result["turn"],
+            "assessment_ready": result["assessment_ready"],
+            "response": result["response"],
+            "history": result["history"],
+        }
+    except Exception as e:
+        print(f"AI Doctor Respond Error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"AI Doctor error: {str(e)}")
+
+
+# ==========================================
 # Placeholder Services (Existing)
 # ==========================================
 @app.post("/api/chronic-care")
@@ -585,16 +670,18 @@ async def health_check():
     return {
         "status": "online",
         "service": "DoctorX Care API",
-        "version": "2.2",
+        "version": "2.3",
         "endpoints": {
             "lab_analysis": "/api/medical-analysis",
             "scan_health_report": "/api/health-tracking/scan-report",
             "health_tracking": "/api/health-tracking/analyze",
             "trend_analysis": "/api/health-tracking/trend-analysis",
             "quick_log": "/api/health-tracking/quick-log",
-            # NEW
             "nearby_finder": "/api/v1/nearby-finder",
             "facility_details": "/api/v1/facility-details/{place_id}",
+            # NEW
+            "ai_doctor_start": "/api/ai-doctor/start",
+            "ai_doctor_respond": "/api/ai-doctor/respond",
         }
     }
 

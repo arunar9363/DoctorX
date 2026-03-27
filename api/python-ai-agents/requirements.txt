@@ -9,3 +9,5 @@ python-dotenv  # For environment variable management
 pydantic # Data validation library
 pillow  # Image processing library
 phi # Phi Data SDK
+groq  # Groq AI SDK for LLM inference
+httpx  # Async HTTP client (used by DoctorFinder)

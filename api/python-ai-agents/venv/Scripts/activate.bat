@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=D:\CodeByArun\DoctorX-care\DoctorX\python-ai-agents\venv
+set VIRTUAL_ENV=D:\CodeByArun\DoctorX-care\DoctorX\api\python-ai-agents\venv
 
 if not defined PROMPT set PROMPT=$P$G
 

@@ -13,7 +13,7 @@ import LoginModal from "./components/common/LoginModal";
 import ScrollToTop from "./components/common/ScrollToTop";
 import Audience from "./components/sections/Audience";
 import About from "./components/sections/AboutUs";
-import Services from "./components/features/ServiceList";  
+import Services from "./components/features/ServiceList";
 import DiseaseSearch from "./components/features/DiseaseSearch";
 import IndividualDiseasesInfo from "./components/features/IndividualDiseaseInfo";
 import InfermedicaTriageSymptomChecker from "./components/features/InfermedicaTriageSymptomChecker";
@@ -21,6 +21,7 @@ import LabUpload from "./components/features/ai-agents/LabAnalysis/LabUpload"; /
 import ChronicCareLanding from "./components/features/ai-agents/HealthTracking/ChronicCareLanding"; // Chronic Care Landing Page
 import Charts from "./components/features/ai-agents/HealthTracking/Charts"; // Health Tracking Charts
 import TrackerDashboard from "./components/features/ai-agents/HealthTracking/TrackerDashboard"; // Health Tracking Dashboard
+import AIDoctorPage from "./pages/AIDoctorPage";// AI Doctor Page
 
 
 // Pages
@@ -42,7 +43,7 @@ function LoginPageWrapper() {
   return <LoginModal show={true} onClose={() => { }} />;
 }
 
-// Protected Router Component
+// Protected Router Component (used with <Outlet /> for grouped protected routes)
 const ProtectedRouter = () => {
   const [user, loading] = useAuthState(auth);
 
@@ -52,6 +53,19 @@ const ProtectedRouter = () => {
 
   return user ? <Outlet /> : <Navigate to="/" />;
 };
+
+// ── NEW: ProtectedRoute wrapper for individual routes ──────────────────────
+// Usage: <ProtectedRoute><SomePage /></ProtectedRoute>
+const ProtectedRoute = ({ children }) => {
+  const [user, loading] = useAuthState(auth);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  return user ? children : <Navigate to="/" />;
+};
+// ──────────────────────────────────────────────────────────────────────────────
 
 // Layout wrapper
 function Layout({ children }) {
@@ -73,7 +87,7 @@ function App() {
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
 
-          
+
 
 
           {/* Other Public Routes */}
@@ -87,6 +101,7 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
 
           <Route path="/healthcare-network" element={<DoctorList />} />
+          <Route path="/ai-doctor" element={<ProtectedRoute><AIDoctorPage /></ProtectedRoute>} />
 
           {/* Protected Routes */}
           <Route element={<ProtectedRouter />}>
@@ -111,7 +126,7 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
 
             {/* Development Phase Pages - In sab par wahi popup dikhega */}
-            
+
           </Route>
 
         </Routes>
