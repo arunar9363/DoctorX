@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
-const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
+const API_BASE = import.meta.env.VITE_API_URL || "https://doctorx-backend-t1ic.onrender.com";
 
 const EMERGENCY_CONFIG = {
   1: { label: "Non-Urgent", color: "#22c55e", bg: "rgba(34,197,94,0.1)", icon: "🟢", border: "rgba(34,197,94,0.25)" },
