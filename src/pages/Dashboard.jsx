@@ -727,7 +727,7 @@ function Dashboard() {
         <div style={styles.loader} className="loader-spin">
           <div style={styles.loaderInner} className="loader-spin"></div>
         </div>
-        <div style={styles.loadingText}>Loading Dashboard...</div>
+        <div style={styles.loadingText}>Preparing your health dashboard…</div>
       </div>
     );
   }
@@ -741,9 +741,11 @@ function Dashboard() {
         <div style={styles.welcomeSection}>
           <div style={styles.welcomeGlow}></div>
           <div style={styles.welcomeText}>
-            <span style={styles.badge}>HEALTHCARE DASHBOARD</span>
-            <h1 style={styles.h1}>Welcome back, {userName}!</h1>
-            <p style={styles.subtitle}>Here's what's happening with your health today.</p>
+            <span style={styles.badge}>Your Personal Health Hub</span>
+            <h1 style={styles.h1}>Good to see you, {userName}!</h1>
+            <p style={styles.subtitle}>
+              Your health journey continues here. Let's take a look at what matters most to you today.
+            </p>
           </div>
           <div style={styles.profileContainer}>
             <div style={styles.profileRing}></div>
@@ -777,7 +779,7 @@ function Dashboard() {
           >
             <div style={styles.statIcon}>📊</div>
             <div style={styles.statValue}>{recentAssessments.length}</div>
-            <div style={styles.statLabel}>Recent Assessments</div>
+            <div style={styles.statLabel}>Health Assessments Done</div>
           </div>
 
           <div
@@ -797,7 +799,7 @@ function Dashboard() {
           >
             <div style={styles.statIcon}>💾</div>
             <div style={styles.statValue}>{savedDiseases.length}</div>
-            <div style={styles.statLabel}>Saved Diseases</div>
+            <div style={styles.statLabel}>Conditions You're Tracking</div>
           </div>
 
           <div
@@ -817,7 +819,7 @@ function Dashboard() {
           >
             <div style={styles.statIcon}>🏥</div>
             <div style={styles.statValue}>24/7</div>
-            <div style={styles.statLabel}>AI Assistant</div>
+            <div style={styles.statLabel}>Always Here for You</div>
           </div>
 
           <div
@@ -838,14 +840,14 @@ function Dashboard() {
           >
             <div style={styles.statIcon}>🎯</div>
             <div style={styles.statValue}>8</div>
-            <div style={styles.statLabel}>Active Services</div>
+            <div style={styles.statLabel}>Tools at Your Fingertips</div>
           </div>
         </div>
 
         {/* Services Section */}
         <div style={styles.sectionHeader}>
           <h2 style={styles.sectionTitle}>
-            Quick Access Services
+            What would you like to do today?
             <div style={styles.titleUnderline}></div>
           </h2>
         </div>
@@ -853,33 +855,33 @@ function Dashboard() {
         <div style={styles.servicesGrid}>
           {[
             {
-              title: 'Analyze Symptoms',
-              desc: 'Check your symptoms using our advanced AI to get instant triage advice.',
-              link: 'Start Check',
+              title: 'Check Your Symptoms',
+              desc: 'Not feeling well? Tell us what\'s going on and our AI will help you understand your symptoms and what to do next — quickly and without the wait.',
+              link: 'Start Symptom Check',
               route: '/symptoms',
               image: '/assets/Symptomspage.svg',
               icon: '🔬'
             },
             {
-              title: 'Disease Library',
-              desc: 'Search our verified medical library for detailed disease information.',
-              link: 'Explore',
+              title: 'Explore the Disease Library',
+              desc: 'Curious about a condition? Browse our clinically-verified library of thousands of diseases, written in plain language — so you actually understand what you\'re reading.',
+              link: 'Browse Library',
               route: '/diseases',
               image: '/assets/diseas.svg',
               icon: '📚'
             },
             {
-              title: 'Lab Report Analysis',
-              desc: 'Upload lab reports or medical imaging for AI-powered analysis and insights.',
-              link: 'Upload Now',
+              title: 'Understand Your Lab Reports',
+              desc: 'Got a report and not sure what it means? Upload your lab results or medical images and let our AI walk you through them in a way that actually makes sense.',
+              link: 'Upload a Report',
               route: '/lab-analysis',
               image: '/assets/report_analysis.svg',
               icon: '🧪'
             },
             {
-              title: 'AI Doctor',
-              desc: 'Speak with Doctorxcare Assistance describe your symptoms and get a professiona assessment with emergency triage, diagnosis, and next- step guidance.',
-              link: 'Start Consultation',
+              title: 'Talk to Your AI Doctor',
+              desc: 'Just describe how you\'re feeling — in your own words. Doctorxcare Assistance will listen, ask the right follow-up questions, and give you a clear picture of what might be going on.',
+              link: 'Begin Consultation',
               route: '/ai-doctor',
               image: '/assets/aidoctor2.jpeg',
               icon: '💬'
@@ -933,7 +935,7 @@ function Dashboard() {
           {/* Recent Assessments */}
           <div style={styles.sectionBox}>
             <div style={styles.boxHeader}>
-              <div style={styles.boxTitle}>Recent Assessments</div>
+              <div style={styles.boxTitle}>Your Recent Check-ins</div>
               <div
                 style={styles.viewAllLink}
                 onClick={() => navigate('/history')}
@@ -946,7 +948,7 @@ function Dashboard() {
                   e.target.style.color = '#0d9db8';
                 }}
               >
-                View All →
+                See Full History →
               </div>
             </div>
 
@@ -969,19 +971,19 @@ function Dashboard() {
                   <div style={styles.itemLeft}>
                     <div style={styles.itemIcon}>📋</div>
                     <div style={styles.itemContent}>
-                      <div style={styles.itemTitle}>{item.patientName || 'Self Assessment'}</div>
-                      <div style={styles.itemSub}>{formatDate(item.completedAt)} • {item.symptoms?.length || 0} Symptoms</div>
+                      <div style={styles.itemTitle}>{item.patientName || 'Personal Assessment'}</div>
+                      <div style={styles.itemSub}>{formatDate(item.completedAt)} · {item.symptoms?.length || 0} symptoms reported</div>
                     </div>
                   </div>
                   <span style={styles.itemBadge(getSeverityColor(item.triageLevel))}>
-                    {item.triageLevel === 'no_action' ? 'Stable' : 'Check Required'}
+                    {item.triageLevel === 'no_action' ? 'All Clear' : 'Follow-up Advised'}
                   </span>
                 </div>
               ))
             ) : (
               <div style={styles.emptyState}>
                 <div style={styles.emptyIcon}>📊</div>
-                <div style={styles.emptyText}>No recent assessments found</div>
+                <div style={styles.emptyText}>No check-ins yet — your first one is just a click away</div>
               </div>
             )}
           </div>
@@ -989,7 +991,7 @@ function Dashboard() {
           {/* Saved Diseases */}
           <div style={styles.sectionBox}>
             <div style={styles.boxHeader}>
-              <div style={styles.boxTitle}>Saved Diseases</div>
+              <div style={styles.boxTitle}>Conditions You're Following</div>
               <div
                 style={styles.viewAllLink}
                 onClick={() => navigate('/history')}
@@ -1036,7 +1038,7 @@ function Dashboard() {
             ) : (
               <div style={styles.emptyState}>
                 <div style={styles.emptyIcon}>💾</div>
-                <div style={styles.emptyText}>No saved diseases yet</div>
+                <div style={styles.emptyText}>Save conditions from the library to keep them handy</div>
               </div>
             )}
           </div>
